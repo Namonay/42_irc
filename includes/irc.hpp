@@ -6,7 +6,7 @@
 /*   By: vvaas <vvaas@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/29 13:24:01 by vvaas             #+#    #+#             */
-/*   Updated: 2023/11/29 13:45:51 by vvaas            ###   ########.fr       */
+/*   Updated: 2023/11/29 16:32:34 by vvaas            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,4 +17,8 @@
 # include <string>
 # include <sys/socket.h>
 # include <netinet/in.h>
+# include <unistd.h>
+# include <cstdlib>
+# include <sys/socket.h>
+
 #endif
