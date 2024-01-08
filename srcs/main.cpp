@@ -10,6 +10,8 @@
 /*                                                                            */
 /* ************************************************************************** */
 
+// t'es mauvais
+
 #include "../includes/irc.hpp"
 
 unsigned long get_port(char *port)
