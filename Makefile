@@ -3,10 +3,10 @@
 #                                                         :::      ::::::::    #
 #    Makefile                                           :+:      :+:    :+:    #
 #                                                     +:+ +:+         +:+      #
-#    By: vvaas <vvaas@student.42.fr>                +#+  +:+       +#+         #
+#    By: vavaas <vvaas@student.42.fr>               +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
-#    Created: 2023/08/09 15:08:49 by vvaas             #+#    #+#              #
-#    Updated: 2023/11/29 16:17:31 by vvaas            ###   ########.fr        #
+#    Created: 2023/08/09 15:08:49 by vavaas            #+#    #+#              #
+#    Updated: 2024/01/20 10:01:26 by maldavid         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -17,29 +17,29 @@ SRCS	= srcs/main.cpp \
 OBJ_DIR	= objs
 OBJS	= $(addprefix $(OBJ_DIR)/, $(SRCS:.cpp=.o))
 
-CC		= c++
-CFLAGS	= -std=c++98 -Wall -Wextra -Werror
+CXX			= c++
+CXXFLAGS	= -std=c++98 -Wall -Wextra -Werror -I includes
 
 DEBUG		?= false
 MODE		=  "release"
 
 ifeq ($(DEBUG), true)
-	CFLAGS += -g -D DEBUG
+	CXXFLAGS += -g -D DEBUG
 	MODE = "debug"
 endif
 
 RM		= rm -rf
 
 $(OBJ_DIR)/%.o: %.cpp
-	@echo "\e[1;32m[compiling "$(MODE)" {"$(CC)"}...]\e[1;00m "$<
-	@$(CC) $(CFLAGS) $(COPTS) -c $< -o $@
+	@printf "\e[1;32m[compiling "$(MODE)" {"$(CXX)"}...]\e[1;00m "$<"\n"
+	@$(CXX) $(CXXFLAGS) $(COPTS) -c $< -o $@
 
 all: $(NAME)
 
 $(NAME):	$(OBJ_DIR) $(OBJS)
-	@echo "\e[1;32m[linking   "$(MODE)" {"$(CC)"}...]\e[1;00m "$@
-	@$(CC) -o $(NAME) $(OBJS)
-	@echo "\e[1;32m[build finished]\e[1;00m"
+	@printf "\e[1;32m[linking   "$(MODE)" {"$(CXX)"}...]\e[1;00m "$@"\n"
+	@$(CXX) -o $(NAME) $(OBJS)
+	@printf "\e[1;32m[build finished]\e[1;00m\n"
 
 $(OBJ_DIR):
 	@mkdir -p $(sort $(addprefix $(OBJ_DIR)/, $(dir $(SRCS))))
