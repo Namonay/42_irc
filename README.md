@@ -1,4 +1,4 @@
-# IRC parce que fuck Discord <a href="https://github.com/Namonay/42_irc/actions/workflows/build.yml"><img src="https://github.com/Namonay/42_irc/ations/workflows/build.yml/badge.svg"></a>
+# IRC parce que fuck Discord [![Build](https://github.com/Namonay/42_irc/actions/workflows/build.yml/badge.svg)](https://github.com/Namonay/42_irc/actions/workflows/build.yml)
 
 "Vas sans craintes vavaas, je te pardonne"
  - Malo Jan 20, 2024
