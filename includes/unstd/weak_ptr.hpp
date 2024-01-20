@@ -1,20 +1,20 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   weak_ptr.h                                         :+:      :+:    :+:   */
+/*   weak_ptr.hpp                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: maldavid <kbz_8.dev@akel-engine.com>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/20 11:17:07 by maldavid          #+#    #+#             */
-/*   Updated: 2024/01/20 13:16:14 by maldavid         ###   ########.fr       */
+/*   Updated: 2024/01/20 19:13:13 by maldavid         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #ifndef __UNSTD_WEAK_PTR__
 #define __UNSTD_WEAK_PTR__
 
-#include <unstd/bits/ref_counter.h>
-#include <unstd/shared_ptr.h>
+#include <unstd/bits/ref_counter.hpp>
+#include <unstd/shared_ptr.hpp>
 
 namespace unstd
 {
@@ -46,6 +46,6 @@ namespace unstd
 	};
 }
 
-#include <unstd/weak_ptr.h>
+#include <unstd/weak_ptr.ipp>
 
 #endif

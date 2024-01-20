@@ -1,24 +1,30 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   main.cpp                                           :+:      :+:    :+:   */
+/*   ref_counter.hpp                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: maldavid <kbz_8.dev@akel-engine.com>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2024/01/20 09:27:04 by maldavid          #+#    #+#             */
-/*   Updated: 2024/01/20 19:19:39 by maldavid         ###   ########.fr       */
+/*   Created: 2024/01/20 12:54:09 by maldavid          #+#    #+#             */
+/*   Updated: 2024/01/20 19:12:33 by maldavid         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include <unstd/unique_ptr.hpp>
-#include <unstd/shared_ptr.hpp>
-#include <unstd/weak_ptr.hpp>
-#include <ansi.hpp>
+#ifndef __UNSTD_BITS_REFERENCE_COUNTER__
+#define __UNSTD_BITS_REFERENCE_COUNTER__
 
-int main(int ac, char** av)
+namespace unstd
 {
-	(void)ac;
-	(void)av;
-	std::cout << AnsiColor::red << "this" << AnsiColor::blue << " is" << AnsiColor::green << " a" << AnsiColor::yellow << " test" << AnsiColor::reset << std::endl;
-	return 0;
+	namespace bits
+	{
+		struct RefCount
+		{
+			int shared;
+			int weak;
+
+			RefCount(int s, int w) : shared(s), weak(w) {}
+		};
+	}
 }
+
+#endif

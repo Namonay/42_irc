@@ -1,19 +1,19 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   shared_ptr.h                                       :+:      :+:    :+:   */
+/*   shared_ptr.hpp                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: maldavid <kbz_8.dev@akel-engine.com>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/20 10:09:02 by maldavid          #+#    #+#             */
-/*   Updated: 2024/01/20 13:08:04 by maldavid         ###   ########.fr       */
+/*   Updated: 2024/01/20 19:12:42 by maldavid         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #ifndef __UNSTD_SHARED_PTR__
 #define __UNSTD_SHARED_PTR__
 
-#include <unstd/bits/ref_counter.h>
+#include <unstd/bits/ref_counter.hpp>
 #include <cstddef>
 #include <map>
 

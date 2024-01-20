@@ -1,30 +1,19 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   ref_counter.h                                      :+:      :+:    :+:   */
+/*   ansi.cpp                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: maldavid <kbz_8.dev@akel-engine.com>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2024/01/20 12:54:09 by maldavid          #+#    #+#             */
-/*   Updated: 2024/01/20 12:55:02 by maldavid         ###   ########.fr       */
+/*   Created: 2024/01/20 19:08:31 by maldavid          #+#    #+#             */
+/*   Updated: 2024/01/20 19:18:41 by maldavid         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#ifndef __UNSTD_BITS_REFERENCE_COUNTER__
-#define __UNSTD_BITS_REFERENCE_COUNTER__
+#include <ansi.hpp>
+#include <unstd/string.hpp>
 
-namespace unstd
+std::ostream& operator<<(std::ostream& os, const AnsiColor::Codes code)
 {
-	namespace bits
-	{
-		struct RefCount
-		{
-			int shared;
-			int weak;
-
-			RefCount(int s, int w) : shared(s), weak(w) {}
-		};
-	}
+	return os << "\033[1;" << unstd::toString(static_cast<int>(code)) << "m";
 }
-
-#endif

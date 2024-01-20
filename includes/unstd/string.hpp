@@ -1,24 +1,29 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   main.cpp                                           :+:      :+:    :+:   */
+/*   string.hpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: maldavid <kbz_8.dev@akel-engine.com>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2024/01/20 09:27:04 by maldavid          #+#    #+#             */
-/*   Updated: 2024/01/20 19:19:39 by maldavid         ###   ########.fr       */
+/*   Created: 2024/01/20 19:13:26 by maldavid          #+#    #+#             */
+/*   Updated: 2024/01/20 19:14:55 by maldavid         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include <unstd/unique_ptr.hpp>
-#include <unstd/shared_ptr.hpp>
-#include <unstd/weak_ptr.hpp>
-#include <ansi.hpp>
+#ifndef __UNSTD_STRING__
+#define __UNSTD_STRING__
 
-int main(int ac, char** av)
+#include <sstream>
+
+namespace unstd
 {
-	(void)ac;
-	(void)av;
-	std::cout << AnsiColor::red << "this" << AnsiColor::blue << " is" << AnsiColor::green << " a" << AnsiColor::yellow << " test" << AnsiColor::reset << std::endl;
-	return 0;
+	template <typename T>
+	std::string toString(T n)
+	{
+		std::ostringstream ss;
+		ss << n;
+		return ss.str();
+	}
 }
+
+#endif
