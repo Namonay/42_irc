@@ -1,28 +1,26 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   server.cpp                                         :+:      :+:    :+:   */
+/*   channel.hpp                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: maldavid <kbz_8.dev@akel-engine.com>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2024/01/21 09:31:17 by maldavid          #+#    #+#             */
-/*   Updated: 2024/01/21 10:38:12 by maldavid         ###   ########.fr       */
+/*   Created: 2024/01/21 10:34:25 by maldavid          #+#    #+#             */
+/*   Updated: 2024/01/21 10:35:49 by maldavid         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include <server.hpp>
-#include <client.hpp>
-#include <channel.hpp>
+#ifndef __CHANNEL__
+#define __CHANNEL__
 
 namespace irc
 {
-	Server::Server(int port, const std::string& password) : _password(password), _port(port)
+	class Channel
 	{
-		(void)_port;
-		(void)_password;
-		(void)_socket;
-		(void)_channels;
-	}
+		public:
 
-	Server::~Server() {}
+		private:
+	};
 }
+
+#endif
