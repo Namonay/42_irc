@@ -6,14 +6,15 @@
 #    By: vavaas <vvaas@student.42.fr>               +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2023/08/09 15:08:49 by vavaas            #+#    #+#              #
-#    Updated: 2024/01/20 19:16:37 by maldavid         ###   ########.fr        #
+#    Updated: 2024/01/21 09:44:11 by maldavid         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
 NAME	= ircserv
 
-SRCS	= srcs/main.cpp \
-		  srcs/utils/ansi.cpp \
+SRCS	= srcs/core/main.cpp \
+		  srcs/core/logs.cpp  \
+		  srcs/utils/ansi.cpp  \
 
 OBJ_DIR	= objs
 OBJS	= $(addprefix $(OBJ_DIR)/, $(SRCS:.cpp=.o))

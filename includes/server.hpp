@@ -1,24 +1,29 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   main.cpp                                           :+:      :+:    :+:   */
+/*   server.hpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: maldavid <kbz_8.dev@akel-engine.com>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2024/01/20 09:27:04 by maldavid          #+#    #+#             */
-/*   Updated: 2024/01/20 19:19:39 by maldavid         ###   ########.fr       */
+/*   Created: 2024/01/21 09:12:28 by maldavid          #+#    #+#             */
+/*   Updated: 2024/01/21 09:14:20 by maldavid         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include <unstd/unique_ptr.hpp>
-#include <unstd/shared_ptr.hpp>
-#include <unstd/weak_ptr.hpp>
-#include <ansi.hpp>
+#ifndef __SERVER_IRC__
+#define __SERVER_IRC__
 
-int main(int ac, char** av)
+namespace irc
 {
-	(void)ac;
-	(void)av;
-	std::cout << AnsiColor::red << "this" << AnsiColor::blue << " is" << AnsiColor::green << " a" << AnsiColor::yellow << " test" << AnsiColor::reset << std::endl;
-	return 0;
+	class Server
+	{
+		public:
+			Server();
+
+			~Server();
+
+		private:
+	};
 }
+
+#endif
