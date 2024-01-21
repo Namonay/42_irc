@@ -6,13 +6,28 @@
 /*   By: maldavid <kbz_8.dev@akel-engine.com>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/21 09:31:17 by maldavid          #+#    #+#             */
-/*   Updated: 2024/01/21 10:38:12 by maldavid         ###   ########.fr       */
+/*   Updated: 2024/01/21 12:13:51 by maldavid         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include <server.hpp>
 #include <client.hpp>
 #include <channel.hpp>
+
+/** Commands to handle
+ * NICK
+ * USER
+ * QUIT
+ * PART
+ * JOIN
+ * PRIVMSG
+ * NOTICE
+ * KICK
+ * MOTD
+ * TOPIC
+ * PING
+ * MODE
+ */
 
 namespace irc
 {

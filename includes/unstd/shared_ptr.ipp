@@ -15,17 +15,7 @@ namespace unstd
 	template <typename T>
 	SharedPtr<T>::SharedPtr(T* ptr) : _ptr(ptr)
 	{
-		typename std::map<void*, bits::RefCount*>::iterator it = _refs.find(static_cast<void*>(ptr));
-		if(it == _refs.end())
-		{
-			_ref = new bits::RefCount(1, 0);
-			_refs[static_cast<void*>(ptr)] = _ref;
-		}
-		else
-		{
-			_ref = it->second;
-			_ref->shared++;
-		}
+		_ref = new bits::RefCount(1, 0);
 	}
 
 	template <typename T>
@@ -100,17 +90,7 @@ namespace unstd
 	{
 		safeRelease();
 		_ptr = ptr;
-		typename std::map<void*, bits::RefCount*>::iterator it = _refs.find(static_cast<void*>(ptr));
-		if(it == _refs.end())
-		{
-			_ref = new bits::RefCount(1, 0);
-			_refs[static_cast<void*>(ptr)] = _ref;
-		}
-		else
-		{
-			_ref = it->second;
-			_ref->shared++;
-		}
+		_ref = new bits::RefCount(1, 0);
 	}
 
 	template <typename T>

@@ -6,7 +6,7 @@
 /*   By: maldavid <kbz_8.dev@akel-engine.com>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/20 09:27:04 by maldavid          #+#    #+#             */
-/*   Updated: 2024/01/21 10:31:26 by maldavid         ###   ########.fr       */
+/*   Updated: 2024/01/21 12:16:41 by maldavid         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,7 +26,7 @@ int main(int ac, char** av)
 	}
 
 	if(av[1] == NULL || av[2] == NULL)
-		irc::logs::report(irc::log_fatal_error, "invalid argv, one is NULL (wtf)");
+		irc::logs::report(irc::log_fatal_error, "invalid argv, argv[1] or argv[2] is NULL (wtf)");
 
 	char* end;
 	long port = std::strtol(av[1], &end, 10);

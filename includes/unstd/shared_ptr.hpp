@@ -6,7 +6,7 @@
 /*   By: maldavid <kbz_8.dev@akel-engine.com>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/20 10:09:02 by maldavid          #+#    #+#             */
-/*   Updated: 2024/01/20 19:12:42 by maldavid         ###   ########.fr       */
+/*   Updated: 2024/01/21 12:27:07 by maldavid         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -43,7 +43,6 @@ namespace unstd
 			void safeRelease();
 
 		private:
-			static std::map<void*, bits::RefCount*> _refs;
 			T* _ptr;
 			bits::RefCount* _ref;
 	};
