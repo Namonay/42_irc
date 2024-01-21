@@ -1,28 +1,34 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   channel.hpp                                        :+:      :+:    :+:   */
+/*   message.hpp                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: maldavid <kbz_8.dev@akel-engine.com>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2024/01/21 10:34:25 by maldavid          #+#    #+#             */
-/*   Updated: 2024/01/21 11:41:51 by maldavid         ###   ########.fr       */
+/*   Created: 2024/01/21 11:35:21 by maldavid          #+#    #+#             */
+/*   Updated: 2024/01/21 11:39:56 by maldavid         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#ifndef __CHANNEL__
-#define __CHANNEL__
+#ifndef __MESSAGE__
+#define __MESSAGE__
+
+#include <string>
+#include <unstd/shared_ptr.hpp>
 
 namespace irc
 {
-	class Channel
+	class Message
 	{
 		public:
-			Channel();
+			Message(unstd::SharedPtr<class Client> client, const std::string& msg);
 
-			~Channel();
+			~Message();
 
 		private:
+			const std::string _raw_msg;
+			std::string _command;
+			unstd::SharedPtr<class Client> _client;
 	};
 }
 
