@@ -6,7 +6,7 @@
 /*   By: maldavid <kbz_8.dev@akel-engine.com>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/21 11:35:21 by maldavid          #+#    #+#             */
-/*   Updated: 2024/01/21 11:39:56 by maldavid         ###   ########.fr       */
+/*   Updated: 2024/01/21 12:04:43 by maldavid         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,6 +22,10 @@ namespace irc
 	{
 		public:
 			Message(unstd::SharedPtr<class Client> client, const std::string& msg);
+
+			inline unstd::SharedPtr<class Client> getClient() const { return _client; }
+			inline const std::string& getRawMsg() const { return _raw_msg; }
+			inline const std::string& getCmd() const { return _command; }
 
 			~Message();
 
