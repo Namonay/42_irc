@@ -1,14 +1,14 @@
-# **************************************************************************** #
+#******************************************************************************#
 #                                                                              #
 #                                                         :::      ::::::::    #
 #    Makefile                                           :+:      :+:    :+:    #
 #                                                     +:+ +:+         +:+      #
-#    By: vavaas <vvaas@student.42.fr>               +#+  +:+       +#+         #
+#    By: vvaas <vvaas@student.42angouleme.fr>       +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2023/08/09 15:08:49 by vavaas            #+#    #+#              #
-#    Updated: 2024/01/21 12:04:28 by maldavid         ###   ########.fr        #
+#    Updated: 2024/01/21 17:23:26 by vvaas            ###   ########.fr        #
 #                                                                              #
-# **************************************************************************** #
+#******************************************************************************#
 
 NAME	= ircserv
 
@@ -24,7 +24,12 @@ OBJ_DIR	= objs
 OBJS	= $(addprefix $(OBJ_DIR)/, $(SRCS:.cpp=.o))
 
 CXX			= c++
-CXXFLAGS	= -std=c++98 -Wall -Wextra -Werror -I includes
+FLAGS		?= true
+CXXFLAGS	= -std=c++98 -I includes
+ifeq ($(FLAGS), true)
+	CXXFLAGS	+= -Wall -Wextra -Werror
+endif
+
 
 DEBUG		?= false
 MODE		=  "release"

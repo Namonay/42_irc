@@ -1,14 +1,14 @@
-/* ************************************************************************** */
+/******************************************************************************/
 /*                                                                            */
 /*                                                        :::      ::::::::   */
 /*   main.cpp                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: maldavid <kbz_8.dev@akel-engine.com>       +#+  +:+       +#+        */
+/*   By: vvaas <vvaas@student.42angouleme.fr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/20 09:27:04 by maldavid          #+#    #+#             */
-/*   Updated: 2024/01/21 12:16:41 by maldavid         ###   ########.fr       */
+/*   Updated: 2024/01/21 16:14:07 by vvaas            ###   ########.fr       */
 /*                                                                            */
-/* ************************************************************************** */
+/******************************************************************************/
 
 #include <logs.hpp>
 #include <cstdlib>
@@ -24,13 +24,12 @@ int main(int ac, char** av)
 		irc::logs::report(irc::log_message, "usage './ircserv <port> <password>', try again dumbass");
 		return 0;
 	}
-
 	if(av[1] == NULL || av[2] == NULL)
 		irc::logs::report(irc::log_fatal_error, "invalid argv, argv[1] or argv[2] is NULL (wtf)");
 
 	char* end;
-	long port = std::strtol(av[1], &end, 10);
-	if(errno == ERANGE || *end != 0 || port < 0 || port > 0xffff)
+	int port = std::strtol(av[1], &end, 10);
+	if(errno == ERANGE || *end != 0 || port < 0 || port > 0xFFFF || std::strlen(av[1]) == 0)
 		irc::logs::report(irc::log_fatal_error, "invalid port");
 
 	irc::Server server(port, av[2]);
