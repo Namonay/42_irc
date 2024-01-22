@@ -6,7 +6,7 @@
 /*   By: vvaas <vvaas@student.42angouleme.fr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/20 09:27:04 by maldavid          #+#    #+#             */
-/*   Updated: 2024/01/22 17:23:14 by vvaas            ###   ########.fr       */
+/*   Updated: 2024/01/22 17:26:47 by vvaas            ###   ########.fr       */
 /*                                                                            */
 /******************************************************************************/
 
@@ -26,6 +26,8 @@ void signalsHandler(int foo)
 	if (!server_ref)
 		return;
 	server_ref->closeMainSocket();
+	std::cout << "\b\b  \b\b" << std::flush;
+	irc::logs::report(irc::log_message, "Shutting down...");
 }
 
 int main(int ac, char** av)
