@@ -1,14 +1,14 @@
-/* ************************************************************************** */
+/******************************************************************************/
 /*                                                                            */
 /*                                                        :::      ::::::::   */
 /*   server_functions.cpp                               :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: maldavid <kbz_8.dev@akel-engine.com>       +#+  +:+       +#+        */
+/*   By: vvaas <vvaas@student.42angouleme.fr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/22 17:31:06 by maldavid          #+#    #+#             */
-/*   Updated: 2024/01/22 20:19:50 by maldavid         ###   ########.fr       */
+/*   Updated: 2024/01/22 21:09:56 by vvaas            ###   ########.fr       */
 /*                                                                            */
-/* ************************************************************************** */
+/******************************************************************************/
 
 #include <server.hpp>
 #include <client.hpp>
@@ -22,6 +22,8 @@
 #include <config.hpp>
 #include <message.hpp>
 #include <algorithm>
+#include <errorscode.hpp>
+#include <irc.hpp>
 
 namespace irc
 {
@@ -36,7 +38,8 @@ namespace irc
 		{
 			if((*it)->getNickName() == msg.getTokens()[1])
 			{
-				// collision
+				client->sendCode(ERR_NICKCOLLISION, "Nickname is used");
+				return ;
 			}
 		}
 		client->printUserHeader();
@@ -170,6 +173,7 @@ namespace irc
 
 	void Server::handleTopic(unstd::SharedPtr<class Client> client, const Message& msg)
 	{
+		(void)client;
 		if(msg.getTokens().size() == 1)
 		{
 			logs::report(log_error, "TOPIC, invalid command '%s'", msg.getRawMsg().c_str());

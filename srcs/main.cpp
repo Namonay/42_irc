@@ -6,7 +6,7 @@
 /*   By: vvaas <vvaas@student.42angouleme.fr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/20 09:27:04 by maldavid          #+#    #+#             */
-/*   Updated: 2024/01/22 17:26:47 by vvaas            ###   ########.fr       */
+/*   Updated: 2024/01/22 21:04:13 by vvaas            ###   ########.fr       */
 /*                                                                            */
 /******************************************************************************/
 
@@ -51,6 +51,5 @@ int main(int ac, char** av)
 	signal(SIGQUIT, signalsHandler);
 	serv->wait();
 	serv->closeMainSocket();
-
 	return 0;
 }
