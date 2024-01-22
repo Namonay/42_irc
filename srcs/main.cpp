@@ -6,7 +6,7 @@
 /*   By: vvaas <vvaas@student.42angouleme.fr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/20 09:27:04 by maldavid          #+#    #+#             */
-/*   Updated: 2024/01/22 09:30:16 by maldavid         ###   ########.fr       */
+/*   Updated: 2024/01/22 17:04:37 by maldavid         ###   ########.fr       */
 /*                                                                            */
 /******************************************************************************/
 
@@ -16,6 +16,17 @@
 #include <cstring>
 #include <cerrno>
 #include <server.hpp>
+#include <signal.h>
+
+static unstd::SharedPtr<irc::Server> server_ref;
+
+void signalsHandler(int foo)
+{
+	(void)foo;
+	if(server_ref)
+		return;
+	server_ref->closeMainSocket();
+}
 
 int main(int ac, char** av)
 {
@@ -32,8 +43,12 @@ int main(int ac, char** av)
 	if(errno == ERANGE || *end != 0 || port < 0 || port > 0xFFFF || std::strlen(av[1]) == 0)
 		irc::logs::report(irc::log_fatal_error, "invalid port");
 
-	irc::Server server(port, av[2]);
-	server.wait();
+	unstd::SharedPtr<irc::Server> serv(new irc::Server(port, av[2]));
+	server_ref = serv;
+	signal(SIGINT, signalsHandler);
+	signal(SIGQUIT, signalsHandler);
+	serv->wait();
+	serv->closeMainSocket();
 
 	return 0;
 }

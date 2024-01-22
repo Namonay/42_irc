@@ -6,7 +6,7 @@
 /*   By: vvaas <vvaas@student.42angouleme.fr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/21 09:12:28 by maldavid          #+#    #+#             */
-/*   Updated: 2024/01/22 12:16:31 by maldavid         ###   ########.fr       */
+/*   Updated: 2024/01/22 17:00:02 by maldavid         ###   ########.fr       */
 /*                                                                            */
 /******************************************************************************/
 
@@ -27,7 +27,10 @@ namespace irc
 	{
 		public:
 			Server(int port, const std::string& password);
+
+			inline void closeMainSocket() { close(_main_socket); }
 			void wait();
+
 			~Server();
 
 		private:
