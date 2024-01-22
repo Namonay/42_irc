@@ -6,7 +6,7 @@
 /*   By: vvaas <vvaas@student.42angouleme.fr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/21 09:31:17 by maldavid          #+#    #+#             */
-/*   Updated: 2024/01/22 16:08:55 by maldavid         ###   ########.fr       */
+/*   Updated: 2024/01/22 16:44:54 by maldavid         ###   ########.fr       */
 /*                                                                            */
 /******************************************************************************/
 
@@ -22,13 +22,24 @@
 #include <config.hpp>
 #include <message.hpp>
 #include <algorithm>
+#include <signal.h>
 
 namespace irc
 {
+	static bool __quit_required = false;
+
+	static void signalsHandler(int foo)
+	{
+		(void)foo;
+		__quit_required = true;
+	}
+
 	Server::Server(int port, const std::string& password) : _s_len(sizeof(_s_data)), _password(password), _port(port), _active(true)
 	{
 		std::memset(&_s_data, 0, sizeof(sockaddr));
 		initSocket();
+		signal(SIGINT, signalsHandler);
+		signal(SIGQUIT, signalsHandler);
 	}
 
 	void Server::initSocketData()
@@ -92,7 +103,7 @@ namespace irc
 		int i = 0;
 		socklen_t len = sizeof(sockaddr_in);
 
-		while(_active)
+		while(_active && !__quit_required)
 		{
 			FD_ZERO(&_fd_set);
 			FD_SET(_main_socket, &_fd_set);
