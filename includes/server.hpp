@@ -6,7 +6,7 @@
 /*   By: vvaas <vvaas@student.42angouleme.fr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/21 09:12:28 by maldavid          #+#    #+#             */
-/*   Updated: 2024/01/22 17:21:23 by vvaas            ###   ########.fr       */
+/*   Updated: 2024/01/22 17:30:47 by maldavid         ###   ########.fr       */
 /*                                                                            */
 /******************************************************************************/
 
@@ -28,7 +28,7 @@ namespace irc
 		public:
 			Server(int port, const std::string& password);
 
-			inline void closeMainSocket() { if (_main_socket > 0) close(_main_socket); _main_socket = 0; _active = false; }
+			inline void closeMainSocket() { close(_main_socket); _main_socket = 0; _active = false; }
 			void wait();
 
 			~Server();
