@@ -6,7 +6,7 @@
 /*   By: vvaas <vvaas@student.42angouleme.fr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/21 09:31:17 by maldavid          #+#    #+#             */
-/*   Updated: 2024/01/22 14:54:21 by maldavid         ###   ########.fr       */
+/*   Updated: 2024/01/22 16:08:55 by maldavid         ###   ########.fr       */
 /*                                                                            */
 /******************************************************************************/
 
@@ -195,26 +195,75 @@ namespace irc
 
 	void Server::handlePart(unstd::SharedPtr<class Client> client, const Message& msg)
 	{
-		(void)client;
-		(void)msg;
+		if(msg.getTokens().size() < 2 && msg.getTokens().size() > 3)
+		{
+			logs::report(log_error, "PART, invalid command '%s'", msg.getRawMsg().c_str());
+			return;
+		}
+		if(msg.getTokens()[1][0] != '#' && msg.getTokens()[1][0] != '&')
+		{
+			logs::report(log_error, "PART, invalid channel name '%s'", msg.getTokens()[1].c_str());
+			return;
+		}
+
+		for(std::string::const_iterator it = msg.getTokens()[1].begin(); it != msg.getTokens()[1].end(); ++it)
+		{
+			if((it == msg.getTokens()[1].begin() || *(it - 1) == ',') && std::strchr("&#", *it) == NULL)
+			{
+				logs::report(log_error, "PART, invalid channel name '%s'", msg.getTokens()[1].c_str());
+				return;
+			}
+		}
+
+		std::vector<Channel>::iterator chit;
+		for(chit = _channels.begin(); chit != _channels.end(); ++chit)
+		{
+			if(msg.getTokens()[1] == chit->getName())
+				break;
+		}
+		if(chit == _channels.end())
+		{
+			logs::report(log_error, "PART, channel not found '%s'", msg.getTokens()[1].c_str());
+			return;
+		}
+		if(!chit->removeClient(client))
+		{
+			logs::report(log_error, "PART, client was not in channel '%s'", msg.getTokens()[1].c_str());
+			return;
+		}
+		client->printUserHeader();
+		std::cout << "leaving channel, " << msg.getTokens()[1] << std::endl;
+		if(chit->getNumberOfClients() == 0)
+			logs::report(log_message, "channel '%s' has beed destroyed", chit->getName().c_str());
 	}
 
 	void Server::handleJoin(unstd::SharedPtr<class Client> client, const Message& msg)
 	{
-		if(msg.getTokens().size() > 3)
+		if(msg.getTokens().size() < 2 && msg.getTokens().size() > 3)
 		{
 			logs::report(log_error, "JOIN, invalid command '%s'", msg.getRawMsg().c_str());
 			return;
 		}
+		if(msg.getTokens()[1][0] != '#' && msg.getTokens()[1][0] != '&')
+		{
+			logs::report(log_error, "JOIN, invalid channel name '%s'", msg.getTokens()[1].c_str());
+			return;
+		}
 
-		std::vector<Channel>::const_iterator it;
+		std::vector<Channel>::iterator it;
 		for(it = _channels.begin(); it != _channels.end(); ++it)
 		{
 			if(msg.getTokens()[1] == it->getName())
 				break;
 		}
 		if(it == _channels.end())
+		{
 			_channels.push_back(Channel(msg.getTokens()[1]));
+			logs::report(log_message, "channel '%s' has beed created", msg.getTokens()[1].c_str());
+			_channels.back().addClient(client);
+		}
+		else
+			it->addClient(client);
 		client->printUserHeader();
 		std::cout << "joining new channel, " << msg.getTokens()[1] << std::endl;
 	}
