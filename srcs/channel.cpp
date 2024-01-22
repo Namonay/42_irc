@@ -6,7 +6,7 @@
 /*   By: maldavid <kbz_8.dev@akel-engine.com>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/21 10:36:21 by maldavid          #+#    #+#             */
-/*   Updated: 2024/01/21 10:36:49 by maldavid         ###   ########.fr       */
+/*   Updated: 2024/01/22 14:29:55 by maldavid         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,7 +14,7 @@
 
 namespace irc
 {
-	Channel::Channel()
+	Channel::Channel(const std::string& name) : _name(name)
 	{
 
 	}

@@ -6,18 +6,55 @@
 /*   By: maldavid <kbz_8.dev@akel-engine.com>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/21 11:38:34 by maldavid          #+#    #+#             */
-/*   Updated: 2024/01/21 12:03:47 by maldavid         ###   ########.fr       */
+/*   Updated: 2024/01/22 13:02:56 by maldavid         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include <message.hpp>
 #include <client.hpp>
+#include <vector>
+#include <cctype>
 
 namespace irc
 {
+	namespace details
+	{
+		void split(const std::string& s, std::vector<std::string>& elems)
+		{
+			std::string token;
+			for(std::string::const_iterator it = s.begin(); it != s.end();)
+			{
+				if(std::isspace(*it))
+				{
+					elems.push_back(token);
+					token.clear();
+					while(std::isspace(*it) && it != s.end())
+						it++;
+				}
+				else
+				{
+					token.push_back(*it);
+					it++;
+				}
+			}
+			elems.push_back(token);
+		}
+
+		std::vector<std::string> split(const std::string& s)
+		{
+			std::vector<std::string> elems;
+			split(s, elems);
+			return elems;
+		}
+	}
+
 	Message::Message(unstd::SharedPtr<class Client> client, const std::string& msg) : _raw_msg(msg), _client(client)
 	{
-
+		std::vector<std::string> tokens = details::split(msg);
+		if(tokens.empty())
+			return;
+		_command = tokens[0];
+		_tokens = tokens;
 	}
 
 	Message::~Message() {}

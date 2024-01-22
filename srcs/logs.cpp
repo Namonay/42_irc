@@ -6,7 +6,7 @@
 /*   By: maldavid <kbz_8.dev@akel-engine.com>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/21 09:17:47 by maldavid          #+#    #+#             */
-/*   Updated: 2024/01/21 09:30:13 by maldavid         ###   ########.fr       */
+/*   Updated: 2024/01/22 09:46:54 by maldavid         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,8 +15,7 @@
 #include <cstdarg>
 #include <cstdlib>
 #include <cstdio>
-
-#define BUFFER_SIZE 4096
+#include <config.hpp>
 
 namespace irc
 {
@@ -24,11 +23,11 @@ namespace irc
 	{
 		void report(LogType type, std::string message, ...)
 		{
-			char buffer[BUFFER_SIZE];
+			char buffer[LOGS_BUFFER_SIZE];
 
 			va_list al;
 			va_start(al, message);
-			vsnprintf(buffer, BUFFER_SIZE, message.c_str(), al);
+			vsnprintf(buffer, LOGS_BUFFER_SIZE, message.c_str(), al);
 			va_end(al);
 
 			switch(type)

@@ -6,7 +6,7 @@
 /*   By: vvaas <vvaas@student.42angouleme.fr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/21 09:12:28 by maldavid          #+#    #+#             */
-/*   Updated: 2024/01/22 01:14:42 by vvaas            ###   ########.fr       */
+/*   Updated: 2024/01/22 12:16:31 by maldavid         ###   ########.fr       */
 /*                                                                            */
 /******************************************************************************/
 
@@ -20,31 +20,45 @@
 #include <csignal>
 
 #define MAX_USERS 20
+
 namespace irc
 {
 	class Server
 	{
 		public:
 			Server(int port, const std::string& password);
-
+			void wait();
 			~Server();
-			inline unsigned long get_port(void) { return (htons(_port)); }
+
 		private:
-			void init_socket(void);
-			void init_socket_data(void);
-			void init_signal(void);
+			void initSocket();
+			void initSocketData();
+			void initSignal();
 
-			void wait(void);
-			void add_client(int fd);
+			bool handleMessage(unstd::SharedPtr<class Client> client);
 
-			void handle_input(void);
+			void handleInput();
+
+			// ugly as f*ck
+			void handleNick(unstd::SharedPtr<class Client> client, const class Message& msg);
+			void handleUser(unstd::SharedPtr<class Client> client, const class Message& msg);
+			void handleQuit(unstd::SharedPtr<class Client> client, const class Message& msg);
+			void handlePart(unstd::SharedPtr<class Client> client, const class Message& msg);
+			void handleJoin(unstd::SharedPtr<class Client> client, const class Message& msg);
+			void handlePrivMsg(unstd::SharedPtr<class Client> client, const class Message& msg);
+			void handleNotice(unstd::SharedPtr<class Client> client, const class Message& msg);
+			void handleKick(unstd::SharedPtr<class Client> client, const class Message& msg);
+			void handleMotD(unstd::SharedPtr<class Client> client, const class Message& msg);
+			void handleTopic(unstd::SharedPtr<class Client> client, const class Message& msg);
+			void handlePing(unstd::SharedPtr<class Client> client, const class Message& msg);
+			void handleMode(unstd::SharedPtr<class Client> client, const class Message& msg);
+
 		private:
-			sockaddr_in _s_data;
-			socklen_t	_s_len;
-			fd_set		_fd_set;
-
 			std::vector<class Channel> _channels;
-			std::vector<class Client> _client;
+			std::vector<unstd::SharedPtr<class Client> > _client;
+			sockaddr_in _s_data;
+			socklen_t _s_len;
+			fd_set _fd_set;
 			const std::string _password;
 			const std::string _ip;
 			const int _port;

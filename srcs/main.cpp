@@ -6,7 +6,7 @@
 /*   By: vvaas <vvaas@student.42angouleme.fr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/20 09:27:04 by maldavid          #+#    #+#             */
-/*   Updated: 2024/01/21 16:14:07 by vvaas            ###   ########.fr       */
+/*   Updated: 2024/01/22 09:30:16 by maldavid         ###   ########.fr       */
 /*                                                                            */
 /******************************************************************************/
 
@@ -33,5 +33,7 @@ int main(int ac, char** av)
 		irc::logs::report(irc::log_fatal_error, "invalid port");
 
 	irc::Server server(port, av[2]);
+	server.wait();
+
 	return 0;
 }
