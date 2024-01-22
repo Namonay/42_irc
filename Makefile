@@ -6,7 +6,7 @@
 #    By: vvaas <vvaas@student.42angouleme.fr>       +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2023/08/09 15:08:49 by vavaas            #+#    #+#              #
-#    Updated: 2024/01/21 17:23:26 by vvaas            ###   ########.fr        #
+#    Updated: 2024/01/21 19:57:45 by vvaas            ###   ########.fr        #
 #                                                                              #
 #******************************************************************************#
 
@@ -29,7 +29,6 @@ CXXFLAGS	= -std=c++98 -I includes
 ifeq ($(FLAGS), true)
 	CXXFLAGS	+= -Wall -Wextra -Werror
 endif
-
 
 DEBUG		?= false
 MODE		=  "release"
