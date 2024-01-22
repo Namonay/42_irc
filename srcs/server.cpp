@@ -6,7 +6,7 @@
 /*   By: vvaas <vvaas@student.42angouleme.fr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/21 09:31:17 by maldavid          #+#    #+#             */
-/*   Updated: 2024/01/22 17:00:42 by maldavid         ###   ########.fr       */
+/*   Updated: 2024/01/22 17:23:23 by vvaas            ###   ########.fr       */
 /*                                                                            */
 /******************************************************************************/
 
@@ -101,7 +101,7 @@ namespace irc
 				FD_SET((*it)->getFD(), &_fd_set);
 
 			tmp = select(MAX_USERS, &_fd_set, NULL, NULL, NULL); // SELECT blocks till a connection or message is received, and let only those in _fd_set
-			if(tmp < 0)
+			if(tmp < 0 && _main_socket != 0)
 				logs::report(log_fatal_error, "select fd error");
 
 			if(FD_ISSET(_main_socket, &_fd_set)) // if it's a new connection
@@ -118,7 +118,6 @@ namespace irc
 
 				logs::report(log_message, "User %d connected", _client.back()->getID());
 			}
-
 			handleInput();
 		}
 	}

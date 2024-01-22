@@ -6,7 +6,7 @@
 /*   By: vvaas <vvaas@student.42angouleme.fr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/20 09:27:04 by maldavid          #+#    #+#             */
-/*   Updated: 2024/01/22 17:04:37 by maldavid         ###   ########.fr       */
+/*   Updated: 2024/01/22 17:23:14 by vvaas            ###   ########.fr       */
 /*                                                                            */
 /******************************************************************************/
 
@@ -23,7 +23,7 @@ static unstd::SharedPtr<irc::Server> server_ref;
 void signalsHandler(int foo)
 {
 	(void)foo;
-	if(server_ref)
+	if (!server_ref)
 		return;
 	server_ref->closeMainSocket();
 }
