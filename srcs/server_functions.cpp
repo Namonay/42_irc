@@ -6,7 +6,7 @@
 /*   By: maldavid <kbz_8.dev@akel-engine.com>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/22 17:31:06 by maldavid          #+#    #+#             */
-/*   Updated: 2024/01/22 18:05:35 by maldavid         ###   ########.fr       */
+/*   Updated: 2024/01/22 19:54:13 by maldavid         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,11 +27,17 @@ namespace irc
 {
 	void Server::handleNick(unstd::SharedPtr<class Client> client, const Message& msg)
 	{
-		// TODO : handle nick collisions
 		if(msg.getTokens().size() != 2 && msg.getTokens().size() != 3)
 		{
 			logs::report(log_error, "NICK, invalid command '%s'", msg.getRawMsg().c_str());
 			return;
+		}
+		for(std::vector<unstd::SharedPtr<Client> >::iterator it = _client; it != _client.end(); ++it)
+		{
+			if(it->getNickName() == msg.getTokens()[1])
+			{
+				// collision
+			}
 		}
 		client->printUserHeader();
 		client->setNewNickName(msg.getTokens()[1]);
