@@ -6,7 +6,7 @@
 /*   By: maldavid <kbz_8.dev@akel-engine.com>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/22 17:31:06 by maldavid          #+#    #+#             */
-/*   Updated: 2024/01/22 19:56:18 by maldavid         ###   ########.fr       */
+/*   Updated: 2024/01/22 20:19:50 by maldavid         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -170,8 +170,15 @@ namespace irc
 
 	void Server::handleTopic(unstd::SharedPtr<class Client> client, const Message& msg)
 	{
-		(void)client;
-		(void)msg;
+		if(msg.getTokens().size() == 1)
+		{
+			logs::report(log_error, "TOPIC, invalid command '%s'", msg.getRawMsg().c_str());
+			return;
+		}
+		for(std::vector<unstd::SharedPtr<Client> >::iterator it = _client.begin(); it != _client.end(); ++it)
+		{
+
+		}
 	}
 
 	void Server::handlePing(unstd::SharedPtr<class Client> client, const Message& msg)
