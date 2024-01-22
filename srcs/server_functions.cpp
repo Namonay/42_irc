@@ -6,7 +6,7 @@
 /*   By: maldavid <kbz_8.dev@akel-engine.com>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/22 17:31:06 by maldavid          #+#    #+#             */
-/*   Updated: 2024/01/22 19:54:13 by maldavid         ###   ########.fr       */
+/*   Updated: 2024/01/22 19:56:18 by maldavid         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,9 +32,9 @@ namespace irc
 			logs::report(log_error, "NICK, invalid command '%s'", msg.getRawMsg().c_str());
 			return;
 		}
-		for(std::vector<unstd::SharedPtr<Client> >::iterator it = _client; it != _client.end(); ++it)
+		for(std::vector<unstd::SharedPtr<Client> >::iterator it = _client.begin(); it != _client.end(); ++it)
 		{
-			if(it->getNickName() == msg.getTokens()[1])
+			if((*it)->getNickName() == msg.getTokens()[1])
 			{
 				// collision
 			}
