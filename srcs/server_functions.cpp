@@ -6,7 +6,7 @@
 /*   By: maldavid <kbz_8.dev@akel-engine.com>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/22 17:31:06 by maldavid          #+#    #+#             */
-/*   Updated: 2024/01/22 17:31:28 by maldavid         ###   ########.fr       */
+/*   Updated: 2024/01/22 18:05:35 by maldavid         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -57,6 +57,8 @@ namespace irc
 	void Server::handleQuit(unstd::SharedPtr<class Client> client, const Message& msg)
 	{
 		(void)msg;
+		for(std::vector<Channel>::iterator it = _channels.begin(); it != _channels.end(); ++it)
+			it->removeClient(client);
 		client->printUserHeader();
 		std::cout << "quit" << std::endl;
 	}
@@ -127,8 +129,8 @@ namespace irc
 		if(it == _channels.end())
 		{
 			_channels.push_back(Channel(msg.getTokens()[1]));
-			logs::report(log_message, "channel '%s' has beed created", msg.getTokens()[1].c_str());
 			_channels.back().addClient(client);
+			logs::report(log_message, "channel '%s' has beed created", msg.getTokens()[1].c_str());
 		}
 		else
 			it->addClient(client);

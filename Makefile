@@ -6,7 +6,7 @@
 #    By: vvaas <vvaas@student.42angouleme.fr>       +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2023/08/09 15:08:49 by vavaas            #+#    #+#              #
-#    Updated: 2024/01/22 17:31:49 by maldavid         ###   ########.fr        #
+#    Updated: 2024/01/22 17:32:49 by maldavid         ###   ########.fr        #
 #                                                                              #
 #******************************************************************************#
 
@@ -27,6 +27,7 @@ OBJS	= $(addprefix $(OBJ_DIR)/, $(SRCS:.cpp=.o))
 CXX			= c++
 FLAGS		?= true
 CXXFLAGS	= -std=c++98 -I includes
+
 ifeq ($(FLAGS), true)
 	CXXFLAGS	+= -Wall -Wextra -Werror
 endif

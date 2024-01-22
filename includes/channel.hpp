@@ -6,7 +6,7 @@
 /*   By: maldavid <kbz_8.dev@akel-engine.com>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/21 10:34:25 by maldavid          #+#    #+#             */
-/*   Updated: 2024/01/22 16:06:15 by maldavid         ###   ########.fr       */
+/*   Updated: 2024/01/22 18:14:50 by maldavid         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,15 +26,25 @@ namespace irc
 			Channel(const std::string& name);
 
 			inline const std::string& getName() const { return _name; }
+			inline const std::string& getPassword() const { return _password; }
+
 			inline void addClient(unstd::SharedPtr<Client> client) { _clients.insert(client); }
 			inline bool removeClient(unstd::SharedPtr<Client> client) { return _clients.erase(client); }
 			inline std::size_t getNumberOfClients() const { return _clients.size(); }
+
+			inline void addOperator(unstd::SharedPtr<Client> op) { _operators.insert(op); }
+			inline bool removeOperator(unstd::SharedPtr<Client> op) { return _operators.erase(op); }
+
+			inline bool isInviteOnly() const { return _invite_only; }
 
 			~Channel();
 
 		private:
 			std::set<unstd::SharedPtr<Client> > _clients;
+			std::set<unstd::SharedPtr<Client> > _operators;
 			const std::string _name;
+			std::string _password;
+			bool _invite_only;
 	};
 }
 

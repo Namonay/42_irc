@@ -6,7 +6,7 @@
 /*   By: vvaas <vvaas@student.42angouleme.fr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/21 09:31:17 by maldavid          #+#    #+#             */
-/*   Updated: 2024/01/22 17:31:00 by maldavid         ###   ########.fr       */
+/*   Updated: 2024/01/22 17:44:27 by maldavid         ###   ########.fr       */
 /*                                                                            */
 /******************************************************************************/
 
@@ -153,6 +153,7 @@ namespace irc
 			handlePing(client, msg);
 		else if(msg.getCmd() == "MODE")
 			handleMode(client, msg);
+
 		return true;
 	}
 
