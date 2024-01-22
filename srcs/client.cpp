@@ -6,7 +6,7 @@
 /*   By: vvaas <vvaas@student.42angouleme.fr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/21 10:35:52 by maldavid          #+#    #+#             */
-/*   Updated: 2024/01/22 12:25:28 by maldavid         ###   ########.fr       */
+/*   Updated: 2024/01/22 20:43:08 by vvaas            ###   ########.fr       */
 /*                                                                            */
 /******************************************************************************/
 
@@ -14,10 +14,17 @@
 #include <ansi.hpp>
 #include <iostream>
 #include <logs.hpp>
+#include <irc.hpp>
 
 namespace irc
 {
 	Client::Client(int fd, sockaddr_in sock, int id) : _s_data(sock), _fd(fd), _id(id) {}
+
+	void Client::sendCode(const std::string& code, const std::string &msg)
+	{
+		const std::string command = code + " :" + msg;
+		send(_fd, command, command.size(), 0);
+	}
 
 	void Client::printUserHeader() const
 	{
