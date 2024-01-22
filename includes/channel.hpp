@@ -6,7 +6,7 @@
 /*   By: maldavid <kbz_8.dev@akel-engine.com>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/21 10:34:25 by maldavid          #+#    #+#             */
-/*   Updated: 2024/01/22 18:14:50 by maldavid         ###   ########.fr       */
+/*   Updated: 2024/01/22 20:05:52 by maldavid         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,6 +37,8 @@ namespace irc
 
 			inline bool isInviteOnly() const { return _invite_only; }
 
+			void setTopic(unstd::SharedPtr<Client> client, const std::string& new_topic);
+
 			~Channel();
 
 		private:
@@ -44,7 +46,9 @@ namespace irc
 			std::set<unstd::SharedPtr<Client> > _operators;
 			const std::string _name;
 			std::string _password;
+			std::string _topic;
 			bool _invite_only;
+			bool _topic_op_restrict;
 	};
 }
 
