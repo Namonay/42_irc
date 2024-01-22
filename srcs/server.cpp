@@ -6,7 +6,7 @@
 /*   By: vvaas <vvaas@student.42angouleme.fr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/21 09:31:17 by maldavid          #+#    #+#             */
-/*   Updated: 2024/01/22 01:39:29 by vvaas            ###   ########.fr       */
+/*   Updated: 2024/01/22 01:42:10 by vvaas            ###   ########.fr       */
 /*                                                                            */
 /******************************************************************************/
 
@@ -79,12 +79,12 @@ namespace irc
 		{
 			if (!FD_ISSET(it->get_fd(), &_fd_set))
 				continue ;
-			while (recv(it->get_fd(), buffer, 10, 0) > 0) // read() but for socket fd
+			while (recv(it->get_fd(), buffer, 1024, 0) > 0) // read() but for socket fd
 			{
 				std::cout << AnsiColor::cyan << "[User " << it->get_string_id() << "] : " << AnsiColor::reset << buffer << std::flush;
 				memset(buffer, 0, sizeof(buffer)); // clear the buffer to avoid trash remaining
 			}
-			if (recv(it->get_fd(), buffer, 10, 0) == 0) // recv return 0 if an user disconnect
+			if (recv(it->get_fd(), buffer, 1024, 0) == 0) // recv return 0 if an user disconnect
 			{
 				std::cout << AnsiColor::cyan << "[User " << it->get_string_id() << "] : " << AnsiColor::reset << "Disconnected" << std::endl;
 				it = _client.erase(it) - 1; // magic bitch
