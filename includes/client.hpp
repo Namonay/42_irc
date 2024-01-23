@@ -6,7 +6,7 @@
 /*   By: vvaas <vvaas@student.42angouleme.fr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/21 10:33:17 by maldavid          #+#    #+#             */
-/*   Updated: 2024/01/22 20:41:53 by vvaas            ###   ########.fr       */
+/*   Updated: 2024/01/23 10:30:27 by maldavid         ###   ########.fr       */
 /*                                                                            */
 /******************************************************************************/
 
@@ -44,7 +44,9 @@ namespace irc
 
 			inline void setFd(int new_fd) { _fd = new_fd; }
 
-			void	sendCode(const std::string& code, const std::string &msg);
+			void sendCode(const std::string& code, const std::string& msg);
+			void sendMsg(const std::string& sender, const std::string& cmd, const std::string& trailing);
+
 			~Client();
 
 		private:

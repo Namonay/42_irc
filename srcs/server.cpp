@@ -6,7 +6,7 @@
 /*   By: vvaas <vvaas@student.42angouleme.fr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/21 09:31:17 by maldavid          #+#    #+#             */
-/*   Updated: 2024/01/22 17:44:27 by maldavid         ###   ########.fr       */
+/*   Updated: 2024/01/23 10:48:00 by maldavid         ###   ########.fr       */
 /*                                                                            */
 /******************************************************************************/
 
@@ -15,13 +15,10 @@
 #include <channel.hpp>
 #include <logs.hpp>
 #include <cstring>
-#include <errno.h>
-#include <stack>
 #include <fcntl.h>
 #include <ansi.hpp>
 #include <config.hpp>
 #include <message.hpp>
-#include <algorithm>
 
 namespace irc
 {
@@ -73,6 +70,7 @@ namespace irc
 			while(recv((*it)->getFD(), buffer, INPUT_SIZE, 0) > 0) // read() but for socket fd
 			{
 				(*it)->newMsgInFlight(buffer);
+				//std::cout << buffer << std::endl;
 				while(handleMessage(*it));
 				std::memset(buffer, 0, sizeof(buffer)); // clear the buffer to avoid trash remaining
 			}
@@ -101,13 +99,13 @@ namespace irc
 				FD_SET((*it)->getFD(), &_fd_set);
 
 			tmp = select(MAX_USERS, &_fd_set, NULL, NULL, NULL); // SELECT blocks till a connection or message is received, and let only those in _fd_set
-			if(tmp < 0 && _main_socket != 0)
+			if(tmp < 0 && _main_socket != NULL_SOCKET)
 				logs::report(log_fatal_error, "select fd error");
 
 			if(FD_ISSET(_main_socket, &_fd_set)) // if it's a new connection
 			{
 				sockaddr_in cli_sock;
-				fd = accept(_main_socket, (sockaddr *)&cli_sock, &len); // adds the new connection
+				fd = accept(_main_socket, reinterpret_cast<sockaddr*>(&cli_sock), &len); // adds the new connection
 				if(fd < 0)
 					logs::report(log_fatal_error, "accept() error");
 				if(fcntl(fd, F_SETFL, O_NONBLOCK) < 0)
@@ -159,7 +157,6 @@ namespace irc
 
 	Server::~Server()
 	{
-		if(_main_socket > 0)
-			close(_main_socket);
+		closeMainSocket();
 	}
 }

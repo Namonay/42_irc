@@ -6,17 +6,17 @@
 /*   By: vvaas <vvaas@student.42angouleme.fr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/20 09:27:04 by maldavid          #+#    #+#             */
-/*   Updated: 2024/01/22 21:04:13 by vvaas            ###   ########.fr       */
+/*   Updated: 2024/01/23 10:23:01 by maldavid         ###   ########.fr       */
 /*                                                                            */
 /******************************************************************************/
 
 #include <logs.hpp>
 #include <cstdlib>
-#include <cctype>
 #include <cstring>
 #include <cerrno>
 #include <server.hpp>
 #include <signal.h>
+#include <iostream>
 
 static unstd::SharedPtr<irc::Server> server_ref;
 
@@ -51,5 +51,6 @@ int main(int ac, char** av)
 	signal(SIGQUIT, signalsHandler);
 	serv->wait();
 	serv->closeMainSocket();
+	irc::logs::report(irc::log_message, "Server has been closed");
 	return 0;
 }

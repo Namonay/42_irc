@@ -6,7 +6,7 @@
 /*   By: vvaas <vvaas@student.42angouleme.fr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/21 09:12:28 by maldavid          #+#    #+#             */
-/*   Updated: 2024/01/22 17:30:47 by maldavid         ###   ########.fr       */
+/*   Updated: 2024/01/23 10:21:04 by maldavid         ###   ########.fr       */
 /*                                                                            */
 /******************************************************************************/
 
@@ -17,9 +17,7 @@
 #include <vector>
 #include <irc.hpp>
 #include <unstd/shared_ptr.hpp>
-#include <csignal>
-
-#define MAX_USERS 20
+#include <config.hpp>
 
 namespace irc
 {
@@ -28,7 +26,14 @@ namespace irc
 		public:
 			Server(int port, const std::string& password);
 
-			inline void closeMainSocket() { close(_main_socket); _main_socket = 0; _active = false; }
+			inline void closeMainSocket()
+			{
+				if(_main_socket > NULL_SOCKET)
+					close(_main_socket);
+				_main_socket = NULL_SOCKET;
+				_active = false;
+			}
+
 			void wait();
 
 			~Server();

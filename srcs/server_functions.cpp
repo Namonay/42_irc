@@ -6,7 +6,7 @@
 /*   By: vvaas <vvaas@student.42angouleme.fr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/22 17:31:06 by maldavid          #+#    #+#             */
-/*   Updated: 2024/01/22 21:09:56 by vvaas            ###   ########.fr       */
+/*   Updated: 2024/01/23 12:33:34 by maldavid         ###   ########.fr       */
 /*                                                                            */
 /******************************************************************************/
 
@@ -15,13 +15,10 @@
 #include <channel.hpp>
 #include <logs.hpp>
 #include <cstring>
-#include <errno.h>
-#include <stack>
 #include <fcntl.h>
 #include <ansi.hpp>
 #include <config.hpp>
 #include <message.hpp>
-#include <algorithm>
 #include <errorscode.hpp>
 #include <irc.hpp>
 
@@ -34,14 +31,16 @@ namespace irc
 			logs::report(log_error, "NICK, invalid command '%s'", msg.getRawMsg().c_str());
 			return;
 		}
+		const std::string& nickname = msg.getTokens()[1];
 		for(std::vector<unstd::SharedPtr<Client> >::iterator it = _client.begin(); it != _client.end(); ++it)
 		{
-			if((*it)->getNickName() == msg.getTokens()[1])
+			if((*it)->getNickName() == nickname)
 			{
 				client->sendCode(ERR_NICKCOLLISION, "Nickname is used");
-				return ;
+				return;
 			}
 		}
+
 		client->printUserHeader();
 		client->setNewNickName(msg.getTokens()[1]);
 		std::cout << "new nickname, " << client->getNickName() << std::endl;
@@ -58,9 +57,9 @@ namespace irc
 		client->setNewUserName(msg.getTokens()[1]);
 		std::cout << "new username, " << client->getUserName() << std::endl;
 
-		//client->printUserHeader();
-		//client->setNewRealName(msg.getTokens()[1]);
-		//std::cout << "new realname, " << client->getRealName() << std::endl;
+		client->printUserHeader();
+		client->setNewRealName(msg.getTokens()[4]);
+		std::cout << "new realname, " << client->getRealName() << std::endl;
 	}
 
 	void Server::handleQuit(unstd::SharedPtr<class Client> client, const Message& msg)
@@ -149,8 +148,20 @@ namespace irc
 
 	void Server::handlePrivMsg(unstd::SharedPtr<class Client> client, const Message& msg)
 	{
-		(void)client;
-		(void)msg;
+		if(msg.getTokens().size() < 2)
+		{
+			logs::report(log_error, "PRIVMSG, invalid command '%s'", msg.getRawMsg().c_str());
+			return;
+		}
+		std::vector<Channel>::iterator it;
+		for(it = _channels.begin(); it != _channels.end(); ++it)
+		{
+			if(msg.getTokens()[1] == it->getName())
+			{
+				it->handleMessage(msg.getTokens()[2], client);
+				break;
+			}
+		}
 	}
 
 	void Server::handleNotice(unstd::SharedPtr<class Client> client, const Message& msg)
