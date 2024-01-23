@@ -6,7 +6,7 @@
 /*   By: vvaas <vvaas@student.42angouleme.fr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/21 09:31:17 by maldavid          #+#    #+#             */
-/*   Updated: 2024/01/23 17:10:38 by vvaas            ###   ########.fr       */
+/*   Updated: 2024/01/24 00:16:34 by vvaas            ###   ########.fr       */
 /*                                                                            */
 /******************************************************************************/
 
@@ -41,7 +41,7 @@ namespace irc
 
 	void Server::initSocket()
 	{
-		int opt = 0;
+		int opt = 1;
 	
 		initSocketData();
 		if(setsockopt(_main_socket, SOL_SOCKET, SO_REUSEADDR, &opt, sizeof(opt)) < 0) // SOL_SOCKET : modify socket only, SO_REUSEADDR : Reusable after program ends
@@ -75,9 +75,10 @@ namespace irc
 				std::memset(buffer, 0, sizeof(buffer)); // clear the buffer to avoid trash remaining
 			}
 
-			if(recv((*it)->getFD(), buffer, INPUT_SIZE, 0) == 0) // recv return 0 if an user disconnect
+			if(recv((*it)->getFD(), buffer, INPUT_SIZE, 0) == 0 || (*it)->getDisconnect()) // recv return 0 if an user disconnect
 			{
 				logs::report(log_message, "User %d disconnected", (*it)->getID());
+				close((*it)->getFD());
 				it = _client.erase(it) - 1;
 			}
 		}
@@ -126,14 +127,17 @@ namespace irc
 			return false;
 
 		const Message msg(client, client->getNextMsg());
-
 		if(msg.getCmd() == "NICK")
 			handleNick(client, msg);
 		else if(msg.getCmd() == "USER")
 			handleUser(client, msg);
+		else if (msg.getCmd() == "PASS")
+			handlePass(client, msg);
+		else if (!client->getLogged())
+			return true;
 		else if(msg.getCmd() == "QUIT")
 			handleQuit(client, msg);
-		else if(msg.getCmd() == "PART")
+		else if(msg.getCmd() == "PART") // Not mandatory ?
 			handlePart(client, msg);
 		else if(msg.getCmd() == "JOIN")
 			handleJoin(client, msg);
@@ -151,7 +155,6 @@ namespace irc
 			handlePing(client, msg);
 		else if(msg.getCmd() == "MODE")
 			handleMode(client, msg);
-
 		return true;
 	}
 

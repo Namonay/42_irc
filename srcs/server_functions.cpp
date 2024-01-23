@@ -6,7 +6,7 @@
 /*   By: vvaas <vvaas@student.42angouleme.fr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/22 17:31:06 by maldavid          #+#    #+#             */
-/*   Updated: 2024/01/23 12:33:34 by maldavid         ###   ########.fr       */
+/*   Updated: 2024/01/24 00:23:29 by vvaas            ###   ########.fr       */
 /*                                                                            */
 /******************************************************************************/
 
@@ -40,9 +40,10 @@ namespace irc
 				return;
 			}
 		}
-
+		std::string oldNick = (client->getNickName().size() > 0) ? client->getNickName() : msg.getTokens()[1]; // get nickname before /nick execution inside server (oldNick)
 		client->printUserHeader();
 		client->setNewNickName(msg.getTokens()[1]);
+		client->sendMsg(oldNick, "NICK", msg.getTokens()[1]);
 		std::cout << "new nickname, " << client->getNickName() << std::endl;
 	}
 
@@ -61,7 +62,22 @@ namespace irc
 		client->setNewRealName(msg.getTokens()[4]);
 		std::cout << "new realname, " << client->getRealName() << std::endl;
 	}
+	void Server::handlePass(unstd::SharedPtr<class Client> client, const Message& msg)
+	{
 
+		if (client->getLogged())
+			return ;
+		if (msg.getTokens()[1] == _password)
+		{
+			client->setLogged();
+			client->sendCode(RPL_WELCOME, "Welcome :)\n");
+		}
+		else
+		{
+			client->sendCode(ERR_PASSWDMISMATCH);
+			client->setDisconnect();
+		}
+	}
 	void Server::handleQuit(unstd::SharedPtr<class Client> client, const Message& msg)
 	{
 		(void)msg;
@@ -112,7 +128,7 @@ namespace irc
 		client->printUserHeader();
 		std::cout << "leaving channel, " << msg.getTokens()[1] << std::endl;
 		if(chit->getNumberOfClients() == 0)
-			logs::report(log_message, "channel '%s' has beed destroyed", chit->getName().c_str());
+			logs::report(log_message, "channel '%s' has been destroyed", chit->getName().c_str());
 	}
 
 	void Server::handleJoin(unstd::SharedPtr<class Client> client, const Message& msg)
@@ -138,7 +154,7 @@ namespace irc
 		{
 			_channels.push_back(Channel(msg.getTokens()[1]));
 			_channels.back().addClient(client);
-			logs::report(log_message, "channel '%s' has beed created", msg.getTokens()[1].c_str());
+			logs::report(log_message, "channel '%s' has been created", msg.getTokens()[1].c_str());
 		}
 		else
 			it->addClient(client);
@@ -190,9 +206,27 @@ namespace irc
 			logs::report(log_error, "TOPIC, invalid command '%s'", msg.getRawMsg().c_str());
 			return;
 		}
+		if(msg.getTokens()[1][0] != '#' && msg.getTokens()[1][0] != '&')
+		{
+			logs::report(log_error, "TOPIC, invalid channel name '%s'", msg.getTokens()[1].c_str());
+			return;
+		}
+		std::vector<Channel>::iterator it;
+		for(it = _channels.begin(); it != _channels.end(); ++it)
+		{
+			if(msg.getTokens()[1] == it->getName())
+			{
+				
+			}
+		}
+		if(it == _channels.end())
+		{
+			_channels.push_back(Channel(msg.getTokens()[1]));
+			_channels.back().addClient(client);
+			logs::report(log_message, "channel '%s' has been created", msg.getTokens()[1].c_str());
+		}
 		for(std::vector<unstd::SharedPtr<Client> >::iterator it = _client.begin(); it != _client.end(); ++it)
 		{
-
 		}
 	}
 

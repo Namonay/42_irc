@@ -6,7 +6,7 @@
 /*   By: vvaas <vvaas@student.42angouleme.fr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/21 10:36:21 by maldavid          #+#    #+#             */
-/*   Updated: 2024/01/23 17:43:02 by vvaas            ###   ########.fr       */
+/*   Updated: 2024/01/23 23:55:17 by vvaas            ###   ########.fr       */
 /*                                                                            */
 /******************************************************************************/
 
@@ -23,15 +23,11 @@ namespace irc
 	{
 		if (!_clients.insert(client).second)
 		{
-			logs::report(log_message, "%s is already is channel for", client->getNickName().c_str());
 			client->sendCode(ERR_USERONCHANNEL, "You are already in the channel");
 			return ;
 		}
 		for(std::set<unstd::SharedPtr<Client> >::iterator it = _clients.begin(); it != _clients.end(); ++it)
-		{
 			const_cast<unstd::SharedPtr<irc::Client>&>(*it)->sendMsg(client->getNickName(), "JOIN", _name);
-			logs::report(log_message, "%s has been sent a JOIN message", const_cast<unstd::SharedPtr<irc::Client>&>(*it)->getNickName().c_str());
-		}
 	}
 
 	bool Channel::removeClient(unstd::SharedPtr<Client> client)
@@ -52,9 +48,10 @@ namespace irc
 
 	void Channel::setTopic(unstd::SharedPtr<Client> client, const std::string& new_topic)
 	{
-		if(_topic_op_restrict && _operators.find(client) == _operators.end())
+		if(_topic_op_restrict && _operators.find(client) == _operators.end() )
 		{
-			// send error code to user
+			client->sendCode(ERR_CHANOPRIVSNEEDED, "You need operator privileges");
+			return ;
 		}
 		_topic = new_topic;
 	}

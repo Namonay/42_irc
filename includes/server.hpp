@@ -6,7 +6,7 @@
 /*   By: vvaas <vvaas@student.42angouleme.fr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/21 09:12:28 by maldavid          #+#    #+#             */
-/*   Updated: 2024/01/23 17:07:50 by vvaas            ###   ########.fr       */
+/*   Updated: 2024/01/23 23:29:00 by vvaas            ###   ########.fr       */
 /*                                                                            */
 /******************************************************************************/
 
@@ -50,6 +50,7 @@ namespace irc
 			// ugly as f*ck
 			void handleNick(unstd::SharedPtr<class Client> client, const class Message& msg);
 			void handleUser(unstd::SharedPtr<class Client> client, const class Message& msg);
+			void handlePass(unstd::SharedPtr<class Client> client, const class Message& msg);
 			void handleQuit(unstd::SharedPtr<class Client> client, const class Message& msg);
 			void handlePart(unstd::SharedPtr<class Client> client, const class Message& msg);
 			void handleJoin(unstd::SharedPtr<class Client> client, const class Message& msg);

@@ -6,7 +6,7 @@
 /*   By: vvaas <vvaas@student.42angouleme.fr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/21 10:33:17 by maldavid          #+#    #+#             */
-/*   Updated: 2024/01/23 10:30:27 by maldavid         ###   ########.fr       */
+/*   Updated: 2024/01/24 00:11:46 by vvaas            ###   ########.fr       */
 /*                                                                            */
 /******************************************************************************/
 
@@ -27,6 +27,8 @@ namespace irc
 
 			inline int getFD() const { return _fd; }
 			inline int getID() const { return _id; }
+			inline int getLogged() const { return _logged; }
+			inline int getDisconnect() const { return _to_disconnect; }
 			inline sockaddr_in getSockAddr() const { return _s_data; }
 			inline const std::string& getMsgInFlight() const { return _msg_in_flight; }
 
@@ -35,6 +37,8 @@ namespace irc
 			inline void setNewNickName(const std::string& name) { _nickname = name; }
 			inline void setNewUserName(const std::string& name) { _username = name; }
 			inline void setNewRealName(const std::string& name) { _realname = name; }
+			inline void setLogged(void) { _logged = true; }
+			inline void setDisconnect(void) { _to_disconnect = true; }
 
 			inline const std::string& getNickName() const { return _nickname; }
 			inline const std::string& getUserName() const { return _username; }
@@ -57,6 +61,8 @@ namespace irc
 			sockaddr_in _s_data;
 			int _fd;
 			int _id;
+			bool _logged;
+			bool _to_disconnect;
 	};
 }
 
