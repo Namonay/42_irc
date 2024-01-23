@@ -6,7 +6,7 @@
 /*   By: vvaas <vvaas@student.42angouleme.fr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/21 09:12:28 by maldavid          #+#    #+#             */
-/*   Updated: 2024/01/23 10:21:04 by maldavid         ###   ########.fr       */
+/*   Updated: 2024/01/23 17:07:50 by vvaas            ###   ########.fr       */
 /*                                                                            */
 /******************************************************************************/
 
@@ -69,7 +69,7 @@ namespace irc
 			fd_set _fd_set;
 			const std::string _password;
 			const std::string _ip;
-			const int _port;
+			int _port;
 			int _main_socket;
 			bool _active;
 	};

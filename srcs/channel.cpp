@@ -1,16 +1,18 @@
-/* ************************************************************************** */
+/******************************************************************************/
 /*                                                                            */
 /*                                                        :::      ::::::::   */
 /*   channel.cpp                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: maldavid <kbz_8.dev@akel-engine.com>       +#+  +:+       +#+        */
+/*   By: vvaas <vvaas@student.42angouleme.fr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/21 10:36:21 by maldavid          #+#    #+#             */
-/*   Updated: 2024/01/23 11:01:06 by maldavid         ###   ########.fr       */
+/*   Updated: 2024/01/23 17:10:16 by vvaas            ###   ########.fr       */
 /*                                                                            */
-/* ************************************************************************** */
+/******************************************************************************/
 
 #include <channel.hpp>
+#include <logs.hpp>
+#include <iostream>
 
 namespace irc
 {
@@ -18,11 +20,19 @@ namespace irc
 
 	void Channel::addClient(unstd::SharedPtr<Client> client)
 	{
-		if(!_clients.insert(client).second) // client already in coco channel
-			return;
+		for (std::set<unstd::SharedPtr<Client> >::iterator it = _clients.begin(); it != _clients.end(); ++it)
+		{
+			if (const_cast<unstd::SharedPtr<irc::Client>&>(*it)->getNickName() == client->getNickName())
+			{
+				logs::report(log_message, "%s is already is channel for", client->getNickName().c_str());
+				return ;
+			}
+		}
+		_clients.insert(client);
 		for(std::set<unstd::SharedPtr<Client> >::iterator it = _clients.begin(); it != _clients.end(); ++it)
 		{
 			const_cast<unstd::SharedPtr<irc::Client>&>(*it)->sendMsg(client->getNickName(), "JOIN", _name);
+			logs::report(log_message, "%s has been sent a JOIN message", const_cast<unstd::SharedPtr<irc::Client>&>(*it)->getNickName().c_str());
 		}
 	}
 
