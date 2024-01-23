@@ -6,7 +6,7 @@
 /*   By: vvaas <vvaas@student.42angouleme.fr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/21 10:34:25 by maldavid          #+#    #+#             */
-/*   Updated: 2024/01/23 17:35:49 by maldavid         ###   ########.fr       */
+/*   Updated: 2024/01/24 00:42:16 by vvaas            ###   ########.fr       */
 /*                                                                            */
 /******************************************************************************/
 
@@ -17,6 +17,7 @@
 #include <set>
 #include <unstd/shared_ptr.hpp>
 #include <client.hpp>
+#include <message.hpp>
 
 namespace irc
 {
@@ -37,6 +38,7 @@ namespace irc
 			inline const std::string& getPassword() const { return _password; }
 
 			void addClient(unstd::SharedPtr<Client> client);
+			void addClient(unstd::SharedPtr<Client> client, bool op);
 			bool removeClient(unstd::SharedPtr<Client> client);
 
 			inline std::size_t getNumberOfClients() const { return _clients.size(); }

@@ -6,7 +6,7 @@
 /*   By: vvaas <vvaas@student.42angouleme.fr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/21 10:36:21 by maldavid          #+#    #+#             */
-/*   Updated: 2024/01/23 23:55:17 by vvaas            ###   ########.fr       */
+/*   Updated: 2024/01/24 00:42:13 by vvaas            ###   ########.fr       */
 /*                                                                            */
 /******************************************************************************/
 
@@ -26,6 +26,18 @@ namespace irc
 			client->sendCode(ERR_USERONCHANNEL, "You are already in the channel");
 			return ;
 		}
+		for(std::set<unstd::SharedPtr<Client> >::iterator it = _clients.begin(); it != _clients.end(); ++it)
+			const_cast<unstd::SharedPtr<irc::Client>&>(*it)->sendMsg(client->getNickName(), "JOIN", _name);
+	}
+	void Channel::addClient(unstd::SharedPtr<Client> client, bool op)
+	{
+		if (!_clients.insert(client).second)
+		{
+			client->sendCode(ERR_USERONCHANNEL, "You are already in the channel");
+			return ;
+		}
+		if (op)
+			_operators.insert(client);
 		for(std::set<unstd::SharedPtr<Client> >::iterator it = _clients.begin(); it != _clients.end(); ++it)
 			const_cast<unstd::SharedPtr<irc::Client>&>(*it)->sendMsg(client->getNickName(), "JOIN", _name);
 	}

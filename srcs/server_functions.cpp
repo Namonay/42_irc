@@ -6,7 +6,7 @@
 /*   By: vvaas <vvaas@student.42angouleme.fr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/22 17:31:06 by maldavid          #+#    #+#             */
-/*   Updated: 2024/01/24 00:23:29 by vvaas            ###   ########.fr       */
+/*   Updated: 2024/01/24 00:43:01 by vvaas            ###   ########.fr       */
 /*                                                                            */
 /******************************************************************************/
 
@@ -157,7 +157,7 @@ namespace irc
 			logs::report(log_message, "channel '%s' has been created", msg.getTokens()[1].c_str());
 		}
 		else
-			it->addClient(client);
+			it->addClient(client, true);
 		client->printUserHeader();
 		std::cout << "joining new channel, " << msg.getTokens()[1] << std::endl;
 	}
@@ -210,23 +210,6 @@ namespace irc
 		{
 			logs::report(log_error, "TOPIC, invalid channel name '%s'", msg.getTokens()[1].c_str());
 			return;
-		}
-		std::vector<Channel>::iterator it;
-		for(it = _channels.begin(); it != _channels.end(); ++it)
-		{
-			if(msg.getTokens()[1] == it->getName())
-			{
-				
-			}
-		}
-		if(it == _channels.end())
-		{
-			_channels.push_back(Channel(msg.getTokens()[1]));
-			_channels.back().addClient(client);
-			logs::report(log_message, "channel '%s' has been created", msg.getTokens()[1].c_str());
-		}
-		for(std::vector<unstd::SharedPtr<Client> >::iterator it = _client.begin(); it != _client.end(); ++it)
-		{
 		}
 	}
 
