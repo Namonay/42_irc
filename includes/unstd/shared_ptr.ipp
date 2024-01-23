@@ -69,7 +69,7 @@ namespace unstd
 	}
 
 	template <typename T>
-	T* SharedPtr<T>::get()
+	T* SharedPtr<T>::get() const
 	{
 		return _ptr;
 	}

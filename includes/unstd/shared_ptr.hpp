@@ -6,7 +6,7 @@
 /*   By: maldavid <kbz_8.dev@akel-engine.com>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/20 10:09:02 by maldavid          #+#    #+#             */
-/*   Updated: 2024/01/21 12:27:07 by maldavid         ###   ########.fr       */
+/*   Updated: 2024/01/23 17:35:24 by maldavid         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,7 +34,7 @@ namespace unstd
 			bool operator==(T* ptr);
 			T& operator*();
 			T* operator->();
-			T* get();
+			T* get() const;
 			void swap(SharedPtr& rhs);
 			void reset(T* ptr = NULL);
 			~SharedPtr();

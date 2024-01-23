@@ -6,7 +6,7 @@
 /*   By: vvaas <vvaas@student.42angouleme.fr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/21 10:34:25 by maldavid          #+#    #+#             */
-/*   Updated: 2024/01/23 16:48:15 by vvaas            ###   ########.fr       */
+/*   Updated: 2024/01/23 17:35:49 by maldavid         ###   ########.fr       */
 /*                                                                            */
 /******************************************************************************/
 
@@ -17,8 +17,17 @@
 #include <set>
 #include <unstd/shared_ptr.hpp>
 #include <client.hpp>
+
 namespace irc
 {
+	struct ClientCmp
+	{
+		bool operator()(const unstd::SharedPtr<Client>& lhs, const unstd::SharedPtr<Client>& rhs) const
+		{
+			return lhs.get() < rhs.get();
+		}
+	};
+
 	class Channel
 	{
 		public:
@@ -44,8 +53,8 @@ namespace irc
 			~Channel();
 
 		private:
-			std::set<unstd::SharedPtr<Client> > _clients;
-			std::set<unstd::SharedPtr<Client> > _operators;
+			std::set<unstd::SharedPtr<Client>, ClientCmp> _clients;
+			std::set<unstd::SharedPtr<Client>, ClientCmp> _operators;
 			const std::string _name;
 			std::string _password;
 			std::string _topic;
