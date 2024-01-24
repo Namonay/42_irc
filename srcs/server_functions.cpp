@@ -6,7 +6,7 @@
 /*   By: vvaas <vvaas@student.42angouleme.fr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/22 17:31:06 by maldavid          #+#    #+#             */
-/*   Updated: 2024/01/24 19:32:55 by maldavid         ###   ########.fr       */
+/*   Updated: 2024/01/24 19:57:12 by maldavid         ###   ########.fr       */
 /*                                                                            */
 /******************************************************************************/
 
@@ -266,6 +266,12 @@ namespace irc
 				break;
 			}
 		}
+	}
+
+	void Server::handleInvite(unstd::SharedPtr<class Client> client, const Message& msg)
+	{
+		(void)client;
+		(void)msg;
 	}
 
 	void Server::handleKick(unstd::SharedPtr<class Client> client, const Message& msg)
