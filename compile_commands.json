@@ -1,0 +1,170 @@
+[
+  {
+    "arguments": [
+      "/usr/bin/c++",
+      "-std=c++98",
+      "-I",
+      "includes",
+      "-Wall",
+      "-Wextra",
+      "-Werror",
+      "-g",
+      "-D",
+      "DEBUG",
+      "-c",
+      "-o",
+      "objs/srcs/main.o",
+      "srcs/main.cpp"
+    ],
+    "directory": "/home/kbz_8/Documents/Programmation/42/cursus/irc",
+    "file": "/home/kbz_8/Documents/Programmation/42/cursus/irc/srcs/main.cpp",
+    "output": "/home/kbz_8/Documents/Programmation/42/cursus/irc/objs/srcs/main.o"
+  },
+  {
+    "arguments": [
+      "/usr/bin/c++",
+      "-std=c++98",
+      "-I",
+      "includes",
+      "-Wall",
+      "-Wextra",
+      "-Werror",
+      "-g",
+      "-D",
+      "DEBUG",
+      "-c",
+      "-o",
+      "objs/srcs/logs.o",
+      "srcs/logs.cpp"
+    ],
+    "directory": "/home/kbz_8/Documents/Programmation/42/cursus/irc",
+    "file": "/home/kbz_8/Documents/Programmation/42/cursus/irc/srcs/logs.cpp",
+    "output": "/home/kbz_8/Documents/Programmation/42/cursus/irc/objs/srcs/logs.o"
+  },
+  {
+    "arguments": [
+      "/usr/bin/c++",
+      "-std=c++98",
+      "-I",
+      "includes",
+      "-Wall",
+      "-Wextra",
+      "-Werror",
+      "-g",
+      "-D",
+      "DEBUG",
+      "-c",
+      "-o",
+      "objs/srcs/server.o",
+      "srcs/server.cpp"
+    ],
+    "directory": "/home/kbz_8/Documents/Programmation/42/cursus/irc",
+    "file": "/home/kbz_8/Documents/Programmation/42/cursus/irc/srcs/server.cpp",
+    "output": "/home/kbz_8/Documents/Programmation/42/cursus/irc/objs/srcs/server.o"
+  },
+  {
+    "arguments": [
+      "/usr/bin/c++",
+      "-std=c++98",
+      "-I",
+      "includes",
+      "-Wall",
+      "-Wextra",
+      "-Werror",
+      "-g",
+      "-D",
+      "DEBUG",
+      "-c",
+      "-o",
+      "objs/srcs/server_functions.o",
+      "srcs/server_functions.cpp"
+    ],
+    "directory": "/home/kbz_8/Documents/Programmation/42/cursus/irc",
+    "file": "/home/kbz_8/Documents/Programmation/42/cursus/irc/srcs/server_functions.cpp",
+    "output": "/home/kbz_8/Documents/Programmation/42/cursus/irc/objs/srcs/server_functions.o"
+  },
+  {
+    "arguments": [
+      "/usr/bin/c++",
+      "-std=c++98",
+      "-I",
+      "includes",
+      "-Wall",
+      "-Wextra",
+      "-Werror",
+      "-g",
+      "-D",
+      "DEBUG",
+      "-c",
+      "-o",
+      "objs/srcs/client.o",
+      "srcs/client.cpp"
+    ],
+    "directory": "/home/kbz_8/Documents/Programmation/42/cursus/irc",
+    "file": "/home/kbz_8/Documents/Programmation/42/cursus/irc/srcs/client.cpp",
+    "output": "/home/kbz_8/Documents/Programmation/42/cursus/irc/objs/srcs/client.o"
+  },
+  {
+    "arguments": [
+      "/usr/bin/c++",
+      "-std=c++98",
+      "-I",
+      "includes",
+      "-Wall",
+      "-Wextra",
+      "-Werror",
+      "-g",
+      "-D",
+      "DEBUG",
+      "-c",
+      "-o",
+      "objs/srcs/channel.o",
+      "srcs/channel.cpp"
+    ],
+    "directory": "/home/kbz_8/Documents/Programmation/42/cursus/irc",
+    "file": "/home/kbz_8/Documents/Programmation/42/cursus/irc/srcs/channel.cpp",
+    "output": "/home/kbz_8/Documents/Programmation/42/cursus/irc/objs/srcs/channel.o"
+  },
+  {
+    "arguments": [
+      "/usr/bin/c++",
+      "-std=c++98",
+      "-I",
+      "includes",
+      "-Wall",
+      "-Wextra",
+      "-Werror",
+      "-g",
+      "-D",
+      "DEBUG",
+      "-c",
+      "-o",
+      "objs/srcs/message.o",
+      "srcs/message.cpp"
+    ],
+    "directory": "/home/kbz_8/Documents/Programmation/42/cursus/irc",
+    "file": "/home/kbz_8/Documents/Programmation/42/cursus/irc/srcs/message.cpp",
+    "output": "/home/kbz_8/Documents/Programmation/42/cursus/irc/objs/srcs/message.o"
+  },
+  {
+    "arguments": [
+      "/usr/bin/c++",
+      "-std=c++98",
+      "-I",
+      "includes",
+      "-Wall",
+      "-Wextra",
+      "-Werror",
+      "-g",
+      "-D",
+      "DEBUG",
+      "-c",
+      "-o",
+      "objs/srcs/ansi.o",
+      "srcs/ansi.cpp"
+    ],
+    "directory": "/home/kbz_8/Documents/Programmation/42/cursus/irc",
+    "file": "/home/kbz_8/Documents/Programmation/42/cursus/irc/srcs/ansi.cpp",
+    "output": "/home/kbz_8/Documents/Programmation/42/cursus/irc/objs/srcs/ansi.o"
+  }
+]

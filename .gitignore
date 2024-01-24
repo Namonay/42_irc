@@ -7,7 +7,6 @@
 *.dll
 *.lib
 *.exp
-*.json
 *.tmp
 *.ilk
 *.pdb
