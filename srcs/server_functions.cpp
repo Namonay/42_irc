@@ -6,7 +6,7 @@
 /*   By: vvaas <vvaas@student.42angouleme.fr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/22 17:31:06 by maldavid          #+#    #+#             */
-/*   Updated: 2024/01/24 21:28:29 by vvaas            ###   ########.fr       */
+/*   Updated: 2024/01/24 21:57:04 by vvaas            ###   ########.fr       */
 /*                                                                            */
 /******************************************************************************/
 
@@ -182,7 +182,6 @@ namespace irc
 			client->sendCode(ERR_NOTEXTTOSEND, "No text to send\n");
 			return;
 		}
-		channel_it it;
 		if (msg.getTokens()[1][0] != '&' && msg.getTokens()[1][0] != '#')
 		{
 			for (client_it itc = _client.begin(); itc != _client.end(); ++itc)
@@ -205,7 +204,7 @@ namespace irc
 			}
 			return ;
 		}
-		for(it = _channels.begin(); it != _channels.end(); ++it)
+		for(channel_it it = _channels.begin(); it != _channels.end(); ++it)
 		{
 			if(msg.getTokens()[1] == it->getName())
 			{
@@ -232,8 +231,29 @@ namespace irc
 			logs::report(log_error, "NOTICE, invalid command '%s'", msg.getRawMsg().c_str());
 			return;
 		}
-		channel_it it;
-		for(it = _channels.begin(); it != _channels.end(); ++it)
+		if (msg.getTokens()[1][0] != '&' && msg.getTokens()[1][0] != '#')
+		{
+			for (client_it itc = _client.begin(); itc != _client.end(); ++itc)
+			{
+				if ((*itc)->getNickName() == msg.getTokens()[1] && (*itc)->getNickName() != client->getNickName())
+				{
+					std::string complete_msg;
+					if(msg.getTokens().size() > 2)
+					{
+						for(std::vector<std::string>::const_iterator tit = msg.getTokens().begin() + 2; tit < msg.getTokens().end(); ++tit)
+						{
+							complete_msg.append(*tit);
+							complete_msg.append(" ");
+						}
+						complete_msg.erase(complete_msg.begin());
+					}
+					(*itc)->sendMsg(client->getNickName(), "NOTICE " + (*itc)->getNickName(), complete_msg);
+					break;
+				}
+			}
+			return ;
+		}
+		for(channel_it it = _channels.begin(); it != _channels.end(); ++it)
 		{
 			if(msg.getTokens()[1] == it->getName())
 			{
@@ -251,6 +271,12 @@ namespace irc
 				break;
 			}
 		}
+	}
+
+	void Server::handleInvite(unstd::SharedPtr<class Client> client, const Message& msg)
+	{
+		(void)client;
+		(void)msg;
 	}
 
 	void Server::handleKick(unstd::SharedPtr<class Client> client, const Message& msg)

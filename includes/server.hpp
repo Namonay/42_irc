@@ -6,7 +6,7 @@
 /*   By: vvaas <vvaas@student.42angouleme.fr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/21 09:12:28 by maldavid          #+#    #+#             */
-/*   Updated: 2024/01/24 15:14:05 by maldavid         ###   ########.fr       */
+/*   Updated: 2024/01/24 19:57:00 by maldavid         ###   ########.fr       */
 /*                                                                            */
 /******************************************************************************/
 
@@ -54,6 +54,7 @@ namespace irc
 			void handleQuit(unstd::SharedPtr<class Client> client, const class Message& msg);
 			void handlePart(unstd::SharedPtr<class Client> client, const class Message& msg);
 			void handleJoin(unstd::SharedPtr<class Client> client, const class Message& msg);
+			void handleInvite(unstd::SharedPtr<class Client> client, const class Message& msg);
 			void handlePrivMsg(unstd::SharedPtr<class Client> client, const class Message& msg);
 			void handleNotice(unstd::SharedPtr<class Client> client, const class Message& msg);
 			void handleKick(unstd::SharedPtr<class Client> client, const class Message& msg);
