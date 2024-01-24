@@ -32,7 +32,7 @@
 #define ERR_NEEDMOREPARAMS    "461"
 #define ERR_ALREADYREGISTRED  "462", "Unauthorized command (already registered)"
 #define ERR_NOPERMFORHOST     "463"
-#define ERR_PASSWDMISMATCH    "464", "Password incorrect"
+#define ERR_PASSWDMISMATCH    "464", "Password incorrect\n"
 #define ERR_YOUREBANNEDCREEP  "465"
 #define ERR_YOUWILLBEBANNED   "466"
 #define ERR_KEYSET            "467"

@@ -6,7 +6,7 @@
 /*   By: vvaas <vvaas@student.42angouleme.fr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/21 10:35:52 by maldavid          #+#    #+#             */
-/*   Updated: 2024/01/24 15:01:44 by maldavid         ###   ########.fr       */
+/*   Updated: 2024/01/24 18:42:31 by vvaas            ###   ########.fr       */
 /*                                                                            */
 /******************************************************************************/
 
@@ -15,6 +15,11 @@
 #include <iostream>
 #include <logs.hpp>
 #include <irc.hpp>
+#include <config.hpp>
+#include <cstdarg>
+#include <cstring>
+#include <cstdlib>
+#include <cstdio>
 
 namespace irc
 {
@@ -42,6 +47,18 @@ namespace irc
 			logs::report(log_error, "server failed to send a message from '%s' to '%s' (:sadge:)", sender.c_str(), _username.c_str());
 	}
 
+	void Client::sendModular(std::string message, ...)
+		{
+			char buffer[LOGS_BUFFER_SIZE];
+
+			va_list al;
+			va_start(al, message);
+			vsnprintf(buffer, LOGS_BUFFER_SIZE, message.c_str(), al);
+			va_end(al);
+
+			if (send(_fd, buffer, std::strlen(buffer), 0) < static_cast<ssize_t>(std::strlen(buffer)))
+				logs::report(log_error, "server failed to send a message to '%s'", _nickname.c_str());
+		}
 	void Client::printUserHeader() const
 	{
 		std::cout << AnsiColor::green << "[User " << _id;

@@ -6,7 +6,7 @@
 /*   By: vvaas <vvaas@student.42angouleme.fr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/21 09:31:17 by maldavid          #+#    #+#             */
-/*   Updated: 2024/01/24 15:14:19 by maldavid         ###   ########.fr       */
+/*   Updated: 2024/01/24 19:06:59 by vvaas            ###   ########.fr       */
 /*                                                                            */
 /******************************************************************************/
 
@@ -70,7 +70,7 @@ namespace irc
 			while(recv((*it)->getFD(), buffer, INPUT_SIZE, 0) > 0) // read() but for socket fd
 			{
 				(*it)->newMsgInFlight(buffer);
-				//std::cout << buffer << std::endl;
+				std::cout << buffer << std::endl;
 				while(handleMessage(*it));
 				std::memset(buffer, 0, sizeof(buffer)); // clear the buffer to avoid trash remaining
 			}
