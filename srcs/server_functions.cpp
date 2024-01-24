@@ -6,7 +6,7 @@
 /*   By: vvaas <vvaas@student.42angouleme.fr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/22 17:31:06 by maldavid          #+#    #+#             */
-/*   Updated: 2024/01/24 12:52:32 by maldavid         ###   ########.fr       */
+/*   Updated: 2024/01/24 15:35:06 by maldavid         ###   ########.fr       */
 /*                                                                            */
 /******************************************************************************/
 
@@ -24,6 +24,12 @@
 
 namespace irc
 {
+	typedef std::vector<unstd::SharedPtr<Client> >::iterator client_it;
+	typedef std::vector<unstd::SharedPtr<Client> >::const_iterator client_const_it;
+
+	typedef std::vector<Channel>::iterator channel_it;
+	typedef std::vector<Channel>::const_iterator channel_const_it;
+
 	void Server::handleNick(unstd::SharedPtr<class Client> client, const Message& msg)
 	{
 		if(msg.getTokens().size() != 2 && msg.getTokens().size() != 3)
@@ -32,7 +38,7 @@ namespace irc
 			return;
 		}
 		const std::string& nickname = msg.getTokens()[1];
-		for(std::vector<unstd::SharedPtr<Client> >::iterator it = _client.begin(); it != _client.end(); ++it)
+		for(client_it it = _client.begin(); it != _client.end(); ++it)
 		{
 			if((*it)->getNickName() == nickname)
 			{
@@ -62,26 +68,27 @@ namespace irc
 		client->setNewRealName(msg.getTokens()[4]);
 		std::cout << "new realname, " << client->getRealName() << std::endl;
 	}
+
 	void Server::handlePass(unstd::SharedPtr<class Client> client, const Message& msg)
 	{
-
-		if (client->getLogged())
-			return ;
-		if (msg.getTokens()[1] == _password)
+		if(client->isLogged())
+			return;
+		if(msg.getTokens()[1] == _password)
 		{
-			client->setLogged();
+			client->login();
 			client->sendCode(RPL_WELCOME, "Welcome :)\n");
 		}
 		else
 		{
 			client->sendCode(ERR_PASSWDMISMATCH);
-			client->setDisconnect();
+			client->requireDisconnect();
 		}
 	}
+
 	void Server::handleQuit(unstd::SharedPtr<class Client> client, const Message& msg)
 	{
 		(void)msg;
-		for(std::vector<Channel>::iterator it = _channels.begin(); it != _channels.end(); ++it)
+		for(channel_it it = _channels.begin(); it != _channels.end(); ++it)
 			it->removeClient(client);
 		client->printUserHeader();
 		std::cout << "quit" << std::endl;
@@ -109,7 +116,7 @@ namespace irc
 			}
 		}
 
-		std::vector<Channel>::iterator chit;
+		channel_it chit;
 		for(chit = _channels.begin(); chit != _channels.end(); ++chit)
 		{
 			if(msg.getTokens()[1] == chit->getName())
@@ -144,7 +151,7 @@ namespace irc
 			return;
 		}
 
-		std::vector<Channel>::iterator it;
+		channel_it it;
 		for(it = _channels.begin(); it != _channels.end(); ++it)
 		{
 			if(msg.getTokens()[1] == it->getName())
@@ -169,16 +176,20 @@ namespace irc
 			logs::report(log_error, "PRIVMSG, invalid command '%s'", msg.getRawMsg().c_str());
 			return;
 		}
-		std::vector<Channel>::iterator it;
+		channel_it it;
 		for(it = _channels.begin(); it != _channels.end(); ++it)
 		{
 			if(msg.getTokens()[1] == it->getName())
 			{
 				std::string complete_msg;
-				for(std::vector<std::string>::const_iterator tit = msg.getTokens().begin(); tit != msg.getTokens().end(); ++it)
+				if(msg.getTokens().size() > 2)
 				{
-					complete_msg.append(*tit);
-					complete_msg.append(" ");
+					for(std::vector<std::string>::const_iterator tit = msg.getTokens().begin() + 2; tit < msg.getTokens().end(); ++tit)
+					{
+						complete_msg.append(*tit);
+						complete_msg.append(" ");
+					}
+					complete_msg.erase(complete_msg.begin());
 				}
 				it->handleMessage(complete_msg, client);
 				break;
@@ -188,17 +199,33 @@ namespace irc
 
 	void Server::handleNotice(unstd::SharedPtr<class Client> client, const Message& msg)
 	{
-		(void)client;
-		(void)msg;
+		if(msg.getTokens().size() < 2)
+		{
+			logs::report(log_error, "NOTICE, invalid command '%s'", msg.getRawMsg().c_str());
+			return;
+		}
+		channel_it it;
+		for(it = _channels.begin(); it != _channels.end(); ++it)
+		{
+			if(msg.getTokens()[1] == it->getName())
+			{
+				std::string complete_msg;
+				if(msg.getTokens().size() > 2)
+				{
+					for(std::vector<std::string>::const_iterator tit = msg.getTokens().begin() + 2; tit < msg.getTokens().end(); ++tit)
+					{
+						complete_msg.append(*tit);
+						complete_msg.append(" ");
+					}
+					complete_msg.erase(complete_msg.begin());
+				}
+				it->handleMessage(complete_msg, client, true);
+				break;
+			}
+		}
 	}
 
 	void Server::handleKick(unstd::SharedPtr<class Client> client, const Message& msg)
-	{
-		(void)client;
-		(void)msg;
-	}
-
-	void Server::handleMotD(unstd::SharedPtr<class Client> client, const Message& msg)
 	{
 		(void)client;
 		(void)msg;
@@ -221,8 +248,18 @@ namespace irc
 
 	void Server::handlePing(unstd::SharedPtr<class Client> client, const Message& msg)
 	{
-		(void)client;
-		(void)msg;
+		if(msg.getTokens().size() == 1)
+		{
+			logs::report(log_error, "PING, invalid command '%s'", msg.getRawMsg().c_str());
+			return;
+		}
+		std::string out = "PONG";
+		for(std::vector<std::string>::const_iterator it = msg.getTokens().begin() + 1; it < msg.getTokens().end(); ++it)
+			out += ' ' + *it;
+		out += "\r\n";
+		client->sendPlainText(out);
+		client->printUserHeader();
+		std::cout << "pong" << std::endl;
 	}
 
 	void Server::handleMode(unstd::SharedPtr<class Client> client, const Message& msg)

@@ -6,7 +6,7 @@
 /*   By: vvaas <vvaas@student.42angouleme.fr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/21 10:34:25 by maldavid          #+#    #+#             */
-/*   Updated: 2024/01/24 00:42:16 by vvaas            ###   ########.fr       */
+/*   Updated: 2024/01/24 15:34:26 by maldavid         ###   ########.fr       */
 /*                                                                            */
 /******************************************************************************/
 
@@ -37,8 +37,7 @@ namespace irc
 			inline const std::string& getName() const { return _name; }
 			inline const std::string& getPassword() const { return _password; }
 
-			void addClient(unstd::SharedPtr<Client> client);
-			void addClient(unstd::SharedPtr<Client> client, bool op);
+			void addClient(unstd::SharedPtr<Client> client, bool op = false);
 			bool removeClient(unstd::SharedPtr<Client> client);
 
 			inline std::size_t getNumberOfClients() const { return _clients.size(); }
@@ -46,7 +45,7 @@ namespace irc
 			inline void addOperator(unstd::SharedPtr<Client> op) { _operators.insert(op); }
 			inline bool removeOperator(unstd::SharedPtr<Client> op) { return _operators.erase(op); }
 
-			void handleMessage(const std::string& msg, unstd::SharedPtr<Client> client) const;
+			void handleMessage(const std::string& msg, unstd::SharedPtr<Client> client, bool notice = false) const;
 
 			inline bool isInviteOnly() const { return _invite_only; }
 

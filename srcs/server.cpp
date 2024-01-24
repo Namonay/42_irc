@@ -6,7 +6,7 @@
 /*   By: vvaas <vvaas@student.42angouleme.fr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/21 09:31:17 by maldavid          #+#    #+#             */
-/*   Updated: 2024/01/24 00:16:34 by vvaas            ###   ########.fr       */
+/*   Updated: 2024/01/24 15:14:19 by maldavid         ###   ########.fr       */
 /*                                                                            */
 /******************************************************************************/
 
@@ -75,7 +75,7 @@ namespace irc
 				std::memset(buffer, 0, sizeof(buffer)); // clear the buffer to avoid trash remaining
 			}
 
-			if(recv((*it)->getFD(), buffer, INPUT_SIZE, 0) == 0 || (*it)->getDisconnect()) // recv return 0 if an user disconnect
+			if(recv((*it)->getFD(), buffer, INPUT_SIZE, 0) == 0 || (*it)->disconnectRequired()) // recv return 0 if an user disconnect
 			{
 				logs::report(log_message, "User %d disconnected", (*it)->getID());
 				close((*it)->getFD());
@@ -133,7 +133,7 @@ namespace irc
 			handleUser(client, msg);
 		else if (msg.getCmd() == "PASS")
 			handlePass(client, msg);
-		else if (!client->getLogged())
+		else if(!client->isLogged())
 			return true;
 		else if(msg.getCmd() == "QUIT")
 			handleQuit(client, msg);
@@ -147,8 +147,6 @@ namespace irc
 			handleNotice(client, msg);
 		else if(msg.getCmd() == "KICK")
 			handleKick(client, msg);
-		else if(msg.getCmd() == "MOTD")
-			handleMotD(client, msg);
 		else if(msg.getCmd() == "TOPIC")
 			handleTopic(client, msg);
 		else if(msg.getCmd() == "PING")

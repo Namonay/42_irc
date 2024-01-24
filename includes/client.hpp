@@ -6,7 +6,7 @@
 /*   By: vvaas <vvaas@student.42angouleme.fr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/21 10:33:17 by maldavid          #+#    #+#             */
-/*   Updated: 2024/01/24 00:11:46 by vvaas            ###   ########.fr       */
+/*   Updated: 2024/01/24 15:00:39 by maldavid         ###   ########.fr       */
 /*                                                                            */
 /******************************************************************************/
 
@@ -27,8 +27,6 @@ namespace irc
 
 			inline int getFD() const { return _fd; }
 			inline int getID() const { return _id; }
-			inline int getLogged() const { return _logged; }
-			inline int getDisconnect() const { return _to_disconnect; }
 			inline sockaddr_in getSockAddr() const { return _s_data; }
 			inline const std::string& getMsgInFlight() const { return _msg_in_flight; }
 
@@ -37,8 +35,12 @@ namespace irc
 			inline void setNewNickName(const std::string& name) { _nickname = name; }
 			inline void setNewUserName(const std::string& name) { _username = name; }
 			inline void setNewRealName(const std::string& name) { _realname = name; }
-			inline void setLogged(void) { _logged = true; }
-			inline void setDisconnect(void) { _to_disconnect = true; }
+
+			inline void login() { _logged = true; }
+			inline void requireDisconnect() { _disconnect_required = true; }
+
+			inline bool isLogged() const { return _logged; }
+			inline bool disconnectRequired() const { return _disconnect_required; }
 
 			inline const std::string& getNickName() const { return _nickname; }
 			inline const std::string& getUserName() const { return _username; }
@@ -48,6 +50,7 @@ namespace irc
 
 			inline void setFd(int new_fd) { _fd = new_fd; }
 
+			void sendPlainText(const std::string& str);
 			void sendCode(const std::string& code, const std::string& msg);
 			void sendMsg(const std::string& sender, const std::string& cmd, const std::string& trailing);
 
@@ -62,7 +65,7 @@ namespace irc
 			int _fd;
 			int _id;
 			bool _logged;
-			bool _to_disconnect;
+			bool _disconnect_required;
 	};
 }
 

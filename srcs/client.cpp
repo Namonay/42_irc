@@ -6,7 +6,7 @@
 /*   By: vvaas <vvaas@student.42angouleme.fr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/21 10:35:52 by maldavid          #+#    #+#             */
-/*   Updated: 2024/01/24 00:07:56 by vvaas            ###   ########.fr       */
+/*   Updated: 2024/01/24 15:01:44 by maldavid         ###   ########.fr       */
 /*                                                                            */
 /******************************************************************************/
 
@@ -23,15 +23,21 @@ namespace irc
 	void Client::sendCode(const std::string& code, const std::string& msg)
 	{
 		const std::string command = code + " :" + msg;
-		logs::report(log_message, "C<-%s", command.c_str());
+		//logs::report(log_message, "C<-%s", command.c_str());
 		if(send(_fd, command.c_str(), command.size(), 0) != static_cast<ssize_t>(command.length()))
 			logs::report(log_error, "server failed to send a code to '%s' (:sadge:)", _username.c_str());
+	}
+
+	void Client::sendPlainText(const std::string& str)
+	{
+		if(send(_fd, str.c_str(), str.length(), 0) != static_cast<ssize_t>(str.length()))
+			logs::report(log_error, "server failed to send a message to '%s' (:sadge:)", _username.c_str());
 	}
 
 	void Client::sendMsg(const std::string& sender, const std::string& cmd, const std::string& trailing)
 	{
 		const std::string out = ':' + sender + ' ' + cmd + " :" + trailing + "\r\n";
-		logs::report(log_message,"<- S %s", out.c_str());
+		//logs::report(log_message,"<- S %s", out.c_str());
 		if(send(_fd, out.c_str(), out.length(), 0) != static_cast<ssize_t>(out.length()))
 			logs::report(log_error, "server failed to send a message from '%s' to '%s' (:sadge:)", sender.c_str(), _username.c_str());
 	}
