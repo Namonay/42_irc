@@ -6,7 +6,7 @@
 /*   By: vvaas <vvaas@student.42angouleme.fr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/22 17:31:06 by maldavid          #+#    #+#             */
-/*   Updated: 2024/01/24 19:23:56 by vvaas            ###   ########.fr       */
+/*   Updated: 2024/01/24 21:28:29 by vvaas            ###   ########.fr       */
 /*                                                                            */
 /******************************************************************************/
 
@@ -174,7 +174,12 @@ namespace irc
 	{
 		if(msg.getTokens().size() < 2)
 		{
-			logs::report(log_error, "PRIVMSG, invalid command '%s'", msg.getRawMsg().c_str());
+			client->sendCode(ERR_NORECIPIENT, "No recipient given\n");
+			return;
+		}
+		if(msg.getTokens().size() < 3)
+		{
+			client->sendCode(ERR_NOTEXTTOSEND, "No text to send\n");
 			return;
 		}
 		channel_it it;
