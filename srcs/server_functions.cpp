@@ -6,7 +6,7 @@
 /*   By: vvaas <vvaas@student.42angouleme.fr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/22 17:31:06 by maldavid          #+#    #+#             */
-/*   Updated: 2024/01/24 00:43:01 by vvaas            ###   ########.fr       */
+/*   Updated: 2024/01/24 12:52:32 by maldavid         ###   ########.fr       */
 /*                                                                            */
 /******************************************************************************/
 
@@ -174,7 +174,13 @@ namespace irc
 		{
 			if(msg.getTokens()[1] == it->getName())
 			{
-				it->handleMessage(msg.getTokens()[2], client);
+				std::string complete_msg;
+				for(std::vector<std::string>::const_iterator tit = msg.getTokens().begin(); tit != msg.getTokens().end(); ++it)
+				{
+					complete_msg.append(*tit);
+					complete_msg.append(" ");
+				}
+				it->handleMessage(complete_msg, client);
 				break;
 			}
 		}

@@ -6,13 +6,12 @@
 /*   By: vvaas <vvaas@student.42angouleme.fr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/21 10:36:21 by maldavid          #+#    #+#             */
-/*   Updated: 2024/01/24 00:42:13 by vvaas            ###   ########.fr       */
+/*   Updated: 2024/01/24 12:52:25 by maldavid         ###   ########.fr       */
 /*                                                                            */
 /******************************************************************************/
 
 #include <channel.hpp>
 #include <logs.hpp>
-#include <iostream>
 #include <errorscode.hpp>
 
 namespace irc
