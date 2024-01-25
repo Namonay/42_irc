@@ -6,7 +6,7 @@
 /*   By: vvaas <vvaas@student.42angouleme.fr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/22 17:31:06 by maldavid          #+#    #+#             */
-/*   Updated: 2024/01/24 21:57:19 by vvaas            ###   ########.fr       */
+/*   Updated: 2024/01/25 02:43:54 by vvaas            ###   ########.fr       */
 /*                                                                            */
 /******************************************************************************/
 
@@ -21,6 +21,7 @@
 #include <message.hpp>
 #include <errorscode.hpp>
 #include <irc.hpp>
+#include <cstring>
 
 namespace irc
 {
@@ -76,8 +77,7 @@ namespace irc
 		if(msg.getTokens()[1] == _password)
 		{
 			client->login();
-			client->sendCode(RPL_WELCOME, "\n");
-			client->sendPlainText("Welcome to yipiirc :)\n");
+			client->sendCode(RPL_WELCOME, "Welcome to yipiirc :)\n");
 		}
 		else
 		{
@@ -90,7 +90,9 @@ namespace irc
 	{
 		(void)msg;
 		for(channel_it it = _channels.begin(); it != _channels.end(); ++it)
+		{
 			it->removeClient(client);
+		}
 		client->printUserHeader();
 		std::cout << "quit" << std::endl;
 	}
@@ -125,12 +127,12 @@ namespace irc
 		}
 		if(chit == _channels.end())
 		{
-			logs::report(log_error, "PART, channel not found '%s'", msg.getTokens()[1].c_str());
+			client->sendCode(ERR_NOSUCHCHANNEL, "NO such channel");
 			return;
 		}
 		if(!chit->removeClient(client))
 		{
-			logs::report(log_error, "PART, client was not in channel '%s'", msg.getTokens()[1].c_str());
+			client->sendCode(ERR_NOTONCHANNEL, "Not on channel");
 			return;
 		}
 		client->printUserHeader();
@@ -141,8 +143,9 @@ namespace irc
 
 	void Server::handleJoin(unstd::SharedPtr<class Client> client, const Message& msg)
 	{
-		if(msg.getTokens().size() < 2 && msg.getTokens().size() > 3)
+		if(msg.getTokens().size() < 2)
 		{
+			client->sendCode(ERR_NEEDMOREPARAMS, "Need more params");
 			logs::report(log_error, "JOIN, invalid command '%s'", msg.getRawMsg().c_str());
 			return;
 		}
@@ -161,13 +164,21 @@ namespace irc
 		if(it == _channels.end())
 		{
 			_channels.push_back(Channel(msg.getTokens()[1]));
-			_channels.back().addClient(client);
+			_channels.back().addClient(client, true);
 			logs::report(log_message, "channel '%s' has been created", msg.getTokens()[1].c_str());
+			return ;
 		}
-		else
-			it->addClient(client, true);
-		client->printUserHeader();
-		std::cout << "joining new channel, " << msg.getTokens()[1] << std::endl;
+		if (msg.getTokens().size() == 3 && msg.getTokens()[2] != it->getPassword())
+			client->sendCode(ERR_BADCHANNELKEY, "Invalid password");
+		else if (it->getChannelSize() != -1 && it->getChannelSize() >= static_cast<int>(it->getNumberOfClients()))
+			client->sendCode(ERR_CHANNELISFULL, "Channel is full");
+		else if (it->getPassword().size() == 0)
+			it->addClient(client);
+		else if (it->getPassword().size() > 0 && msg.getTokens()[2] == it->getPassword())
+			it->addClient(client);
+	
+		// client->printUserHeader();
+		// std::cout << "joining new channel, " << msg.getTokens()[1] << std::endl;
 	}
 
 	void Server::handlePrivMsg(unstd::SharedPtr<class Client> client, const Message& msg)
@@ -318,7 +329,18 @@ namespace irc
 
 	void Server::handleMode(unstd::SharedPtr<class Client> client, const Message& msg)
 	{
-		(void)client;
-		(void)msg;
+		logs::report(log_message, "Mode requested");
+		if (msg.getTokens().size() != 3 || (msg.getTokens().size() != 4 && !std::strchr("koi", msg.getTokens()[2][1])))
+			return ;
+		logs::report(log_message, "Mode parsing ok");
+		channel_it it;
+		for (it = _channels.begin(); it != _channels.end() && it->getName() != msg.getTokens()[1]; ++it);
+		if (it == _channels.end())
+			client->sendCode(ERR_NOSUCHCHANNEL, "No such channel");
+		if (!it->isOp(client))
+			client->sendCode(ERR_CHANOPRIVSNEEDED, "You need operator privileges to execute this command");
+		if (msg.getTokens()[2][0] != '-' && msg.getTokens()[2][0] != '+')
+			return ;
+		it->changeMode(client, msg);
 	}
 }

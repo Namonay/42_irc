@@ -6,7 +6,7 @@
 /*   By: vvaas <vvaas@student.42angouleme.fr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/21 10:34:25 by maldavid          #+#    #+#             */
-/*   Updated: 2024/01/24 15:34:26 by maldavid         ###   ########.fr       */
+/*   Updated: 2024/01/25 02:18:30 by vvaas            ###   ########.fr       */
 /*                                                                            */
 /******************************************************************************/
 
@@ -41,10 +41,11 @@ namespace irc
 			bool removeClient(unstd::SharedPtr<Client> client);
 
 			inline std::size_t getNumberOfClients() const { return _clients.size(); }
-
+			inline int getChannelSize() const { return _channel_size; }
 			inline void addOperator(unstd::SharedPtr<Client> op) { _operators.insert(op); }
 			inline bool removeOperator(unstd::SharedPtr<Client> op) { return _operators.erase(op); }
-
+			void changeMode(unstd::SharedPtr<class Client> client, const Message& msg);
+			bool isOp(unstd::SharedPtr<Client> client);
 			void handleMessage(const std::string& msg, unstd::SharedPtr<Client> client, bool notice = false) const;
 
 			inline bool isInviteOnly() const { return _invite_only; }
@@ -59,6 +60,7 @@ namespace irc
 			const std::string _name;
 			std::string _password;
 			std::string _topic;
+			int  _channel_size;
 			bool _invite_only;
 			bool _topic_op_restrict;
 	};
