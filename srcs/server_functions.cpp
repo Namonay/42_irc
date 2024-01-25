@@ -6,7 +6,7 @@
 /*   By: vvaas <vvaas@student.42angouleme.fr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/22 17:31:06 by maldavid          #+#    #+#             */
-/*   Updated: 2024/01/25 18:11:24 by maldavid         ###   ########.fr       */
+/*   Updated: 2024/01/25 18:15:16 by maldavid         ###   ########.fr       */
 /*                                                                            */
 /******************************************************************************/
 
@@ -347,14 +347,14 @@ namespace irc
 	void Server::handleTopic(unstd::SharedPtr<class Client> client, const Message& msg)
 	{
 		(void)client;
-		if(msg.getTokens().size() == 1)
+		if(msg.getArgs().empty())
 		{
 			logs::report(log_error, "TOPIC, invalid command '%s'", msg.getRawMsg().c_str());
 			return;
 		}
-		if(msg.getTokens()[1][0] != '#' && msg.getTokens()[1][0] != '&')
+		if(msg.getArgs()[0][0] != '#' && msg.getArgs()[0][0] != '&')
 		{
-			logs::report(log_error, "TOPIC, invalid channel name '%s'", msg.getTokens()[1].c_str());
+			logs::report(log_error, "TOPIC, invalid channel name '%s'", msg.getArgs()[0].c_str());
 			return;
 		}
 	}
