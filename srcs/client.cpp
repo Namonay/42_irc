@@ -6,7 +6,7 @@
 /*   By: vvaas <vvaas@student.42angouleme.fr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/21 10:35:52 by maldavid          #+#    #+#             */
-/*   Updated: 2024/01/25 21:55:14 by vvaas            ###   ########.fr       */
+/*   Updated: 2024/01/25 21:55:52 by maldavid         ###   ########.fr       */
 /*                                                                            */
 /******************************************************************************/
 
@@ -28,7 +28,7 @@ namespace irc
 
 	void Client::sendCode(const std::string& code, const std::string& msg)
 	{
-		const std::string command = ":yipirc " + code + " : "  + msg + "\r";
+		const std::string command = code + " : "  + msg + "\r";
 #ifdef DEBUG
 		logs::report(log_message, "sending '%s'", command.c_str());
 #endif
