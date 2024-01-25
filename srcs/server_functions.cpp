@@ -6,7 +6,7 @@
 /*   By: vvaas <vvaas@student.42angouleme.fr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/22 17:31:06 by maldavid          #+#    #+#             */
-/*   Updated: 2024/01/25 02:43:54 by vvaas            ###   ########.fr       */
+/*   Updated: 2024/01/25 17:03:18 by maldavid         ###   ########.fr       */
 /*                                                                            */
 /******************************************************************************/
 
@@ -22,6 +22,7 @@
 #include <errorscode.hpp>
 #include <irc.hpp>
 #include <cstring>
+#include <unstd/string.hpp>
 
 namespace irc
 {
@@ -143,7 +144,7 @@ namespace irc
 
 	void Server::handleJoin(unstd::SharedPtr<class Client> client, const Message& msg)
 	{
-		if(msg.getTokens().size() < 2)
+		if(msg.getArgs().empty())
 		{
 			client->sendCode(ERR_NEEDMOREPARAMS, "Need more params");
 			logs::report(log_error, "JOIN, invalid command '%s'", msg.getRawMsg().c_str());
@@ -183,7 +184,7 @@ namespace irc
 
 	void Server::handlePrivMsg(unstd::SharedPtr<class Client> client, const Message& msg)
 	{
-		if(msg.getTokens().size() < 2)
+		if(msg.getArgs().empty())
 		{
 			client->sendCode(ERR_NORECIPIENT, "No recipient given\n");
 			return;
@@ -237,7 +238,7 @@ namespace irc
 
 	void Server::handleNotice(unstd::SharedPtr<class Client> client, const Message& msg)
 	{
-		if(msg.getTokens().size() < 2)
+		if(msg.getArgs().empty())
 		{
 			logs::report(log_error, "NOTICE, invalid command '%s'", msg.getRawMsg().c_str());
 			return;
@@ -292,8 +293,34 @@ namespace irc
 
 	void Server::handleKick(unstd::SharedPtr<class Client> client, const Message& msg)
 	{
-		(void)client;
-		(void)msg;
+		if(msg.getArgs().empty())
+		{
+			logs::report(log_error, "KICK, invalid command '%s'", msg.getRawMsg().c_str());
+			return;
+		}
+		
+		typedef std::vector<std::string>::iterator name_it;
+		std::vector<std::string> channels = unstd::split(msg.getArgs()[0], ',');
+		std::vector<std::string> users = unstd::split(msg.getArgs()[1], ',');
+
+		if(users.size() != channels.size())
+		{
+			client->sendCode(ERR_NEEDMOREPARAMS, "KICK : Not enough parameters");
+			return;
+		}
+		for(name_it user = users.begin(), channel = channels.begin(); user < users.end(); ++user, ++channel)
+		{
+			if(!isUserKnown(*user))
+			{
+				client->sendCode(ERR_NOSUCHNICK, const_cast<std::string&>(*user) + " no such nick");
+				continue;
+			}
+			if(!isChannelKnown(*channel))
+			{
+				client->sendCode(ERR_NOSUCHNICK, const_cast<std::string&>(*channel) + " no such channel");
+				continue;
+			}
+		}
 	}
 
 	void Server::handleTopic(unstd::SharedPtr<class Client> client, const Message& msg)

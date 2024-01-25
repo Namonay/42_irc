@@ -6,7 +6,7 @@
 /*   By: maldavid <kbz_8.dev@akel-engine.com>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/21 11:38:34 by maldavid          #+#    #+#             */
-/*   Updated: 2024/01/22 13:02:56 by maldavid         ###   ########.fr       */
+/*   Updated: 2024/01/25 13:21:33 by maldavid         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -55,6 +55,19 @@ namespace irc
 			return;
 		_command = tokens[0];
 		_tokens = tokens;
+		bool reason = false;
+		for(std::vector<std::string>::iterator it = tokens.begin(); it != tokens.end(); ++it)
+		{
+			if((*it)[0] == ':')
+				reason = true;
+			if(!reason)
+				_args.push_back(*it);
+			else
+			{
+				_reason.append(*it);
+				_reason.push_back(' ');
+			}
+		}
 	}
 
 	Message::~Message() {}

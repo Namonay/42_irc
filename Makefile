@@ -6,20 +6,21 @@
 #    By: vvaas <vvaas@student.42angouleme.fr>       +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2023/08/09 15:08:49 by vavaas            #+#    #+#              #
-#    Updated: 2024/01/22 17:32:49 by maldavid         ###   ########.fr        #
+#    Updated: 2024/01/25 15:22:06 by maldavid         ###   ########.fr        #
 #                                                                              #
 #******************************************************************************#
 
 NAME	= ircserv
 
-SRCS	= srcs/main.cpp \
-		  srcs/logs.cpp  \
-		  srcs/server.cpp  \
-		  srcs/server_functions.cpp  \
-		  srcs/client.cpp  \
-		  srcs/channel.cpp  \
-		  srcs/message.cpp  \
-		  srcs/ansi.cpp  \
+SRCS	= srcs/main.cpp     \
+		  srcs/logs.cpp      \
+		  srcs/ansi.cpp       \
+		  srcs/server.cpp      \
+		  srcs/client.cpp       \
+		  srcs/channel.cpp       \
+		  srcs/message.cpp        \
+		  srcs/unstd/string.cpp    \
+		  srcs/server_functions.cpp \
 
 OBJ_DIR	= objs
 OBJS	= $(addprefix $(OBJ_DIR)/, $(SRCS:.cpp=.o))

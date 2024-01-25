@@ -6,7 +6,7 @@
 /*   By: vvaas <vvaas@student.42angouleme.fr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/21 09:31:17 by maldavid          #+#    #+#             */
-/*   Updated: 2024/01/25 00:09:16 by vvaas            ###   ########.fr       */
+/*   Updated: 2024/01/25 16:39:09 by maldavid         ###   ########.fr       */
 /*                                                                            */
 /******************************************************************************/
 
@@ -22,6 +22,12 @@
 
 namespace irc
 {
+	typedef std::vector<unstd::SharedPtr<Client> >::iterator client_it;
+	typedef std::vector<unstd::SharedPtr<Client> >::const_iterator client_const_it;
+
+	typedef std::vector<Channel>::iterator channel_it;
+	typedef std::vector<Channel>::const_iterator channel_const_it;
+
 	Server::Server(int port, const std::string& password) : _s_len(sizeof(_s_data)), _password(password), _port(port), _active(true)
 	{
 		std::memset(&_s_data, 0, sizeof(sockaddr));
@@ -156,6 +162,26 @@ namespace irc
 		else if(msg.getCmd() == "MODE")
 			handleMode(client, msg);
 		return true;
+	}
+
+	bool Server::isUserKnown(const std::string& user) const
+	{
+		for(client_const_it it = _client.begin(); it < _client.end(); ++it)
+		{
+			if(const_cast<unstd::SharedPtr<Client>&>(*it)->getNickName() == user)
+				return true;
+		}
+		return false;
+	}
+
+	bool Server::isChannelKnown(const std::string& channel) const
+	{
+		for(channel_const_it it = _channels.begin(); it < _channels.end(); ++it)
+		{
+			if(it->getName() == channel)
+				return true;
+		}
+		return false;
 	}
 
 	Server::~Server()

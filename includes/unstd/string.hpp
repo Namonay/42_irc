@@ -6,7 +6,7 @@
 /*   By: maldavid <kbz_8.dev@akel-engine.com>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/20 19:13:26 by maldavid          #+#    #+#             */
-/*   Updated: 2024/01/20 19:14:55 by maldavid         ###   ########.fr       */
+/*   Updated: 2024/01/25 15:20:00 by maldavid         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,6 +14,8 @@
 #define __UNSTD_STRING__
 
 #include <sstream>
+#include <string>
+#include <vector>
 
 namespace unstd
 {
@@ -24,6 +26,8 @@ namespace unstd
 		ss << n;
 		return ss.str();
 	}
+
+	std::vector<std::string> split(const std::string& s, char delim);
 }
 
 #endif
