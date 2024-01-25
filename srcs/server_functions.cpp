@@ -6,7 +6,7 @@
 /*   By: vvaas <vvaas@student.42angouleme.fr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/22 17:31:06 by maldavid          #+#    #+#             */
-/*   Updated: 2024/01/25 17:03:18 by maldavid         ###   ########.fr       */
+/*   Updated: 2024/01/25 18:04:02 by vvaas            ###   ########.fr       */
 /*                                                                            */
 /******************************************************************************/
 
@@ -357,7 +357,7 @@ namespace irc
 	void Server::handleMode(unstd::SharedPtr<class Client> client, const Message& msg)
 	{
 		logs::report(log_message, "Mode requested");
-		if (msg.getTokens().size() != 3 || (msg.getTokens().size() != 4 && !std::strchr("koi", msg.getTokens()[2][1])))
+		if (msg.getTokens().size() < 3)
 			return ;
 		logs::report(log_message, "Mode parsing ok");
 		channel_it it;
