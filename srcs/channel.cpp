@@ -6,7 +6,7 @@
 /*   By: vvaas <vvaas@student.42angouleme.fr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/21 10:36:21 by maldavid          #+#    #+#             */
-/*   Updated: 2024/01/25 18:19:07 by vvaas            ###   ########.fr       */
+/*   Updated: 2024/01/25 18:25:27 by vvaas            ###   ########.fr       */
 /*                                                                            */
 /******************************************************************************/
 
@@ -162,7 +162,7 @@ namespace irc
 
 	bool Channel::isOp(unstd::SharedPtr<Client> client) const
 	{
-		for(client_const_it it = _clients.begin(); it != _clients.end(); ++it)
+		for(client_const_it it = _operators.begin(); it != _operators.end(); ++it)
 		{
 			if(const_cast<unstd::SharedPtr<irc::Client>&>(*it)->getNickName() == client->getNickName())
 				return true;
