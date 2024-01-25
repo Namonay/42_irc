@@ -6,7 +6,7 @@
 /*   By: vvaas <vvaas@student.42angouleme.fr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/21 10:36:21 by maldavid          #+#    #+#             */
-/*   Updated: 2024/01/25 21:21:12 by maldavid         ###   ########.fr       */
+/*   Updated: 2024/01/25 21:46:29 by vvaas            ###   ########.fr       */
 /*                                                                            */
 /******************************************************************************/
 
@@ -72,14 +72,15 @@ namespace irc
 
 	void Channel::sendWho(unstd::SharedPtr<Client> client)
 	{
-		std::string clientlist(RPL_NAMREPLY " " + client->getNickName() + " = " + getName() + ": ");
+		std::string clientlist(":yipirc " RPL_NAMREPLY " " + client->getNickName() + " = " + getName() + ": ");
 		
 		for (client_it it = _clients.begin(); it != _clients.end(); ++it)
 		{
 			clientlist += const_cast<unstd::SharedPtr<irc::Client>&>(*it)->getNickName() + ' ';
 		}
-		client->sendModular("%s", clientlist.c_str());
-		client->sendModular("%s %s %s : End of names list", RPL_ENDOFNAMES, client->getNickName().c_str(), getName().c_str());
+		logs::report(log_message, "%s", clientlist.c_str());
+		client->sendModular("%s\r\n", clientlist.c_str());
+		client->sendModular("%s %s %s : End of names list\r\n", RPL_ENDOFNAMES, client->getNickName().c_str(), getName().c_str());
 	}
 
 	void Channel::handleMessage(const std::string& msg, unstd::SharedPtr<Client> client, bool notice) const

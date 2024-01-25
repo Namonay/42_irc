@@ -6,7 +6,7 @@
 /*   By: vvaas <vvaas@student.42angouleme.fr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/21 10:35:52 by maldavid          #+#    #+#             */
-/*   Updated: 2024/01/25 21:22:34 by maldavid         ###   ########.fr       */
+/*   Updated: 2024/01/25 21:55:14 by vvaas            ###   ########.fr       */
 /*                                                                            */
 /******************************************************************************/
 
@@ -20,6 +20,7 @@
 #include <cstring>
 #include <cstdlib>
 #include <cstdio>
+#include <vector>
 
 namespace irc
 {
@@ -27,7 +28,7 @@ namespace irc
 
 	void Client::sendCode(const std::string& code, const std::string& msg)
 	{
-		const std::string command = code + " :" + msg + "\r\n";
+		const std::string command = ":yipirc " + code + " : "  + msg + "\r";
 #ifdef DEBUG
 		logs::report(log_message, "sending '%s'", command.c_str());
 #endif
@@ -55,18 +56,33 @@ namespace irc
 	}
 
 	void Client::sendModular(std::string message, ...)
+	{
+		std::string buffer;
+
+		va_list al;
+		va_list al_copy;
+
+		va_start(al, message);
+		__builtin_va_copy(al_copy, al);
+
+		int len = vsnprintf(NULL, 0, message.c_str(), al);
+
+		if(len > 0)
 		{
-			char buffer[LOGS_BUFFER_SIZE];
-
-			va_list al;
-			va_start(al, message);
-			vsnprintf(buffer, LOGS_BUFFER_SIZE, message.c_str(), al);
-			va_end(al);
-
-			logs::report(log_message,"<- S %s", buffer);
-			if (send(_fd, buffer, std::strlen(buffer), 0) < static_cast<ssize_t>(std::strlen(buffer)))
-				logs::report(log_error, "server failed to send a message to '%s'", _nickname.c_str());
+			std::vector<char> tmp(len + 1);
+			vsnprintf(&tmp[0], tmp.size(), message.c_str(), al_copy);
+			buffer = std::string(&tmp[0], len);
+			buffer += "\r";
 		}
+		va_end(al_copy);
+		va_end(al);
+
+#ifdef DEBUG
+		logs::report(log_message,"sending '%s'", buffer.c_str());
+#endif	
+		if (send(_fd, buffer.c_str(), buffer.length(), 0) < static_cast<ssize_t>(buffer.length()))
+			logs::report(log_error, "server failed to send a message to '%s'", _nickname.c_str());
+	}
 	void Client::printUserHeader() const
 	{
 		std::cout << AnsiColor::green << "[User " << _id;
