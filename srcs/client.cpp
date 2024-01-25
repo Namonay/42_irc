@@ -6,7 +6,7 @@
 /*   By: vvaas <vvaas@student.42angouleme.fr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/21 10:35:52 by maldavid          #+#    #+#             */
-/*   Updated: 2024/01/25 20:24:16 by vvaas            ###   ########.fr       */
+/*   Updated: 2024/01/25 21:20:41 by maldavid         ###   ########.fr       */
 /*                                                                            */
 /******************************************************************************/
 
@@ -27,15 +27,19 @@ namespace irc
 
 	void Client::sendCode(const std::string& code, const std::string& msg)
 	{
-		const std::string command = code + " :" + msg;
-		logs::report(log_message, "C<-%s", command.c_str());
+		const std::string command = code + " :" + msg + "\r\n";
+#ifdef DEBUG
+		logs::report(log_message, "sending '%s'", command.c_str());
+#endif
 		if(send(_fd, command.c_str(), command.size(), 0) != static_cast<ssize_t>(command.length()))
 			logs::report(log_error, "server failed to send a code to '%s' (:sadge:)", _username.c_str());
 	}
 
 	void Client::sendPlainText(const std::string& str)
 	{
-		logs::report(log_message,"<- S %s", str.c_str());
+#ifdef DEBUG
+		logs::report(log_message,"sending '%s'", str.c_str());
+#endif
 		if(send(_fd, str.c_str(), str.length(), 0) != static_cast<ssize_t>(str.length()))
 			logs::report(log_error, "server failed to send a message to '%s' (:sadge:)", _username.c_str());
 	}
@@ -44,6 +48,9 @@ namespace irc
 	{
 		const std::string out = ':' + sender + ' ' + cmd + " :" + trailing + "\r\n";
 		logs::report(log_message,"<- S %s", out.c_str());
+#ifdef DEBUG
+		logs::report(log_message,"sending '%s'", out.c_str());
+#endif
 		if(send(_fd, out.c_str(), out.length(), 0) != static_cast<ssize_t>(out.length()))
 			logs::report(log_error, "server failed to send a message from '%s' to '%s' (:sadge:)", sender.c_str(), _username.c_str());
 	}

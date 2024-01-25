@@ -6,7 +6,7 @@
 /*   By: vvaas <vvaas@student.42angouleme.fr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/21 10:36:21 by maldavid          #+#    #+#             */
-/*   Updated: 2024/01/25 21:15:06 by vvaas            ###   ########.fr       */
+/*   Updated: 2024/01/25 21:21:12 by maldavid         ###   ########.fr       */
 /*                                                                            */
 /******************************************************************************/
 
@@ -35,6 +35,7 @@ namespace irc
 		for(client_it it = _clients.begin(); it != _clients.end(); ++it)
 			const_cast<unstd::SharedPtr<irc::Client>&>(*it)->sendMsg(client->getNickName(), "JOIN", _name);
 	}
+
 	void Channel::ModOperator(unstd::SharedPtr<class Client> client, const std::string &clientname, bool mode)
 	{
 		client_it it;
@@ -56,6 +57,7 @@ namespace irc
 				const_cast<unstd::SharedPtr<irc::Client>&>(*it)->sendMsg(client->getNickName(), "MODE", out);
 		}
 	}
+
 	bool Channel::removeClient(unstd::SharedPtr<Client> client)
 	{
 		if (!_clients.erase(client))
@@ -109,6 +111,7 @@ namespace irc
 		for(client_it it = _clients.begin(); it != _clients.end(); ++it)
 			const_cast<unstd::SharedPtr<irc::Client>&>(*it)->sendCode(RPL_CHANNELMODEIS, modes);
 	}
+
 	void Channel::changeMode(unstd::SharedPtr<class Client> client, const Message& msg)
 	{
 		bool modevalue = (msg.getTokens()[2][0] != '-');
@@ -169,9 +172,19 @@ namespace irc
 		if(_topic_op_restrict && !isOp(client))
 		{
 			client->sendCode(ERR_CHANOPRIVSNEEDED, "You need operator privileges");
-			return ;
+			return;
 		}
 		_topic = new_topic;
+		relayTopic(client);
+	}
+
+	void Channel::relayTopic(unstd::SharedPtr<Client> client)
+	{
+		if(!hasClient(client))
+			return;
+		if(_topic.empty())
+			return client->sendCode(RPL_NOTOPIC " " + _name, " no topic is set");
+		return client->sendCode(RPL_TOPIC " " + _name, _topic);
 	}
 
 	bool Channel::isOp(unstd::SharedPtr<Client> client) const
@@ -193,7 +206,7 @@ namespace irc
 		}
 		if(!hasClient(target))
 		{
-			op->sendCode(ERR_USERNOTINCHANNEL, const_cast<std::string&>(target->getNickName()) + std::string(" " + _name) + "  they aren't on that channel");
+			op->sendCode(ERR_USERNOTINCHANNEL, const_cast<std::string&>(target->getNickName()) + ' ' + _name + "  they aren't on that channel");
 			return false;
 		}
 		if(!isOp(op))

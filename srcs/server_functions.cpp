@@ -6,7 +6,7 @@
 /*   By: vvaas <vvaas@student.42angouleme.fr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/22 17:31:06 by maldavid          #+#    #+#             */
-/*   Updated: 2024/01/25 20:28:19 by vvaas            ###   ########.fr       */
+/*   Updated: 2024/01/25 21:21:04 by maldavid         ###   ########.fr       */
 /*                                                                            */
 /******************************************************************************/
 
@@ -293,14 +293,12 @@ namespace irc
 
 	void Server::handleKick(unstd::SharedPtr<class Client> client, const Message& msg)
 	{
-		std::cout << "kick" << std::endl;
 		if(msg.getArgs().empty())
 		{
 			logs::report(log_error, "KICK, invalid command '%s'", msg.getRawMsg().c_str());
 			return;
 		}
-		std::cout << "kick" << std::endl;
-		
+
 		typedef std::vector<std::string>::iterator name_it;
 		std::vector<std::string> channels = unstd::split(msg.getArgs()[0], ',');
 		std::vector<std::string> users = unstd::split(msg.getArgs()[1], ',');
@@ -310,22 +308,19 @@ namespace irc
 			client->sendCode(ERR_NEEDMOREPARAMS, "KICK : Not enough parameters");
 			return;
 		}
-		std::cout << "kick" << std::endl;
+
 		for(name_it user = users.begin(), channel = channels.begin(); user < users.end(); ++user, ++channel)
 		{
-			std::cout << *user << " " << *channel << std::endl;
 			if(!isUserKnown(*user))
 			{
 				client->sendCode(ERR_NOSUCHNICK, const_cast<std::string&>(*user) + " no such nick");
 				continue;
 			}
-			std::cout << *user << " " << *channel << std::endl;
 			if(!isChannelKnown(*channel))
 			{
 				client->sendCode(ERR_NOSUCHCHANNEL, const_cast<std::string&>(*channel) + " no such channel");
 				continue;
 			}
-			std::cout << *user << " " << *channel << std::endl;
 
 			Channel* channel_target = getChannelByName(*channel);
 			if(channel_target == NULL)
@@ -357,17 +352,32 @@ namespace irc
 	}
 	void Server::handleTopic(unstd::SharedPtr<class Client> client, const Message& msg)
 	{
-		(void)client;
 		if(msg.getArgs().empty())
 		{
 			logs::report(log_error, "TOPIC, invalid command '%s'", msg.getRawMsg().c_str());
 			return;
 		}
-		if(msg.getArgs()[0][0] != '#' && msg.getArgs()[0][0] != '&')
+		if(!isChannelKnown(msg.getArgs()[0]))
 		{
-			logs::report(log_error, "TOPIC, invalid channel name '%s'", msg.getArgs()[0].c_str());
+			client->sendCode(ERR_NOSUCHCHANNEL, msg.getArgs()[0] + " no such channel");
 			return;
 		}
+		Channel* channel = getChannelByName(msg.getArgs()[0]);
+		if(channel == NULL)
+			logs::report(log_fatal_error, "(TOPIC), cannot get channel '%s' by name; panic !", channel->getName().c_str());
+		if(!channel->hasClient(client))
+		{
+			client->sendCode(ERR_NOTONCHANNEL, msg.getArgs()[0] + " you're not on that channel");
+			return;
+		}
+		if(!msg.getReason().empty())
+		{
+			channel->setTopic(client, msg.getReason());
+			client->printUserHeader();
+			std::cout << "changed topic to " << msg.getReason() << std::endl;
+		}
+		else
+			channel->relayTopic(client);
 	}
 
 	void Server::handlePing(unstd::SharedPtr<class Client> client, const Message& msg)

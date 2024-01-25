@@ -6,7 +6,7 @@
 /*   By: vvaas <vvaas@student.42angouleme.fr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/21 10:34:25 by maldavid          #+#    #+#             */
-/*   Updated: 2024/01/25 19:38:50 by vvaas            ###   ########.fr       */
+/*   Updated: 2024/01/25 21:21:19 by maldavid         ###   ########.fr       */
 /*                                                                            */
 /******************************************************************************/
 
@@ -54,7 +54,8 @@ namespace irc
 			inline bool isInviteOnly() const { return _invite_only; }
 
 			void setTopic(unstd::SharedPtr<Client> client, const std::string& new_topic);
-			void showModes(void) const;
+			void relayTopic(unstd::SharedPtr<Client> client);
+			void showModes() const;
 
 			bool kick(unstd::SharedPtr<Client> op, unstd::SharedPtr<Client> target, const std::string& reason);
 
