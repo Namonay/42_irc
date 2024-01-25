@@ -6,7 +6,7 @@
 /*   By: vvaas <vvaas@student.42angouleme.fr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/21 10:34:25 by maldavid          #+#    #+#             */
-/*   Updated: 2024/01/25 17:59:52 by vvaas            ###   ########.fr       */
+/*   Updated: 2024/01/25 18:11:58 by maldavid         ###   ########.fr       */
 /*                                                                            */
 /******************************************************************************/
 
@@ -45,13 +45,19 @@ namespace irc
 			void ModOperator(unstd::SharedPtr<class Client> client, const std::string &clientname, bool mode);
 			inline bool removeOperator(unstd::SharedPtr<Client> op) { return _operators.erase(op); }
 			void changeMode(unstd::SharedPtr<class Client> client, const Message& msg);
-			bool isOp(unstd::SharedPtr<Client> client);
+			bool isOp(unstd::SharedPtr<Client> client) const;
 			void handleMessage(const std::string& msg, unstd::SharedPtr<Client> client, bool notice = false) const;
+
+			inline bool hasClient(unstd::SharedPtr<Client> client) const { return _clients.find(client) != _clients.end(); }
+			bool hasClient(std::string client) const;
 
 			inline bool isInviteOnly() const { return _invite_only; }
 
 			void setTopic(unstd::SharedPtr<Client> client, const std::string& new_topic);
 			void showModes(void) const;
+
+			bool kick(unstd::SharedPtr<Client> op, unstd::SharedPtr<Client> target, const std::string& reason);
+
 			~Channel();
 
 		private:

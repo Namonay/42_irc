@@ -6,7 +6,7 @@
 /*   By: vvaas <vvaas@student.42angouleme.fr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/21 09:31:17 by maldavid          #+#    #+#             */
-/*   Updated: 2024/01/25 16:39:09 by maldavid         ###   ########.fr       */
+/*   Updated: 2024/01/25 17:23:12 by maldavid         ###   ########.fr       */
 /*                                                                            */
 /******************************************************************************/
 
@@ -182,6 +182,26 @@ namespace irc
 				return true;
 		}
 		return false;
+	}
+
+	Channel* Server::getChannelByName(const std::string& name)
+	{
+		for(channel_it it = _channels.begin(); it < _channels.end(); ++it)
+		{
+			if(it->getName() == name)
+				return &*it;
+		}
+		return NULL;
+	}
+
+	unstd::SharedPtr<Client> Server::getClientByName(const std::string& name)
+	{
+		for(client_it it = _client.begin(); it < _client.end(); ++it)
+		{
+			if((*it)->getNickName() == name)
+				return *it;
+		}
+		return unstd::SharedPtr<Client>(NULL);
 	}
 
 	Server::~Server()

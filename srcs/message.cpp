@@ -6,7 +6,7 @@
 /*   By: maldavid <kbz_8.dev@akel-engine.com>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/21 11:38:34 by maldavid          #+#    #+#             */
-/*   Updated: 2024/01/25 13:21:33 by maldavid         ###   ########.fr       */
+/*   Updated: 2024/01/25 18:06:49 by maldavid         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -56,7 +56,7 @@ namespace irc
 		_command = tokens[0];
 		_tokens = tokens;
 		bool reason = false;
-		for(std::vector<std::string>::iterator it = tokens.begin(); it != tokens.end(); ++it)
+		for(std::vector<std::string>::iterator it = tokens.begin() + 1; it < tokens.end(); ++it)
 		{
 			if((*it)[0] == ':')
 				reason = true;

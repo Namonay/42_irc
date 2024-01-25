@@ -6,7 +6,7 @@
 /*   By: vvaas <vvaas@student.42angouleme.fr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/22 17:31:06 by maldavid          #+#    #+#             */
-/*   Updated: 2024/01/25 18:04:02 by vvaas            ###   ########.fr       */
+/*   Updated: 2024/01/25 18:11:24 by maldavid         ###   ########.fr       */
 /*                                                                            */
 /******************************************************************************/
 
@@ -293,11 +293,13 @@ namespace irc
 
 	void Server::handleKick(unstd::SharedPtr<class Client> client, const Message& msg)
 	{
+		std::cout << "kick" << std::endl;
 		if(msg.getArgs().empty())
 		{
 			logs::report(log_error, "KICK, invalid command '%s'", msg.getRawMsg().c_str());
 			return;
 		}
+		std::cout << "kick" << std::endl;
 		
 		typedef std::vector<std::string>::iterator name_it;
 		std::vector<std::string> channels = unstd::split(msg.getArgs()[0], ',');
@@ -308,18 +310,37 @@ namespace irc
 			client->sendCode(ERR_NEEDMOREPARAMS, "KICK : Not enough parameters");
 			return;
 		}
+		std::cout << "kick" << std::endl;
 		for(name_it user = users.begin(), channel = channels.begin(); user < users.end(); ++user, ++channel)
 		{
+			std::cout << *user << " " << *channel << std::endl;
 			if(!isUserKnown(*user))
 			{
 				client->sendCode(ERR_NOSUCHNICK, const_cast<std::string&>(*user) + " no such nick");
 				continue;
 			}
+			std::cout << *user << " " << *channel << std::endl;
 			if(!isChannelKnown(*channel))
 			{
-				client->sendCode(ERR_NOSUCHNICK, const_cast<std::string&>(*channel) + " no such channel");
+				client->sendCode(ERR_NOSUCHCHANNEL, const_cast<std::string&>(*channel) + " no such channel");
 				continue;
 			}
+			std::cout << *user << " " << *channel << std::endl;
+
+			Channel* channel_target = getChannelByName(*channel);
+			if(channel_target == NULL)
+				logs::report(log_fatal_error, "(KICK), cannot get channel '%s' by name; panic !", channel->c_str());
+			unstd::SharedPtr<Client> client_target = getClientByName(*user);
+			if(client_target.get() == NULL)
+				logs::report(log_fatal_error, "(KICK), cannot get client '%s' by name; panic !", user->c_str());
+
+			if(!channel_target->kick(client, client_target, msg.getReason()))
+			{
+				logs::report(log_error, "could not kick %s because why not", user->c_str());
+				continue;
+			}
+			client->printUserHeader();
+			std::cout << "kicked " << *user << " from " << *channel << std::endl;
 		}
 	}
 

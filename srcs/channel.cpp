@@ -6,7 +6,7 @@
 /*   By: vvaas <vvaas@student.42angouleme.fr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/21 10:36:21 by maldavid          #+#    #+#             */
-/*   Updated: 2024/01/25 18:09:11 by vvaas            ###   ########.fr       */
+/*   Updated: 2024/01/25 18:11:45 by maldavid         ###   ########.fr       */
 /*                                                                            */
 /******************************************************************************/
 
@@ -19,6 +19,7 @@
 namespace irc
 {
 	typedef std::set<unstd::SharedPtr<Client> >::iterator client_it;
+	typedef std::set<unstd::SharedPtr<Client> >::const_iterator client_const_it;
 
 	Channel::Channel(const std::string& name) : _name(name), _channel_size(-1) {}
 
@@ -57,9 +58,9 @@ namespace irc
 	}
 	bool Channel::removeClient(unstd::SharedPtr<Client> client)
 	{
-		if (!_clients.erase(client))
+		if(!_clients.erase(client))
 			return (false);
-		for (client_it it = _clients.begin(); it != _clients.end(); ++it)
+		for(client_it it = _clients.begin(); it != _clients.end(); ++it)
 			const_cast<unstd::SharedPtr<irc::Client>&>(*it)->sendMsg(client->getNickName(), "PART", _name);
 		client->sendMsg(client->getNickName(), "PART", _name);
 		return (true);
@@ -138,6 +139,16 @@ namespace irc
 		showModes();
 	}
 
+	bool Channel::hasClient(std::string client) const
+	{
+		for(client_const_it it = _clients.begin(); it != _clients.end(); ++it)
+		{
+			if(const_cast<unstd::SharedPtr<irc::Client>&>(*it)->getNickName() == client)
+				return true;
+		}
+		return false;
+	}
+
 	void Channel::setTopic(unstd::SharedPtr<Client> client, const std::string& new_topic)
 	{
 		if(_topic_op_restrict && !isOp(client))
@@ -148,14 +159,38 @@ namespace irc
 		_topic = new_topic;
 	}
 
-	bool Channel::isOp(unstd::SharedPtr<Client> client)
+	bool Channel::isOp(unstd::SharedPtr<Client> client) const
 	{
-		for (client_it it = _clients.begin(); it != _clients.end(); ++it)
+		for(client_const_it it = _clients.begin(); it != _clients.end(); ++it)
 		{
-			if (const_cast<unstd::SharedPtr<irc::Client>&>(*it)->getNickName() == client->getNickName())
-				return (true);
+			if(const_cast<unstd::SharedPtr<irc::Client>&>(*it)->getNickName() == client->getNickName())
+				return true;
 		}
-		return (false);
+		return false;
 	}
+
+	bool Channel::kick(unstd::SharedPtr<Client> op, unstd::SharedPtr<Client> target, const std::string& reason)
+	{
+		if(!hasClient(op))
+		{
+			op->sendCode(ERR_NOTONCHANNEL, _name + " you're not on that channel");
+			return false;
+		}
+		if(!hasClient(target))
+		{
+			op->sendCode(ERR_USERNOTINCHANNEL, const_cast<std::string&>(target->getNickName()) + std::string(" " + _name) + "  they aren't on that channel");
+			return false;
+		}
+		if(!isOp(op))
+		{
+			op->sendCode(ERR_CHANOPRIVSNEEDED, const_cast<std::string&>(_name) + " you're not channel operator");
+			return false;
+		}
+		for(client_it it = _clients.begin(); it != _clients.end(); ++it)
+			const_cast<unstd::SharedPtr<irc::Client>&>(*it)->sendMsg(op->getNickName(), "KICK " + _name + ' ' + target->getNickName(), reason);
+		_clients.erase(target);
+		return true;
+	}
+
 	Channel::~Channel() {}
 }
