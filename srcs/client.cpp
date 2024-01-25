@@ -6,7 +6,7 @@
 /*   By: vvaas <vvaas@student.42angouleme.fr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/21 10:35:52 by maldavid          #+#    #+#             */
-/*   Updated: 2024/01/25 21:20:41 by maldavid         ###   ########.fr       */
+/*   Updated: 2024/01/25 21:22:34 by maldavid         ###   ########.fr       */
 /*                                                                            */
 /******************************************************************************/
 
@@ -47,7 +47,6 @@ namespace irc
 	void Client::sendMsg(const std::string& sender, const std::string& cmd, const std::string& trailing)
 	{
 		const std::string out = ':' + sender + ' ' + cmd + " :" + trailing + "\r\n";
-		logs::report(log_message,"<- S %s", out.c_str());
 #ifdef DEBUG
 		logs::report(log_message,"sending '%s'", out.c_str());
 #endif
