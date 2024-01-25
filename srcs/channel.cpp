@@ -6,7 +6,7 @@
 /*   By: vvaas <vvaas@student.42angouleme.fr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/21 10:36:21 by maldavid          #+#    #+#             */
-/*   Updated: 2024/01/25 18:11:45 by maldavid         ###   ########.fr       */
+/*   Updated: 2024/01/25 18:19:07 by vvaas            ###   ########.fr       */
 /*                                                                            */
 /******************************************************************************/
 
@@ -21,7 +21,7 @@ namespace irc
 	typedef std::set<unstd::SharedPtr<Client> >::iterator client_it;
 	typedef std::set<unstd::SharedPtr<Client> >::const_iterator client_const_it;
 
-	Channel::Channel(const std::string& name) : _name(name), _channel_size(-1) {}
+	Channel::Channel(const std::string& name) : _name(name), _channel_size(-1), _topic_op_restrict(false) {}
 
 	void Channel::addClient(unstd::SharedPtr<Client> client, bool op)
 	{
@@ -99,6 +99,7 @@ namespace irc
 	{
 		bool modevalue = (msg.getTokens()[2][0] != '-');
 		// attention on est sur un truc solidement MERDIQUE, a toucher a tes propres risques (je suis proche du nervous breakdown) gl hf :)
+		logs::report(log_message, "tokensize : %d, mode : %c, modevalue %d", msg.getTokens().size(), msg.getTokens()[2][1], modevalue);
 		switch (msg.getTokens()[2][1])
 		{
 			case 'i':
@@ -108,12 +109,12 @@ namespace irc
 				_topic_op_restrict = modevalue;
 				break;
 			case 'k':
-				if (modevalue && msg.getTokens().size() < 3)
+				if (modevalue && msg.getTokens().size() == 4)
 				{
 					logs::report(log_message, "%s password set as %s", getName().c_str(), msg.getTokens()[3].c_str());
 					_password = msg.getTokens()[3];
 				}
-				else if (msg.getTokens().size() < 2)
+				else if (msg.getTokens().size() < 4)
 				{
 					_password = "";
 					logs::report(log_message, "password removed on %s", getName().c_str());
