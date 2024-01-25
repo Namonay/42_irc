@@ -6,7 +6,7 @@
 /*   By: vvaas <vvaas@student.42angouleme.fr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/21 10:34:25 by maldavid          #+#    #+#             */
-/*   Updated: 2024/01/25 18:11:58 by maldavid         ###   ########.fr       */
+/*   Updated: 2024/01/25 19:38:50 by vvaas            ###   ########.fr       */
 /*                                                                            */
 /******************************************************************************/
 
@@ -47,7 +47,7 @@ namespace irc
 			void changeMode(unstd::SharedPtr<class Client> client, const Message& msg);
 			bool isOp(unstd::SharedPtr<Client> client) const;
 			void handleMessage(const std::string& msg, unstd::SharedPtr<Client> client, bool notice = false) const;
-
+			void sendWho(unstd::SharedPtr<Client> client);
 			inline bool hasClient(unstd::SharedPtr<Client> client) const { return _clients.find(client) != _clients.end(); }
 			bool hasClient(std::string client) const;
 

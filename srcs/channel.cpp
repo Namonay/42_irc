@@ -6,7 +6,7 @@
 /*   By: vvaas <vvaas@student.42angouleme.fr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/21 10:36:21 by maldavid          #+#    #+#             */
-/*   Updated: 2024/01/25 18:25:27 by vvaas            ###   ########.fr       */
+/*   Updated: 2024/01/25 21:15:06 by vvaas            ###   ########.fr       */
 /*                                                                            */
 /******************************************************************************/
 
@@ -58,12 +58,26 @@ namespace irc
 	}
 	bool Channel::removeClient(unstd::SharedPtr<Client> client)
 	{
-		if(!_clients.erase(client))
+		if (!_clients.erase(client))
 			return (false);
+		if (isOp(client))
+			_operators.erase(client);
 		for(client_it it = _clients.begin(); it != _clients.end(); ++it)
 			const_cast<unstd::SharedPtr<irc::Client>&>(*it)->sendMsg(client->getNickName(), "PART", _name);
 		client->sendMsg(client->getNickName(), "PART", _name);
 		return (true);
+	}
+
+	void Channel::sendWho(unstd::SharedPtr<Client> client)
+	{
+		std::string clientlist(RPL_NAMREPLY " " + client->getNickName() + " = " + getName() + ": ");
+		
+		for (client_it it = _clients.begin(); it != _clients.end(); ++it)
+		{
+			clientlist += const_cast<unstd::SharedPtr<irc::Client>&>(*it)->getNickName() + ' ';
+		}
+		client->sendModular("%s", clientlist.c_str());
+		client->sendModular("%s %s %s : End of names list", RPL_ENDOFNAMES, client->getNickName().c_str(), getName().c_str());
 	}
 
 	void Channel::handleMessage(const std::string& msg, unstd::SharedPtr<Client> client, bool notice) const
@@ -189,6 +203,8 @@ namespace irc
 		}
 		for(client_it it = _clients.begin(); it != _clients.end(); ++it)
 			const_cast<unstd::SharedPtr<irc::Client>&>(*it)->sendMsg(op->getNickName(), "KICK " + _name + ' ' + target->getNickName(), reason);
+		if (isOp(target))
+			_operators.erase(target);
 		_clients.erase(target);
 		return true;
 	}

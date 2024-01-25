@@ -6,7 +6,7 @@
 /*   By: vvaas <vvaas@student.42angouleme.fr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/22 17:31:06 by maldavid          #+#    #+#             */
-/*   Updated: 2024/01/25 18:15:16 by maldavid         ###   ########.fr       */
+/*   Updated: 2024/01/25 20:28:19 by vvaas            ###   ########.fr       */
 /*                                                                            */
 /******************************************************************************/
 
@@ -344,6 +344,17 @@ namespace irc
 		}
 	}
 
+	void Server::handleWho(unstd::SharedPtr<class Client> client, const class Message& msg)
+	{
+		irc::Channel *chan;
+
+		logs::report(log_message, "tokensize ok : %d", msg.getTokens().size());
+		if (msg.getTokens().size() != 2)
+			return;
+		if ((chan = getChannelByName(msg.getTokens()[1])) == NULL)
+			client->sendCode(ERR_NOSUCHCHANNEL, "No such channel");
+		chan->sendWho(client);
+	}
 	void Server::handleTopic(unstd::SharedPtr<class Client> client, const Message& msg)
 	{
 		(void)client;

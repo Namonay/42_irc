@@ -6,7 +6,7 @@
 /*   By: vvaas <vvaas@student.42angouleme.fr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/21 09:31:17 by maldavid          #+#    #+#             */
-/*   Updated: 2024/01/25 18:32:27 by vvaas            ###   ########.fr       */
+/*   Updated: 2024/01/25 18:40:10 by vvaas            ###   ########.fr       */
 /*                                                                            */
 /******************************************************************************/
 
@@ -143,6 +143,8 @@ namespace irc
 			return true;
 		else if(msg.getCmd() == "QUIT")
 			handleQuit(client, msg);
+		else if(msg.getCmd() == "WHO")
+			handleWho(client, msg);
 		else if(msg.getCmd() == "PART")
 			handlePart(client, msg);
 		else if(msg.getCmd() == "JOIN")
