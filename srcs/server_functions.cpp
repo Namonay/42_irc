@@ -6,7 +6,7 @@
 /*   By: vvaas <vvaas@student.42angouleme.fr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/22 17:31:06 by maldavid          #+#    #+#             */
-/*   Updated: 2024/01/25 21:21:04 by maldavid         ###   ########.fr       */
+/*   Updated: 2024/01/25 22:04:39 by vvaas            ###   ########.fr       */
 /*                                                                            */
 /******************************************************************************/
 
@@ -78,7 +78,7 @@ namespace irc
 		if(msg.getTokens()[1] == _password)
 		{
 			client->login();
-			client->sendCode(RPL_WELCOME, "Welcome to yipiirc :)\n");
+			client->sendCode("Welcome to", "yipiirc :)\n");
 		}
 		else
 		{
