@@ -6,7 +6,7 @@
 /*   By: vvaas <vvaas@student.42angouleme.fr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/22 17:31:06 by maldavid          #+#    #+#             */
-/*   Updated: 2024/01/25 22:04:39 by vvaas            ###   ########.fr       */
+/*   Updated: 2024/01/25 23:01:42 by maldavid         ###   ########.fr       */
 /*                                                                            */
 /******************************************************************************/
 
@@ -110,36 +110,32 @@ namespace irc
 			logs::report(log_error, "PART, invalid channel name '%s'", msg.getTokens()[1].c_str());
 			return;
 		}
-
-		for(std::string::const_iterator it = msg.getTokens()[1].begin(); it != msg.getTokens()[1].end(); ++it)
+		if(!isChannelKnown(msg.getArgs()[0]))
 		{
-			if((it == msg.getTokens()[1].begin() || *(it - 1) == ',') && std::strchr("&#", *it) == NULL)
-			{
-				logs::report(log_error, "PART, invalid channel name '%s'", msg.getTokens()[1].c_str());
-				return;
-			}
-		}
-
-		channel_it chit;
-		for(chit = _channels.begin(); chit != _channels.end(); ++chit)
-		{
-			if(msg.getTokens()[1] == chit->getName())
-				break;
-		}
-		if(chit == _channels.end())
-		{
-			client->sendCode(ERR_NOSUCHCHANNEL, "NO such channel");
+			client->sendCode(ERR_NOSUCHCHANNEL, msg.getArgs()[0] + " no such channel");
 			return;
 		}
-		if(!chit->removeClient(client))
+		Channel* channel = getChannelByName(msg.getArgs()[0]);
+		if(channel == NULL)
+			logs::report(log_fatal_error, "(KICK), cannot get channel '%s' by name; panic !", channel->getName().c_str());
+		if(!channel->removeClient(client))
 		{
 			client->sendCode(ERR_NOTONCHANNEL, "Not on channel");
 			return;
 		}
 		client->printUserHeader();
-		std::cout << "leaving channel, " << msg.getTokens()[1] << std::endl;
-		if(chit->getNumberOfClients() == 0)
-			logs::report(log_message, "channel '%s' has been destroyed", chit->getName().c_str());
+		std::cout << "leaving channel, " << msg.getArgs()[0] << std::endl;
+		if(channel->getNumberOfClients() == 0)
+		{
+			channel_it it;
+			for(it = _channels.begin(); it < _channels.end(); ++it)
+			{
+				if(it->getName() == msg.getArgs()[0])
+					break;
+			}
+			_channels.erase(it);
+			logs::report(log_message, "channel '%s' has been destroyed", channel->getName().c_str());
+		}
 	}
 
 	void Server::handleJoin(unstd::SharedPtr<class Client> client, const Message& msg)

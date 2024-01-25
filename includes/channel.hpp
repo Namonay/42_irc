@@ -6,7 +6,7 @@
 /*   By: vvaas <vvaas@student.42angouleme.fr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/21 10:34:25 by maldavid          #+#    #+#             */
-/*   Updated: 2024/01/25 21:21:19 by maldavid         ###   ########.fr       */
+/*   Updated: 2024/01/25 23:04:45 by maldavid         ###   ########.fr       */
 /*                                                                            */
 /******************************************************************************/
 
@@ -64,7 +64,7 @@ namespace irc
 		private:
 			std::set<unstd::SharedPtr<Client>, ClientCmp> _clients;
 			std::set<unstd::SharedPtr<Client>, ClientCmp> _operators;
-			const std::string _name;
+			std::string _name;
 			std::string _password;
 			std::string _topic;
 			int  _channel_size;
