@@ -6,7 +6,7 @@
 /*   By: maldavid <kbz_8.dev@akel-engine.com>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/21 11:38:34 by maldavid          #+#    #+#             */
-/*   Updated: 2024/01/25 20:30:51 by maldavid         ###   ########.fr       */
+/*   Updated: 2024/01/25 23:34:47 by maldavid         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -65,7 +65,7 @@ namespace irc
 			else
 			{
 				if((*it)[0] == ':')
-					continue;
+					it->erase(it->begin());
 				_reason.append(*it);
 				_reason.push_back(' ');
 			}
