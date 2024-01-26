@@ -6,7 +6,7 @@
 /*   By: vvaas <vvaas@student.42angouleme.fr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/22 17:31:06 by maldavid          #+#    #+#             */
-/*   Updated: 2024/01/26 02:29:06 by vvaas            ###   ########.fr       */
+/*   Updated: 2024/01/26 02:33:40 by vvaas            ###   ########.fr       */
 /*                                                                            */
 /******************************************************************************/
 
@@ -213,7 +213,7 @@ namespace irc
 					break;
 				}
 			}
-			return ;
+			return;
 		}
 		for(channel_it it = _channels.begin(); it != _channels.end(); ++it)
 		{
