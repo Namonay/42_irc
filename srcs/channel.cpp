@@ -6,7 +6,7 @@
 /*   By: vvaas <vvaas@student.42angouleme.fr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/21 10:36:21 by maldavid          #+#    #+#             */
-/*   Updated: 2024/01/25 22:45:17 by vvaas            ###   ########.fr       */
+/*   Updated: 2024/01/26 02:10:11 by vvaas            ###   ########.fr       */
 /*                                                                            */
 /******************************************************************************/
 
@@ -21,7 +21,7 @@ namespace irc
 	typedef std::set<unstd::SharedPtr<Client> >::iterator client_it;
 	typedef std::set<unstd::SharedPtr<Client> >::const_iterator client_const_it;
 
-	Channel::Channel(const std::string& name) : _name(name), _channel_size(-1), _topic_op_restrict(false) {}
+	Channel::Channel(const std::string& name) : _name(name), _channel_size(-1), _invite_only(false), _topic_op_restrict(false) {}
 
 	void Channel::addClient(unstd::SharedPtr<Client> client, bool op)
 	{
@@ -98,7 +98,22 @@ namespace irc
 		}
 	}
 
-	void Channel::showModes(void) const
+	void Channel::showModesModify(unstd::SharedPtr<Client> client, const Message& msg) const
+	{
+		std::vector<std::string> mode = msg.getArgs();
+		std::string modes;
+		std::string out = "MODE ";
+		
+		for (std::vector<std::string>::iterator it = mode.begin() + 1; it != mode.end(); ++it)
+		{
+			modes += *it;
+			modes += " ";
+		}
+		out += getName();
+		for(client_it it = _clients.begin(); it != _clients.end(); ++it)
+			const_cast<unstd::SharedPtr<irc::Client>&>(*it)->sendMsg(client->getNickName(), out, modes);
+	}
+	void Channel::showModes(unstd::SharedPtr<Client> client)
 	{
 		std::string modes = "+";
 
@@ -109,14 +124,9 @@ namespace irc
 		if (_password.size() > 0)
 			modes += 'k';
 		if (_channel_size != -1)
-		{
 			modes += 'l';
-			modes += " " + unstd::toString(_channel_size);
-		}
-		for(client_it it = _clients.begin(); it != _clients.end(); ++it)
-			const_cast<unstd::SharedPtr<irc::Client>&>(*it)->sendCode(RPL_CHANNELMODEIS, modes);
+		client->sendCode(RPL_CHANNELMODEIS, modes);
 	}
-
 	void Channel::changeMode(unstd::SharedPtr<class Client> client, const Message& msg)
 	{
 		bool modevalue = (msg.getTokens()[2][0] != '-');
@@ -159,7 +169,7 @@ namespace irc
 					_channel_size = -1;
 		}
 		logs::report(log_message, "%s MODES : i:%d t:%d k:%s l:%d", getName().c_str(), _invite_only, _topic_op_restrict, _password.c_str(), _channel_size);
-		showModes();
+		showModesModify(client, msg);
 	}
 
 	bool Channel::hasClient(std::string client) const

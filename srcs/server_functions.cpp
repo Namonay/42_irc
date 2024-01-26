@@ -6,7 +6,7 @@
 /*   By: vvaas <vvaas@student.42angouleme.fr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/22 17:31:06 by maldavid          #+#    #+#             */
-/*   Updated: 2024/01/25 23:01:42 by maldavid         ###   ########.fr       */
+/*   Updated: 2024/01/26 02:29:06 by vvaas            ###   ########.fr       */
 /*                                                                            */
 /******************************************************************************/
 
@@ -52,6 +52,8 @@ namespace irc
 		client->printUserHeader();
 		client->setNewNickName(msg.getTokens()[1]);
 		client->sendMsg(oldNick, "NICK", msg.getTokens()[1]);
+		if (client->isLogged())
+			client->sendCode(RPL_WELCOME, "Welcome to yipiirc :)\n");
 		std::cout << "new nickname, " << client->getNickName() << std::endl;
 	}
 
@@ -78,7 +80,8 @@ namespace irc
 		if(msg.getTokens()[1] == _password)
 		{
 			client->login();
-			client->sendCode("Welcome to", "yipiirc :)\n");
+			if (client->getNickName().size() != 0)
+				client->sendCode(RPL_WELCOME, "Welcome to yipiirc :)\n");
 		}
 		else
 		{
@@ -395,14 +398,24 @@ namespace irc
 	void Server::handleMode(unstd::SharedPtr<class Client> client, const Message& msg)
 	{
 		logs::report(log_message, "Mode requested");
-		if (msg.getTokens().size() < 3)
+		irc::Channel *chan;
+		if (msg.getTokens().size() < 2)
 			return ;
+		if (msg.getTokens().size() == 2 && (msg.getTokens()[1][0] == '#' || msg.getTokens()[1][0] == '&'))
+		{
+			chan = getChannelByName(msg.getTokens()[1]);
+			if (chan == NULL)
+				client->sendCode(ERR_NOSUCHCHANNEL, "No such channel");
+			else
+				chan->showModes(client);
+			return ;
+		}
 		logs::report(log_message, "Mode parsing ok");
 		channel_it it;
 		for (it = _channels.begin(); it != _channels.end() && it->getName() != msg.getTokens()[1]; ++it);
 		if (it == _channels.end())
 			client->sendCode(ERR_NOSUCHCHANNEL, "No such channel");
-		if (!it->isOp(client))
+		if (getChannelByName(msg.getTokens()[1]) && !it->isOp(client))
 			client->sendCode(ERR_CHANOPRIVSNEEDED, "You need operator privileges to execute this command");
 		if (msg.getTokens()[2][0] != '-' && msg.getTokens()[2][0] != '+')
 			return ;
