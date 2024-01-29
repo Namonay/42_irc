@@ -6,7 +6,7 @@
 /*   By: vvaas <vvaas@student.42angouleme.fr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/22 17:31:06 by maldavid          #+#    #+#             */
-/*   Updated: 2024/01/29 15:13:34 by maldavid         ###   ########.fr       */
+/*   Updated: 2024/01/29 17:03:35 by vvaas            ###   ########.fr       */
 /*                                                                            */
 /******************************************************************************/
 
@@ -335,6 +335,17 @@ namespace irc
 			}
 			client->printUserHeader();
 			std::cout << "kicked " << *user << " from " << *channel << std::endl;
+			if(channel_target->getNumberOfClients() == 0)
+			{
+			channel_it it;
+			for(it = _channels.begin(); it < _channels.end(); ++it)
+			{
+				if(it->getName() == msg.getArgs()[0])
+					break;
+			}
+			_channels.erase(it);
+			logs::report(log_message, "channel '%s' has been destroyed", channel_target->getName().c_str());
+			}
 		}
 	}
 
