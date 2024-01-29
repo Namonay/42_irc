@@ -6,7 +6,7 @@
 /*   By: vvaas <vvaas@student.42angouleme.fr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/22 17:31:06 by maldavid          #+#    #+#             */
-/*   Updated: 2024/01/29 23:18:13 by vvaas            ###   ########.fr       */
+/*   Updated: 2024/01/29 23:26:02 by vvaas            ###   ########.fr       */
 /*                                                                            */
 /******************************************************************************/
 
@@ -211,6 +211,8 @@ namespace irc
 						}
 						complete_msg.erase(complete_msg.begin());
 					}
+					if (complete_msg.empty())
+						client->sendCode(ERR_NOTEXTTOSEND, "No text to send");
 					(*itc)->sendMsg(client->getNickName(), "PRIVMSG " + (*itc)->getNickName(), complete_msg);
 					break;
 				}
