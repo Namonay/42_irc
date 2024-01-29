@@ -6,7 +6,7 @@
 /*   By: vvaas <vvaas@student.42angouleme.fr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/21 10:33:17 by maldavid          #+#    #+#             */
-/*   Updated: 2024/01/26 00:58:20 by vvaas            ###   ########.fr       */
+/*   Updated: 2024/01/29 21:16:38 by vvaas            ###   ########.fr       */
 /*                                                                            */
 /******************************************************************************/
 
@@ -55,6 +55,7 @@ namespace irc
 			void sendCode(const std::string& code, const std::string& msg0, const std::string& msg1);
 			void sendMsg(const std::string& sender, const std::string& cmd, const std::string& trailing);
 			void sendModular(std::string message, ...);
+			void sendCodeInChannel(const std::string& code, const class Channel &chan, const std::string& msg);
 
 			~Client();
 

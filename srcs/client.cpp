@@ -6,7 +6,7 @@
 /*   By: vvaas <vvaas@student.42angouleme.fr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/21 10:35:52 by maldavid          #+#    #+#             */
-/*   Updated: 2024/01/26 02:26:04 by vvaas            ###   ########.fr       */
+/*   Updated: 2024/01/29 21:18:33 by vvaas            ###   ########.fr       */
 /*                                                                            */
 /******************************************************************************/
 
@@ -21,6 +21,7 @@
 #include <cstdlib>
 #include <cstdio>
 #include <vector>
+#include <channel.hpp>
 
 namespace irc
 {
@@ -39,6 +40,16 @@ namespace irc
 	void Client::sendCode(const std::string& code, const std::string& msg0, const std::string& msg1)
 	{
 		const std::string command = code + " " + msg0 + " :"  + msg1 + "\r\n";
+#ifdef DEBUG
+		logs::report(log_message, "sending '%s'", command.c_str());
+#endif
+		if(send(_fd, command.c_str(), command.size(), 0) != static_cast<ssize_t>(command.length()))
+			logs::report(log_error, "server failed to send a code to '%s' (:sadge:)", _username.c_str());
+	}
+
+	void Client::sendCodeInChannel(const std::string& code, const Channel &chan, const std::string& msg)
+	{
+		const std::string command = ":yipirc " + code + " " + getNickName() + " " + chan.getName() + " :"  + msg + "\r\n";
 #ifdef DEBUG
 		logs::report(log_message, "sending '%s'", command.c_str());
 #endif

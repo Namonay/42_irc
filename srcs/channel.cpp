@@ -6,7 +6,7 @@
 /*   By: vvaas <vvaas@student.42angouleme.fr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/21 10:36:21 by maldavid          #+#    #+#             */
-/*   Updated: 2024/01/29 20:16:47 by maldavid         ###   ########.fr       */
+/*   Updated: 2024/01/29 21:08:18 by vvaas            ###   ########.fr       */
 /*                                                                            */
 /******************************************************************************/
 
@@ -166,6 +166,10 @@ namespace irc
 				}
 				if (modevalue)
 					_channel_size = std::atoi(msg.getTokens()[3].c_str());
+				break ;
+			default :
+				client->sendCode(":yipirc " ERR_UNKNOWNMODE " @", getName().c_str(), "Unknown mode");
+				return ;
 		}
 		logs::report(log_message, "%s MODES : i:%d t:%d k:%s l:%d", getName().c_str(), _invite_only, _topic_op_restrict, _password.c_str(), _channel_size);
 		showModesModify(client, msg);

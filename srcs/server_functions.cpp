@@ -6,7 +6,7 @@
 /*   By: vvaas <vvaas@student.42angouleme.fr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/22 17:31:06 by maldavid          #+#    #+#             */
-/*   Updated: 2024/01/29 20:01:48 by vvaas            ###   ########.fr       */
+/*   Updated: 2024/01/29 21:16:00 by vvaas            ###   ########.fr       */
 /*                                                                            */
 /******************************************************************************/
 
@@ -429,7 +429,7 @@ namespace irc
 			return ;
 		}
 		if(!chan->isOp(client))
-			client->sendCode(ERR_CHANOPRIVSNEEDED, "You need operator privileges to execute this command");
+			client->sendCodeInChannel(ERR_CHANOPRIVSNEEDED, *chan, "You need operator privileges to execute this command");
 		if(msg.getTokens()[2][0] != '-' && msg.getTokens()[2][0] != '+')
 			return ;
 		chan->changeMode(client, msg);
