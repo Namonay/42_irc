@@ -6,7 +6,7 @@
 /*   By: vvaas <vvaas@student.42angouleme.fr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/21 10:36:21 by maldavid          #+#    #+#             */
-/*   Updated: 2024/01/29 15:44:32 by maldavid         ###   ########.fr       */
+/*   Updated: 2024/01/29 19:43:33 by maldavid         ###   ########.fr       */
 /*                                                                            */
 /******************************************************************************/
 
@@ -198,8 +198,8 @@ namespace irc
 		if(!hasClient(client))
 			return;
 		if(_topic.empty())
-			return client->sendCode(RPL_NOTOPIC, client->getNickName() + " @ " + _name, " no topic is set");
-		return client->sendCode(RPL_TOPIC " " + _name, _topic);
+			return client->sendCode(":yipirc" RPL_NOTOPIC, client->getNickName() + " " + _name, "no topic is set");
+		return client->sendCode(":yipirc " RPL_TOPIC, client->getNickName() + " " + _name, _topic);
 	}
 
 	bool Channel::isOp(unstd::SharedPtr<Client> client) const
