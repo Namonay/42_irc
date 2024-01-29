@@ -6,7 +6,7 @@
 /*   By: vvaas <vvaas@student.42angouleme.fr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/22 17:31:06 by maldavid          #+#    #+#             */
-/*   Updated: 2024/01/30 00:25:13 by vvaas            ###   ########.fr       */
+/*   Updated: 2024/01/30 00:29:40 by maldavid         ###   ########.fr       */
 /*                                                                            */
 /******************************************************************************/
 
@@ -303,22 +303,21 @@ namespace irc
 			logs::report(log_error, "INVITE, invalid command '%s'", msg.getRawMsg().c_str());
 			return;
 		}
-		Channel* channel_target = getChannelByName(msg.getArgs()[1]);
-		if(channel_target == NULL)
-		{
-			client->sendCode(ERR_NOSUCHCHANNEL, "No such channel");
-			return ;
-		}
+
 		if(!isUserKnown(msg.getArgs()[0]))
 		{
-			client->sendCodeInChannel(ERR_NOSUCHNICK, *channel_target, "No such nick");
+			client->sendCode(ERR_NOSUCHNICK, const_cast<std::string&>(msg.getArgs()[0]) + " no such nick");
 			return;
 		}
 		if(!isChannelKnown(msg.getArgs()[1]))
 		{
-			client->sendCodeInChannel(ERR_NOSUCHCHANNEL, *channel_target, "no such channel");
+			client->sendCode(ERR_NOSUCHCHANNEL, const_cast<std::string&>(msg.getArgs()[1]) + " no such channel");
 			return;
 		}
+
+		Channel* channel_target = getChannelByName(msg.getArgs()[1]);
+		if(channel_target == NULL)
+			logs::report(log_fatal_error, "(INVITE), cannot get channel '%s' by name; panic !", msg.getArgs()[1].c_str());
 
 		unstd::SharedPtr<Client> client_target = getClientByName(msg.getArgs()[0]);
 		if(client_target.get() == NULL)
