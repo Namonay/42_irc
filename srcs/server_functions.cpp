@@ -6,7 +6,7 @@
 /*   By: vvaas <vvaas@student.42angouleme.fr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/22 17:31:06 by maldavid          #+#    #+#             */
-/*   Updated: 2024/01/29 17:06:16 by vvaas            ###   ########.fr       */
+/*   Updated: 2024/01/29 17:12:21 by vvaas            ###   ########.fr       */
 /*                                                                            */
 /******************************************************************************/
 
@@ -409,7 +409,6 @@ namespace irc
 
 	void Server::handleMode(unstd::SharedPtr<class Client> client, const Message& msg)
 	{
-		logs::report(log_message, "Mode requested");
 		irc::Channel *chan;
 		if(msg.getTokens().size() < 2)
 			return ;
@@ -423,14 +422,16 @@ namespace irc
 			return ;
 		}
 		logs::report(log_message, "Mode parsing ok");
-		channel_it it;
-		for(it = _channels.begin(); it != _channels.end() && it->getName() != msg.getTokens()[1]; ++it);
-		if(it == _channels.end())
+		chan = getChannelByName(msg.getTokens()[1]);
+		if(chan == NULL)
+		{
 			client->sendCode(ERR_NOSUCHCHANNEL, "No such channel");
-		if(getChannelByName(msg.getTokens()[1]) && !it->isOp(client))
+			return ;
+		}
+		if(!chan->isOp(client))
 			client->sendCode(ERR_CHANOPRIVSNEEDED, "You need operator privileges to execute this command");
 		if(msg.getTokens()[2][0] != '-' && msg.getTokens()[2][0] != '+')
 			return ;
-		it->changeMode(client, msg);
+		chan->changeMode(client, msg);
 	}
 }

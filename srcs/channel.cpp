@@ -6,7 +6,7 @@
 /*   By: vvaas <vvaas@student.42angouleme.fr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/21 10:36:21 by maldavid          #+#    #+#             */
-/*   Updated: 2024/01/29 19:43:33 by maldavid         ###   ########.fr       */
+/*   Updated: 2024/01/29 19:57:34 by vvaas            ###   ########.fr       */
 /*                                                                            */
 /******************************************************************************/
 
@@ -43,20 +43,16 @@ namespace irc
 		for (it = _clients.begin(); it != _clients.end(); ++it)
 		{
 			if (const_cast<unstd::SharedPtr<irc::Client>&>(*it)->getNickName() == clientname)
-				_operators.insert(const_cast<unstd::SharedPtr<irc::Client>&>(*it));
+			{
+				if (mode)
+					_operators.insert(const_cast<unstd::SharedPtr<irc::Client>&>(*it));
+				else 
+					_operators.erase(const_cast<unstd::SharedPtr<irc::Client>&>(*it));
+				break ;
+			}
 		}
 		if (it == _clients.end())
 			client->sendCode(ERR_USERNOTINCHANNEL, "User not in channel");
-		else
-		{
-			std::string out;
-			if (mode)
-				out = clientname + ": +o";
-			else
-				out = clientname + ": -o";
-			for (it = _clients.begin(); it != _clients.end(); ++it)
-				const_cast<unstd::SharedPtr<irc::Client>&>(*it)->sendMsg(client->getNickName(), "MODE", out);
-		}
 	}
 
 	bool Channel::removeClient(unstd::SharedPtr<Client> client)
@@ -125,6 +121,8 @@ namespace irc
 			modes += 'k';
 		if (_channel_size != -1)
 			modes += 'l';
+		if (modes.size() < 2)
+			return ;
 		client->sendCode(RPL_CHANNELMODEIS, modes);
 	}
 	void Channel::changeMode(unstd::SharedPtr<class Client> client, const Message& msg)
@@ -155,18 +153,19 @@ namespace irc
 			case 'o':
 				if (isOp(client) && modevalue)
 					ModOperator(client, msg.getTokens()[3], modevalue);
-				else
+				else if (!isOp(client))
 					client->sendCode(ERR_CHANOPRIVSNEEDED, "You need to be operator to execute this command");
 				break;
 			case 'l':
 				if (msg.getTokens().size() < 3 && modevalue)
 					return ;
-				if (static_cast<int>(getNumberOfClients()) > std::atoi(msg.getTokens()[3].c_str()))
-					return ;
+				if (!modevalue)
+				{
+					_channel_size = -1;
+					break ;
+				}
 				if (modevalue)
 					_channel_size = std::atoi(msg.getTokens()[3].c_str());
-				if (!modevalue)
-					_channel_size = -1;
 		}
 		logs::report(log_message, "%s MODES : i:%d t:%d k:%s l:%d", getName().c_str(), _invite_only, _topic_op_restrict, _password.c_str(), _channel_size);
 		showModesModify(client, msg);
