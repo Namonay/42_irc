@@ -6,7 +6,7 @@
 /*   By: vvaas <vvaas@student.42angouleme.fr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/22 17:31:06 by maldavid          #+#    #+#             */
-/*   Updated: 2024/01/30 00:29:40 by maldavid         ###   ########.fr       */
+/*   Updated: 2024/01/30 00:40:40 by vvaas            ###   ########.fr       */
 /*                                                                            */
 /******************************************************************************/
 
@@ -499,7 +499,13 @@ namespace irc
 		srand(time(NULL));
 
 		if (rand() % 6 == 0)
-			client->kill("Bye Bye Bye");
+		{
+			client->kill("Pew Pew");
+			usleep(100);
+			client->requireDisconnect();
+		}
+		else
+			client->sendModular("%s\n", "Click..");
 	}
 }
 
