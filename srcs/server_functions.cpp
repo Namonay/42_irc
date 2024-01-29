@@ -6,7 +6,7 @@
 /*   By: vvaas <vvaas@student.42angouleme.fr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/22 17:31:06 by maldavid          #+#    #+#             */
-/*   Updated: 2024/01/29 23:16:50 by vvaas            ###   ########.fr       */
+/*   Updated: 2024/01/29 23:18:13 by vvaas            ###   ########.fr       */
 /*                                                                            */
 /******************************************************************************/
 
@@ -293,8 +293,47 @@ namespace irc
 
 	void Server::handleInvite(unstd::SharedPtr<class Client> client, const Message& msg)
 	{
-		(void)client;
-		(void)msg;
+		if(msg.getArgs().empty() || msg.getArgs().size() != 2)
+		{
+			logs::report(log_error, "INVITE, invalid command '%s'", msg.getRawMsg().c_str());
+			return;
+		}
+
+		if(!isUserKnown(msg.getArgs()[0]))
+		{
+			client->sendCode(ERR_NOSUCHNICK, const_cast<std::string&>(msg.getArgs()[0]) + " no such nick");
+			return;
+		}
+		if(!isChannelKnown(msg.getArgs()[1]))
+		{
+			client->sendCode(ERR_NOSUCHCHANNEL, const_cast<std::string&>(msg.getArgs()[1]) + " no such channel");
+			return;
+		}
+
+		Channel* channel_target = getChannelByName(msg.getArgs()[1]);
+		if(channel_target == NULL)
+			logs::report(log_fatal_error, "(INVITE), cannot get channel '%s' by name; panic !", msg.getArgs()[1].c_str());
+		unstd::SharedPtr<Client> client_target = getClientByName(msg.getArgs()[0]);
+		if(client_target.get() == NULL)
+			logs::report(log_fatal_error, "(INVITE), cannot get client '%s' by name; panic !", msg.getArgs()[0].c_str());
+
+		if(!channel_target->hasClient(client))
+		{
+			client->sendCode(ERR_NOTONCHANNEL, msg.getArgs()[0], "you're not on that channel");
+			return;
+		}
+
+		if(channel_target->hasClient(client_target->getNickName()))
+		{
+			client->sendCode(ERR_USERONCHANNEL, msg.getArgs()[0] + ' ' + msg.getArgs()[1], "is already on channel");
+			return;
+		}
+
+		if(channel_target->isInviteOnly() && !channel_target->isOp(client))
+		{
+			client->sendCode(ERR_CHANOPRIVSNEEDED, msg.getArgs()[1], "you're not channel operator");
+			return;
+		}
 	}
 
 	void Server::handleKick(unstd::SharedPtr<class Client> client, const Message& msg)
