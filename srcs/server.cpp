@@ -6,7 +6,7 @@
 /*   By: vvaas <vvaas@student.42angouleme.fr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/21 09:31:17 by maldavid          #+#    #+#             */
-/*   Updated: 2024/01/29 22:10:26 by vvaas            ###   ########.fr       */
+/*   Updated: 2024/01/29 23:09:30 by vvaas            ###   ########.fr       */
 /*                                                                            */
 /******************************************************************************/
 
@@ -67,13 +67,12 @@ namespace irc
 	void Server::handleInput()
 	{
 		char buffer[INPUT_SIZE] = { 0 };
-
+		ssize_t recv_size;
 		for(std::vector<unstd::SharedPtr<Client> >::iterator it = _client.begin(); it != _client.end(); ++it)
 		{
 			if(!FD_ISSET((*it)->getFD(), &_fd_set))
 				continue;
-
-			while(recv((*it)->getFD(), buffer, INPUT_SIZE, 0) > 0) // read() but for socket fd
+			while((recv_size = recv((*it)->getFD(), buffer, INPUT_SIZE, 0)) > 0) // read() but for socket fd
 			{
 				(*it)->newMsgInFlight(buffer);
 			#ifdef DEBUG
@@ -82,8 +81,7 @@ namespace irc
 				while(handleMessage(*it));
 				std::memset(buffer, 0, sizeof(buffer)); // clear the buffer to avoid trash remaining
 			}
-
-			if(recv((*it)->getFD(), buffer, INPUT_SIZE, 0) == 0 || (*it)->disconnectRequired()) // recv return 0 if an user disconnect
+			if(recv_size == 0 || (*it)->disconnectRequired()) // recv return 0 if an user disconnect
 			{
 				logs::report(log_message, "User %d disconnected", (*it)->getID());
 				close((*it)->getFD());

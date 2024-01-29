@@ -6,7 +6,7 @@
 /*   By: vvaas <vvaas@student.42angouleme.fr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/21 10:35:52 by maldavid          #+#    #+#             */
-/*   Updated: 2024/01/29 21:18:33 by vvaas            ###   ########.fr       */
+/*   Updated: 2024/01/29 23:10:37 by vvaas            ###   ########.fr       */
 /*                                                                            */
 /******************************************************************************/
 
@@ -119,11 +119,22 @@ namespace irc
 	std::string Client::getNextMsg()
 	{
 		std::size_t finder = _msg_in_flight.find("\r\n");
-		if(finder == std::string::npos)
-			logs::report(log_fatal_error, "client %d [getNextMsg()] : cannot get any other message, panic !", _id);
-		std::string msg = _msg_in_flight.substr(0, finder);
-		_msg_in_flight = _msg_in_flight.substr(finder + 2);
-		return msg;
+		if(finder != std::string::npos)
+		{
+			std::string msg = _msg_in_flight.substr(0, finder);
+			_msg_in_flight = _msg_in_flight.substr(finder + 2);
+			return msg;
+		}
+		finder = _msg_in_flight.find("\n");
+		if(finder != std::string::npos)
+		{
+			std::string msg = _msg_in_flight.substr(0, finder);
+			_msg_in_flight = _msg_in_flight.substr(finder + 1);
+			return msg;
+		}
+		logs::report(log_warning, "Incomplete data type");
+		_msg_in_flight.clear();
+		return (std::string());
 	}
 
 	Client::~Client() {}

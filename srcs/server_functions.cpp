@@ -6,7 +6,7 @@
 /*   By: vvaas <vvaas@student.42angouleme.fr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/22 17:31:06 by maldavid          #+#    #+#             */
-/*   Updated: 2024/01/29 21:32:24 by vvaas            ###   ########.fr       */
+/*   Updated: 2024/01/29 23:16:50 by vvaas            ###   ########.fr       */
 /*                                                                            */
 /******************************************************************************/
 
@@ -221,6 +221,11 @@ namespace irc
 		{
 			if(msg.getTokens()[1] == it->getName())
 			{
+				if (!it->hasClient(client))
+				{
+					client->sendCode(ERR_CANNOTSENDTOCHAN, "You are not in the channel");
+					return ;
+				}
 				std::string complete_msg;
 				if(msg.getTokens().size() > 2)
 				{
