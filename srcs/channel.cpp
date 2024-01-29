@@ -6,7 +6,7 @@
 /*   By: vvaas <vvaas@student.42angouleme.fr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/21 10:36:21 by maldavid          #+#    #+#             */
-/*   Updated: 2024/01/26 02:10:11 by vvaas            ###   ########.fr       */
+/*   Updated: 2024/01/29 15:44:32 by maldavid         ###   ########.fr       */
 /*                                                                            */
 /******************************************************************************/
 
@@ -75,9 +75,9 @@ namespace irc
 	{
 		std::string clientlist(":yipirc " RPL_NAMREPLY " " + client->getNickName() + " @ " + getName() + " :");
 		
-		for (client_it it = _clients.begin(); it != _clients.end(); ++it)
+		for(client_it it = _clients.begin(); it != _clients.end(); ++it)
 		{
-			if (isOp(const_cast<unstd::SharedPtr<irc::Client>&>(*it)))
+			if(isOp(const_cast<unstd::SharedPtr<irc::Client>&>(*it)))
 				clientlist += '@';
 			clientlist += const_cast<unstd::SharedPtr<irc::Client>&>(*it)->getNickName() + ' ';
 		}
@@ -198,7 +198,7 @@ namespace irc
 		if(!hasClient(client))
 			return;
 		if(_topic.empty())
-			return client->sendCode(RPL_NOTOPIC " " + _name, " no topic is set");
+			return client->sendCode(RPL_NOTOPIC, client->getNickName() + " @ " + _name, " no topic is set");
 		return client->sendCode(RPL_TOPIC " " + _name, _topic);
 	}
 
