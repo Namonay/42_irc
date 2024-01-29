@@ -6,7 +6,7 @@
 /*   By: vvaas <vvaas@student.42angouleme.fr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/21 09:31:17 by maldavid          #+#    #+#             */
-/*   Updated: 2024/01/29 23:09:30 by vvaas            ###   ########.fr       */
+/*   Updated: 2024/01/29 23:27:51 by maldavid         ###   ########.fr       */
 /*                                                                            */
 /******************************************************************************/
 
@@ -150,7 +150,7 @@ namespace irc
 		else if(msg.getCmd() == "JOIN")
 			handleJoin(client, msg);
 		else if(msg.getCmd() == "INVITE")
-			handlePrivMsg(client, msg);
+			handleInvite(client, msg);
 		else if(msg.getCmd() == "PRIVMSG")
 			handlePrivMsg(client, msg);
 		else if(msg.getCmd() == "NOTICE")

@@ -6,7 +6,7 @@
 /*   By: vvaas <vvaas@student.42angouleme.fr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/22 17:31:06 by maldavid          #+#    #+#             */
-/*   Updated: 2024/01/29 23:26:02 by vvaas            ###   ########.fr       */
+/*   Updated: 2024/01/29 23:27:39 by maldavid         ###   ########.fr       */
 /*                                                                            */
 /******************************************************************************/
 
@@ -170,17 +170,16 @@ namespace irc
 			logs::report(log_message, "channel '%s' has been created", msg.getTokens()[1].c_str());
 			return ;
 		}
-		if (msg.getTokens().size() == 3 && msg.getTokens()[2] != it->getPassword())
+		if(msg.getTokens().size() == 3 && msg.getTokens()[2] != it->getPassword())
 			client->sendCode(ERR_BADCHANNELKEY, "Invalid password");
-		else if (it->getChannelSize() != -1 && it->getChannelSize() >= static_cast<int>(it->getNumberOfClients()))
+		else if(it->getChannelSize() != -1 && it->getChannelSize() >= static_cast<int>(it->getNumberOfClients()))
 			client->sendCode(ERR_CHANNELISFULL, "Channel is full");
-		else if (it->getPassword().size() == 0)
+		else if(it->isInviteOnly() && !client->hasBeenInvitedTo(it->getName()))
+			client->sendCode(ERR_INVITEONLYCHAN, "channel is invite only and you have not been invited u looser");
+		else if(it->getPassword().size() == 0)
 			it->addClient(client);
-		else if (it->getPassword().size() > 0 && msg.getTokens()[2] == it->getPassword())
+		else if(it->getPassword().size() > 0 && msg.getTokens()[2] == it->getPassword())
 			it->addClient(client);
-	
-		// client->printUserHeader();
-		// std::cout << "joining new channel, " << msg.getTokens()[1] << std::endl;
 	}
 
 	void Server::handlePrivMsg(unstd::SharedPtr<class Client> client, const Message& msg)
@@ -336,6 +335,10 @@ namespace irc
 			client->sendCode(ERR_CHANOPRIVSNEEDED, msg.getArgs()[1], "you're not channel operator");
 			return;
 		}
+
+		client_target->inviteToChannel(channel_target->getName());
+		client_target->sendMsg(client->getNickName(), "INVITE " + msg.getArgs()[0] + ' ' + msg.getArgs()[1], "");
+		client->sendCode(RPL_INVITING, msg.getArgs()[1] + ' ' + msg.getArgs()[0], "");
 	}
 
 	void Server::handleKick(unstd::SharedPtr<class Client> client, const Message& msg)
