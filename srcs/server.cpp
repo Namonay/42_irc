@@ -6,7 +6,7 @@
 /*   By: vvaas <vvaas@student.42angouleme.fr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/21 09:31:17 by maldavid          #+#    #+#             */
-/*   Updated: 2024/01/29 23:27:51 by maldavid         ###   ########.fr       */
+/*   Updated: 2024/01/30 00:17:49 by vvaas            ###   ########.fr       */
 /*                                                                            */
 /******************************************************************************/
 
@@ -163,6 +163,8 @@ namespace irc
 			handlePing(client, msg);
 		else if(msg.getCmd() == "MODE")
 			handleMode(client, msg);
+		else if(msg.getCmd() == "imfeelinglucky")
+			handleRussian(client);
 		return true;
 	}
 

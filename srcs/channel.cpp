@@ -6,7 +6,7 @@
 /*   By: vvaas <vvaas@student.42angouleme.fr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/21 10:36:21 by maldavid          #+#    #+#             */
-/*   Updated: 2024/01/29 22:08:11 by vvaas            ###   ########.fr       */
+/*   Updated: 2024/01/29 23:47:14 by vvaas            ###   ########.fr       */
 /*                                                                            */
 /******************************************************************************/
 
@@ -127,7 +127,7 @@ namespace irc
 	}
 	void Channel::showModes(unstd::SharedPtr<Client> client)
 	{
-		std::string modes = "+";
+		std::string modes = " +";
 
 		if (_invite_only)
 			modes += 'i';
@@ -137,7 +137,7 @@ namespace irc
 			modes += 'k';
 		if (_channel_size != -1)
 			modes += 'l';
-		if (modes.size() < 2)
+		if (modes.size() <= 2)
 			return ;
 		client->sendCode(RPL_CHANNELMODEIS, modes);
 	}

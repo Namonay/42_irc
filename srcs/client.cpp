@@ -6,7 +6,7 @@
 /*   By: vvaas <vvaas@student.42angouleme.fr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/21 10:35:52 by maldavid          #+#    #+#             */
-/*   Updated: 2024/01/29 23:27:33 by maldavid         ###   ########.fr       */
+/*   Updated: 2024/01/30 00:10:23 by vvaas            ###   ########.fr       */
 /*                                                                            */
 /******************************************************************************/
 
@@ -135,6 +135,11 @@ namespace irc
 		logs::report(log_warning, "Incomplete data type");
 		_msg_in_flight.clear();
 		return (std::string());
+	}
+
+	void Client::kill(const std::string& reason)
+	{
+		sendMsg("yipirc", "KILL", reason);
 	}
 
 	Client::~Client() {}

@@ -6,7 +6,7 @@
 /*   By: vvaas <vvaas@student.42angouleme.fr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/22 17:31:06 by maldavid          #+#    #+#             */
-/*   Updated: 2024/01/29 23:27:39 by maldavid         ###   ########.fr       */
+/*   Updated: 2024/01/30 00:25:13 by vvaas            ###   ########.fr       */
 /*                                                                            */
 /******************************************************************************/
 
@@ -23,6 +23,8 @@
 #include <irc.hpp>
 #include <cstring>
 #include <unstd/string.hpp>
+#include <cstdlib>
+#include <ctime>
 
 namespace irc
 {
@@ -44,7 +46,9 @@ namespace irc
 		{
 			if((*it)->getNickName() == nickname)
 			{
-				client->sendCode(ERR_NICKCOLLISION, "Nickname is used");
+				client->sendCode(ERR_NICKCOLLISION, nickname + " Nickname is used");
+				client->kill("Nickname already used");
+				client->requireDisconnect();
 				return;
 			}
 		}
@@ -170,7 +174,7 @@ namespace irc
 			logs::report(log_message, "channel '%s' has been created", msg.getTokens()[1].c_str());
 			return ;
 		}
-		if(msg.getTokens().size() == 3 && msg.getTokens()[2] != it->getPassword())
+		if((msg.getTokens().size() == 3 && msg.getTokens()[2] != it->getPassword()) || (msg.getTokens().size() == 2 && it->getPassword().size() > 0))
 			client->sendCode(ERR_BADCHANNELKEY, "Invalid password");
 		else if(it->getChannelSize() != -1 && it->getChannelSize() >= static_cast<int>(it->getNumberOfClients()))
 			client->sendCode(ERR_CHANNELISFULL, "Channel is full");
@@ -178,7 +182,7 @@ namespace irc
 			client->sendCode(ERR_INVITEONLYCHAN, "channel is invite only and you have not been invited u looser");
 		else if(it->getPassword().size() == 0)
 			it->addClient(client);
-		else if(it->getPassword().size() > 0 && msg.getTokens()[2] == it->getPassword())
+		else if(msg.getTokens().size() == 3 && it->getPassword().size() > 0 && msg.getTokens()[2] == it->getPassword())
 			it->addClient(client);
 	}
 
@@ -299,28 +303,30 @@ namespace irc
 			logs::report(log_error, "INVITE, invalid command '%s'", msg.getRawMsg().c_str());
 			return;
 		}
-
+		Channel* channel_target = getChannelByName(msg.getArgs()[1]);
+		if(channel_target == NULL)
+		{
+			client->sendCode(ERR_NOSUCHCHANNEL, "No such channel");
+			return ;
+		}
 		if(!isUserKnown(msg.getArgs()[0]))
 		{
-			client->sendCode(ERR_NOSUCHNICK, const_cast<std::string&>(msg.getArgs()[0]) + " no such nick");
+			client->sendCodeInChannel(ERR_NOSUCHNICK, *channel_target, "No such nick");
 			return;
 		}
 		if(!isChannelKnown(msg.getArgs()[1]))
 		{
-			client->sendCode(ERR_NOSUCHCHANNEL, const_cast<std::string&>(msg.getArgs()[1]) + " no such channel");
+			client->sendCodeInChannel(ERR_NOSUCHCHANNEL, *channel_target, "no such channel");
 			return;
 		}
 
-		Channel* channel_target = getChannelByName(msg.getArgs()[1]);
-		if(channel_target == NULL)
-			logs::report(log_fatal_error, "(INVITE), cannot get channel '%s' by name; panic !", msg.getArgs()[1].c_str());
 		unstd::SharedPtr<Client> client_target = getClientByName(msg.getArgs()[0]);
 		if(client_target.get() == NULL)
 			logs::report(log_fatal_error, "(INVITE), cannot get client '%s' by name; panic !", msg.getArgs()[0].c_str());
 
 		if(!channel_target->hasClient(client))
 		{
-			client->sendCode(ERR_NOTONCHANNEL, msg.getArgs()[0], "you're not on that channel");
+			logs::report(log_fatal_error, "(INVITE), cannot get channel '%s' by name; panic !", msg.getArgs()[1].c_str());
 			return;
 		}
 
@@ -488,4 +494,13 @@ namespace irc
 			return ;
 		chan->changeMode(client, msg);
 	}
+
+	void Server::handleRussian(unstd::SharedPtr<class Client> client)
+	{
+		srand(time(NULL));
+
+		if (rand() % 6 == 0)
+			client->kill("Bye Bye Bye");
+	}
 }
+

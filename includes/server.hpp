@@ -6,7 +6,7 @@
 /*   By: vvaas <vvaas@student.42angouleme.fr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/21 09:12:28 by maldavid          #+#    #+#             */
-/*   Updated: 2024/01/26 00:42:56 by vvaas            ###   ########.fr       */
+/*   Updated: 2024/01/30 00:24:49 by vvaas            ###   ########.fr       */
 /*                                                                            */
 /******************************************************************************/
 
@@ -62,6 +62,7 @@ namespace irc
 			void handleTopic(unstd::SharedPtr<class Client> client, const class Message& msg);
 			void handlePing(unstd::SharedPtr<class Client> client, const class Message& msg);
 			void handleMode(unstd::SharedPtr<class Client> client, const class Message& msg);
+			void handleRussian(unstd::SharedPtr<class Client> client);
 
 			class Channel* getChannelByName(const std::string& name);
 			unstd::SharedPtr<class Client> getClientByName(const std::string& name);
