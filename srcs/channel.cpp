@@ -6,7 +6,7 @@
 /*   By: vvaas <vvaas@student.42angouleme.fr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/21 10:36:21 by maldavid          #+#    #+#             */
-/*   Updated: 2024/01/29 19:57:34 by vvaas            ###   ########.fr       */
+/*   Updated: 2024/01/29 20:10:28 by vvaas            ###   ########.fr       */
 /*                                                                            */
 /******************************************************************************/
 
@@ -189,16 +189,24 @@ namespace irc
 			return;
 		}
 		_topic = new_topic;
-		relayTopic(client);
+		relayTopic(client, true);
 	}
 
-	void Channel::relayTopic(unstd::SharedPtr<Client> client)
+	void Channel::relayTopic(unstd::SharedPtr<Client> client, bool broadcast)
 	{
 		if(!hasClient(client))
 			return;
 		if(_topic.empty())
-			return client->sendCode(":yipirc" RPL_NOTOPIC, client->getNickName() + " " + _name, "no topic is set");
-		return client->sendCode(":yipirc " RPL_TOPIC, client->getNickName() + " " + _name, _topic);
+		{
+			if (!broadcast)
+				return (client->sendCode(":yipirc " RPL_NOTOPIC, client->getNickName() + " " + _name, "no topic is set"));
+			for (client_it it = _clients.begin(); it != _clients.end(); ++ it)
+				const_cast<unstd::SharedPtr<irc::Client>&>(*it)->sendCode(":yipirc " RPL_NOTOPIC, client->getNickName() + " " + _name, "no topic is set");
+		}
+		if (!broadcast)
+			return (client->sendCode(":yipirc " RPL_TOPIC, client->getNickName() + " " + _name, _topic));
+		for (client_it it = _clients.begin(); it != _clients.end(); ++ it)
+				const_cast<unstd::SharedPtr<irc::Client>&>(*it)->sendCode(":yipirc " RPL_TOPIC, client->getNickName() + " " + _name, _topic);
 	}
 
 	bool Channel::isOp(unstd::SharedPtr<Client> client) const
