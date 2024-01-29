@@ -6,7 +6,7 @@
 /*   By: vvaas <vvaas@student.42angouleme.fr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/22 17:31:06 by maldavid          #+#    #+#             */
-/*   Updated: 2024/01/29 21:16:00 by vvaas            ###   ########.fr       */
+/*   Updated: 2024/01/29 21:32:24 by vvaas            ###   ########.fr       */
 /*                                                                            */
 /******************************************************************************/
 
@@ -52,8 +52,9 @@ namespace irc
 		client->printUserHeader();
 		client->setNewNickName(msg.getTokens()[1]);
 		client->sendMsg(oldNick, "NICK", msg.getTokens()[1]);
+		std::string welcome_msg = "Welcome to yipirc :), " + client->getNickName();
 		if (client->isLogged())
-			client->sendCode(RPL_WELCOME, "Welcome to yipiirc :)\n");
+			client->sendCode(RPL_WELCOME, welcome_msg);
 		std::cout << "new nickname, " << client->getNickName() << std::endl;
 	}
 
@@ -75,13 +76,14 @@ namespace irc
 
 	void Server::handlePass(unstd::SharedPtr<class Client> client, const Message& msg)
 	{
+		std::string welcome_msg = "Welcone to yipirc :), " + client->getNickName();
 		if(client->isLogged())
 			return;
 		if(msg.getTokens()[1] == _password)
 		{
 			client->login();
 			if (client->getNickName().size() != 0)
-				client->sendCode(RPL_WELCOME, "Welcome to yipiirc :)\n");
+				client->sendCode(RPL_WELCOME, welcome_msg);
 		}
 		else
 		{
@@ -429,7 +431,10 @@ namespace irc
 			return ;
 		}
 		if(!chan->isOp(client))
+		{
 			client->sendCodeInChannel(ERR_CHANOPRIVSNEEDED, *chan, "You need operator privileges to execute this command");
+			return ;
+		}
 		if(msg.getTokens()[2][0] != '-' && msg.getTokens()[2][0] != '+')
 			return ;
 		chan->changeMode(client, msg);

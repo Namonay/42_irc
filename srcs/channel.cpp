@@ -6,7 +6,7 @@
 /*   By: vvaas <vvaas@student.42angouleme.fr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/21 10:36:21 by maldavid          #+#    #+#             */
-/*   Updated: 2024/01/29 21:08:18 by vvaas            ###   ########.fr       */
+/*   Updated: 2024/01/29 22:08:11 by vvaas            ###   ########.fr       */
 /*                                                                            */
 /******************************************************************************/
 
@@ -40,19 +40,35 @@ namespace irc
 	void Channel::ModOperator(unstd::SharedPtr<class Client> client, const std::string &clientname, bool mode)
 	{
 		client_it it;
-		for (it = _clients.begin(); it != _clients.end(); ++it)
+		logs::report(log_message, "mode operator, mode = %d", mode);
+		if (mode)
 		{
-			if (const_cast<unstd::SharedPtr<irc::Client>&>(*it)->getNickName() == clientname)
+			for (it = _clients.begin(); it != _clients.end(); ++it)
 			{
-				if (mode)
+				if (const_cast<unstd::SharedPtr<irc::Client>&>(*it)->getNickName() == clientname)
+				{
 					_operators.insert(const_cast<unstd::SharedPtr<irc::Client>&>(*it));
-				else 
-					_operators.erase(const_cast<unstd::SharedPtr<irc::Client>&>(*it));
-				break ;
+					break ;
+				}
 			}
+			if (it == _clients.end())
+				client->sendCode(ERR_USERNOTINCHANNEL, "User not in channel");
 		}
-		if (it == _clients.end())
-			client->sendCode(ERR_USERNOTINCHANNEL, "User not in channel");
+		else
+		{
+			for (it = _operators.begin(); it != _operators.end(); ++it)
+			{
+				logs::report(log_message, "nickname %s, clientname : %s", const_cast<unstd::SharedPtr<irc::Client>&>(*it)->getNickName().c_str(), clientname.c_str());
+				if (const_cast<unstd::SharedPtr<irc::Client>&>(*it)->getNickName() == clientname)
+				{
+					logs::report(log_message, "found %s to erase", const_cast<unstd::SharedPtr<irc::Client>&>(*it)->getNickName().c_str());
+					_operators.erase(it);
+					break;
+				}
+			}
+			if (it == _operators.end())
+				client->sendCode(ERR_USERNOTINCHANNEL, "User not in channel");
+		}
 	}
 
 	bool Channel::removeClient(unstd::SharedPtr<Client> client)
@@ -151,7 +167,7 @@ namespace irc
 				}
 				break;
 			case 'o':
-				if (isOp(client) && modevalue)
+				if (isOp(client))
 					ModOperator(client, msg.getTokens()[3], modevalue);
 				else if (!isOp(client))
 					client->sendCode(ERR_CHANOPRIVSNEEDED, "You need to be operator to execute this command");
@@ -232,12 +248,12 @@ namespace irc
 		}
 		if(!hasClient(target))
 		{
-			op->sendCode(ERR_USERNOTINCHANNEL, const_cast<std::string&>(target->getNickName()) + ' ' + _name + "  they aren't on that channel");
+			op->sendCodeInChannel(ERR_USERNOTINCHANNEL, *this, "they aren't on that channel");
 			return false;
 		}
 		if(!isOp(op))
 		{
-			op->sendCode(ERR_CHANOPRIVSNEEDED, const_cast<std::string&>(_name) + " you're not channel operator");
+			op->sendCodeInChannel(ERR_CHANOPRIVSNEEDED, *this, "you're not channel operator");
 			return false;
 		}
 		for(client_it it = _clients.begin(); it != _clients.end(); ++it)
