@@ -6,7 +6,7 @@
 /*   By: vvaas <vvaas@student.42angouleme.fr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/22 17:31:06 by maldavid          #+#    #+#             */
-/*   Updated: 2024/01/30 20:21:11 by maldavid         ###   ########.fr       */
+/*   Updated: 2024/01/30 20:46:24 by vvaas            ###   ########.fr       */
 /*                                                                            */
 /******************************************************************************/
 
@@ -197,7 +197,7 @@ namespace irc
 		else if(it->getChannelSize() != -1 && it->getChannelSize() >= static_cast<int>(it->getNumberOfClients()))
 			client->sendCode(ERR_CHANNELISFULL, "Channel is full");
 		else if(it->isInviteOnly() && !client->hasBeenInvitedTo(it->getName()))
-			client->sendCode(ERR_INVITEONLYCHAN, "channel is invite only and you have not been invited u looser");
+			client->sendCode(ERR_INVITEONLYCHAN, it->getName());
 		else if(it->getPassword().size() == 0)
 			it->addClient(client);
 		else if(msg.getTokens().size() == 3 && it->getPassword().size() > 0 && msg.getTokens()[2] == it->getPassword())
@@ -495,7 +495,6 @@ namespace irc
 				chan->showModes(client);
 			return ;
 		}
-		logs::report(log_message, "Mode parsing ok");
 		chan = getChannelByName(msg.getTokens()[1]);
 		if(chan == NULL)
 		{
@@ -508,7 +507,10 @@ namespace irc
 			return ;
 		}
 		if(msg.getTokens()[2][0] != '-' && msg.getTokens()[2][0] != '+')
+		{
+			client->sendCode(ERR_UNKNOWNMODE, "MODE : Invalid flags (missing +/-)");
 			return ;
+		}
 		chan->changeMode(client, msg);
 	}
 
