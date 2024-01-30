@@ -6,7 +6,11 @@
 /*   By: vvaas <vvaas@student.42angouleme.fr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/21 09:31:17 by maldavid          #+#    #+#             */
+<<<<<<< Updated upstream
 /*   Updated: 2024/01/30 20:58:31 by maldavid         ###   ########.fr       */
+=======
+/*   Updated: 2024/01/30 20:27:37 by vvaas            ###   ########.fr       */
+>>>>>>> Stashed changes
 /*                                                                            */
 /******************************************************************************/
 
@@ -28,8 +32,13 @@ namespace irc
 	typedef std::vector<Channel>::iterator channel_it;
 	typedef std::vector<Channel>::const_iterator channel_const_it;
 
-	Server::Server(int port, const std::string& password) : _s_len(sizeof(_s_data)), _password(password), _port(port), _active(true)
+	Server::Server(int port, const std::string& password) : _s_len(sizeof(_s_data)), _password(password), _port(port), _main_socket(NULL_SOCKET), _active(true)
 	{
+		if (password.empty() || password.find_first_of(" \t\r\v") != std::string::npos)
+		{
+			logs::report(log_error, "Password is invalid !");
+			return ;
+		}
 		std::memset(&_s_data, 0, sizeof(sockaddr));
 		initSocket();
 	}
@@ -108,6 +117,8 @@ namespace irc
 		int i = 0;
 		socklen_t len = sizeof(sockaddr_in);
 
+		if (_main_socket == NULL_SOCKET)
+			return ;
 		while(_active)
 		{
 			FD_ZERO(&_fd_set);
