@@ -6,11 +6,7 @@
 /*   By: vvaas <vvaas@student.42angouleme.fr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/22 17:31:06 by maldavid          #+#    #+#             */
-<<<<<<< Updated upstream
-/*   Updated: 2024/01/30 21:01:20 by maldavid         ###   ########.fr       */
-=======
-/*   Updated: 2024/01/30 20:39:22 by vvaas            ###   ########.fr       */
->>>>>>> Stashed changes
+/*   Updated: 2024/01/30 21:05:17 by maldavid         ###   ########.fr       */
 /*                                                                            */
 /******************************************************************************/
 

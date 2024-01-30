@@ -6,11 +6,7 @@
 /*   By: vvaas <vvaas@student.42angouleme.fr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/21 10:36:21 by maldavid          #+#    #+#             */
-<<<<<<< Updated upstream
-/*   Updated: 2024/01/30 21:01:06 by maldavid         ###   ########.fr       */
-=======
-/*   Updated: 2024/01/30 20:39:37 by vvaas            ###   ########.fr       */
->>>>>>> Stashed changes
+/*   Updated: 2024/01/30 21:06:03 by maldavid         ###   ########.fr       */
 /*                                                                            */
 /******************************************************************************/
 
@@ -75,18 +71,13 @@ namespace irc
 			client->sendCode(ERR_USERNOTINCHANNEL, "User not in channel");
 	}
 
-<<<<<<< Updated upstream
 	bool Channel::removeClient(unstd::SharedPtr<Client> client, const std::string& reason, bool quit)
-=======
-	bool Channel::removeClient(unstd::SharedPtr<Client> client)
->>>>>>> Stashed changes
 	{
 		if(!_clients.erase(client))
 			return (false);
 		if(isOp(client))
 			_operators.erase(client);
 		for(client_it it = _clients.begin(); it != _clients.end(); ++it)
-<<<<<<< Updated upstream
 		{
 			if(!quit)
 				const_cast<unstd::SharedPtr<irc::Client>&>(*it)->sendMsg(client->getNickName(), "PART", _name + ' ' + reason);
@@ -96,11 +87,6 @@ namespace irc
 		if(!quit)
 			client->sendMsg(client->getNickName(), "PART", _name + ' ' + reason);
 		return true;
-=======
-			const_cast<unstd::SharedPtr<irc::Client>&>(*it)->sendMsg(client->getNickName(), "PART", _name);
-		client->sendMsg(client->getNickName(), "PART", _name);
-		return (true);
->>>>>>> Stashed changes
 	}
 
 	void Channel::sendWho(unstd::SharedPtr<Client> client)
