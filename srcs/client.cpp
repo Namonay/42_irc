@@ -6,7 +6,7 @@
 /*   By: vvaas <vvaas@student.42angouleme.fr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/21 10:35:52 by maldavid          #+#    #+#             */
-/*   Updated: 2024/01/30 00:39:39 by vvaas            ###   ########.fr       */
+/*   Updated: 2024/01/30 01:41:49 by vvaas            ###   ########.fr       */
 /*                                                                            */
 /******************************************************************************/
 
@@ -25,7 +25,7 @@
 
 namespace irc
 {
-	Client::Client(int fd, sockaddr_in sock, int id) : _s_data(sock), _fd(fd), _id(id), _logged(false), _disconnect_required(false) {}
+	Client::Client(int fd, sockaddr_in sock, int id) : _s_data(sock), _fd(fd), _id(id), _welcomed(false), _logged(false), _registered(false), _disconnect_required(false) {}
 
 	void Client::sendCode(const std::string& code, const std::string& msg)
 	{

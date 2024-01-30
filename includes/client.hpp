@@ -6,7 +6,7 @@
 /*   By: vvaas <vvaas@student.42angouleme.fr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/21 10:33:17 by maldavid          #+#    #+#             */
-/*   Updated: 2024/01/30 00:07:07 by vvaas            ###   ########.fr       */
+/*   Updated: 2024/01/30 01:45:23 by vvaas            ###   ########.fr       */
 /*                                                                            */
 /******************************************************************************/
 
@@ -16,6 +16,7 @@
 #include <irc.hpp>
 #include <string>
 #include <set>
+#include <errorscode.hpp>
 
 namespace irc
 {
@@ -38,9 +39,13 @@ namespace irc
 			inline void setNewRealName(const std::string& name) { _realname = name; }
 
 			inline void login() { _logged = true; }
+			inline void register_user() { _registered = true; }
+			inline void welcome() { if (isLogged() && !isWelcomed()) return ; _welcomed = true; sendCode(RPL_WELCOME, "Welcome to yipirc :), " + _nickname); }
 			inline void requireDisconnect() { _disconnect_required = true; }
 
 			inline bool isLogged() const { return _logged; }
+			inline bool isRegistered() const { return _registered; }
+			inline bool isWelcomed() const { return _welcomed; }
 			inline bool disconnectRequired() const { return _disconnect_required; }
 
 			inline const std::string& getNickName() const { return _nickname; }
@@ -72,7 +77,9 @@ namespace irc
 			sockaddr_in _s_data;
 			int _fd;
 			int _id;
+			bool _welcomed;
 			bool _logged;
+			bool _registered;
 			bool _disconnect_required;
 	};
 }

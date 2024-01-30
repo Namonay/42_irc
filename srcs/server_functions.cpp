@@ -6,7 +6,7 @@
 /*   By: vvaas <vvaas@student.42angouleme.fr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/22 17:31:06 by maldavid          #+#    #+#             */
-/*   Updated: 2024/01/30 00:40:40 by vvaas            ###   ########.fr       */
+/*   Updated: 2024/01/30 02:32:17 by vvaas            ###   ########.fr       */
 /*                                                                            */
 /******************************************************************************/
 
@@ -36,6 +36,11 @@ namespace irc
 
 	void Server::handleNick(unstd::SharedPtr<class Client> client, const Message& msg)
 	{
+		if (msg.getTokens().size() < 2)
+		{
+			client->sendCode(ERR_NONICKNAMEGIVEN, "No nickname given");
+			return;
+		}
 		if(msg.getTokens().size() != 2 && msg.getTokens().size() != 3)
 		{
 			logs::report(log_error, "NICK, invalid command '%s'", msg.getRawMsg().c_str());
@@ -55,39 +60,56 @@ namespace irc
 		std::string oldNick = (client->getNickName().size() > 0) ? client->getNickName() : msg.getTokens()[1]; // get nickname before /nick execution inside server (oldNick)
 		client->printUserHeader();
 		client->setNewNickName(msg.getTokens()[1]);
-		client->sendMsg(oldNick, "NICK", msg.getTokens()[1]);
+		for (client_it it = _client.begin(); it != _client.end(); ++it)
+			(*it)->sendMsg(oldNick, "NICK", msg.getTokens()[1]);
 		std::string welcome_msg = "Welcome to yipirc :), " + client->getNickName();
-		if (client->isLogged())
-			client->sendCode(RPL_WELCOME, welcome_msg);
+		client->welcome();
 		std::cout << "new nickname, " << client->getNickName() << std::endl;
 	}
 
 	void Server::handleUser(unstd::SharedPtr<class Client> client, const Message& msg)
 	{
-		if(msg.getTokens().size() != 5)
+		if(msg.getTokens().size() < 5)
 		{
+			client->sendCode(ERR_NEEDMOREPARAMS, "Need more parameters");
 			logs::report(log_error, "USER, invalid command '%s'", msg.getRawMsg().c_str());
 			return;
 		}
+		if (client->isRegistered())
+		{
+			client->sendCode(ERR_ALREADYREGISTRED, "You are already registered");
+			return ;
+		}
+		if (msg.getTokens()[4][0] != ':')
+			return ;
 		client->printUserHeader();
 		client->setNewUserName(msg.getTokens()[1]);
 		std::cout << "new username, " << client->getUserName() << std::endl;
 
 		client->printUserHeader();
-		client->setNewRealName(msg.getTokens()[4]);
+
+		std::string realname;
+		for (std::vector<std::string>::const_iterator it = msg.getTokens().begin() + 4; it != msg.getTokens().end(); ++it)
+		{
+			realname.append(*it);
+			realname.append(" ");
+		}
+		realname.erase(realname.begin());
+		realname.erase(realname.end() - 1);
+		client->setNewRealName(realname);
 		std::cout << "new realname, " << client->getRealName() << std::endl;
+		
 	}
 
 	void Server::handlePass(unstd::SharedPtr<class Client> client, const Message& msg)
 	{
-		std::string welcome_msg = "Welcone to yipirc :), " + client->getNickName();
+		std::string welcome_msg = "Welcome to yipirc :), " + client->getNickName();
 		if(client->isLogged())
 			return;
 		if(msg.getTokens()[1] == _password)
 		{
 			client->login();
-			if (client->getNickName().size() != 0)
-				client->sendCode(RPL_WELCOME, welcome_msg);
+			client->welcome();
 		}
 		else
 		{
