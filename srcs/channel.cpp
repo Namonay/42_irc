@@ -6,7 +6,7 @@
 /*   By: vvaas <vvaas@student.42angouleme.fr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/21 10:36:21 by maldavid          #+#    #+#             */
-/*   Updated: 2024/01/30 17:39:44 by vvaas            ###   ########.fr       */
+/*   Updated: 2024/01/30 18:48:32 by vvaas            ###   ########.fr       */
 /*                                                                            */
 /******************************************************************************/
 
@@ -73,9 +73,9 @@ namespace irc
 
 	bool Channel::removeClient(unstd::SharedPtr<Client> client)
 	{
-		if (!_clients.erase(client))
+		if(!_clients.erase(client))
 			return (false);
-		if (isOp(client))
+		if(isOp(client))
 			_operators.erase(client);
 		for(client_it it = _clients.begin(); it != _clients.end(); ++it)
 			const_cast<unstd::SharedPtr<irc::Client>&>(*it)->sendMsg(client->getNickName(), "PART", _name);
@@ -267,7 +267,7 @@ namespace irc
 		}
 		for(client_it it = _clients.begin(); it != _clients.end(); ++it)
 			const_cast<unstd::SharedPtr<irc::Client>&>(*it)->sendMsg(op->getNickName(), "KICK " + _name + ' ' + target->getNickName(), reason);
-		if (isOp(target))
+		if(isOp(target))
 			_operators.erase(target);
 		_clients.erase(target);
 		return true;
