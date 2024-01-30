@@ -6,7 +6,7 @@
 /*   By: vvaas <vvaas@student.42angouleme.fr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/22 17:31:06 by maldavid          #+#    #+#             */
-/*   Updated: 2024/01/30 02:32:17 by vvaas            ###   ########.fr       */
+/*   Updated: 2024/01/30 16:37:16 by maldavid         ###   ########.fr       */
 /*                                                                            */
 /******************************************************************************/
 
@@ -194,7 +194,7 @@ namespace irc
 			_channels.push_back(Channel(msg.getTokens()[1]));
 			_channels.back().addClient(client, true);
 			logs::report(log_message, "channel '%s' has been created", msg.getTokens()[1].c_str());
-			return ;
+			return;
 		}
 		if((msg.getTokens().size() == 3 && msg.getTokens()[2] != it->getPassword()) || (msg.getTokens().size() == 2 && it->getPassword().size() > 0))
 			client->sendCode(ERR_BADCHANNELKEY, "Invalid password");

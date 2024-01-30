@@ -6,7 +6,7 @@
 /*   By: vvaas <vvaas@student.42angouleme.fr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/21 09:31:17 by maldavid          #+#    #+#             */
-/*   Updated: 2024/01/30 02:41:02 by vvaas            ###   ########.fr       */
+/*   Updated: 2024/01/30 16:49:33 by maldavid         ###   ########.fr       */
 /*                                                                            */
 /******************************************************************************/
 
@@ -118,7 +118,10 @@ namespace irc
 
 			tmp = select(MAX_USERS, &_fd_set, NULL, NULL, NULL); // SELECT blocks till a connection or message is received, and let only those in _fd_set
 			if(tmp < 0 && _main_socket != NULL_SOCKET)
-				logs::report(log_fatal_error, "select fd error");
+			{
+				logs::report(log_error, "select fd error");
+				return;
+			}
 
 			if(FD_ISSET(_main_socket, &_fd_set)) // if it's a new connection
 			{
