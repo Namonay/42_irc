@@ -1,12 +1,12 @@
 /******************************************************************************/
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   bot.hpp                                            :+:      :+:    :+:   */
+/*   Bot.hpp                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: vvaas <vvaas@student.42angouleme.fr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/30 01:54:36 by vvaas             #+#    #+#             */
-/*   Updated: 2024/01/30 17:24:08 by vvaas            ###   ########.fr       */
+/*   Updated: 2024/01/30 18:13:55 by vvaas            ###   ########.fr       */
 /*                                                                            */
 /******************************************************************************/
 
@@ -18,14 +18,15 @@
 #include <vector>
 #include <string>
 
-class bot
+class Bot
 {
 	public:
-		bot();
+		Bot();
 		void init(void);
 		void connect_to_server(void);
 		void handle_response(std::string buffer);
-		~bot();
+		void send_message(const std::string &content);
+		~Bot();
 	private :
 		bool _channel_created;
 		bool _logged;

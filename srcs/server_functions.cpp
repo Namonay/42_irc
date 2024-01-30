@@ -6,7 +6,7 @@
 /*   By: vvaas <vvaas@student.42angouleme.fr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/22 17:31:06 by maldavid          #+#    #+#             */
-/*   Updated: 2024/01/30 17:35:15 by maldavid         ###   ########.fr       */
+/*   Updated: 2024/01/30 18:47:38 by vvaas            ###   ########.fr       */
 /*                                                                            */
 /******************************************************************************/
 
@@ -51,7 +51,8 @@ namespace irc
 		{
 			if ((*it)->getNickName() == nickname)
 			{
-				client->sendCode(ERR_NICKCOLLISION, nickname + " Nickname is used");
+				client->setNewNickName(nickname);
+				client->sendCode(ERR_NICKCOLLISION, "Nickname is used");
 				client->kill("Nickname already used");
 				client->requireDisconnect();
 				return;
@@ -120,9 +121,7 @@ namespace irc
 	{
 		(void)msg;
 		for (channel_it it = _channels.begin(); it != _channels.end(); ++it)
-		{
 			it->removeClient(client);
-		}
 		client->printUserHeader();
 		std::cout << "quit" << std::endl;
 	}

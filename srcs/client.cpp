@@ -6,7 +6,7 @@
 /*   By: vvaas <vvaas@student.42angouleme.fr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/21 10:35:52 by maldavid          #+#    #+#             */
-/*   Updated: 2024/01/30 01:41:49 by vvaas            ###   ########.fr       */
+/*   Updated: 2024/01/30 17:48:31 by vvaas            ###   ########.fr       */
 /*                                                                            */
 /******************************************************************************/
 
@@ -139,7 +139,8 @@ namespace irc
 
 	void Client::kill(const std::string& reason)
 	{
-		sendMsg("yipirc", "KILL", reason);
+		std::string cmd = "KILL " + getNickName();
+		sendMsg("yipirc", cmd, reason);
 	}
 
 	Client::~Client() {}
