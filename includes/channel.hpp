@@ -6,7 +6,7 @@
 /*   By: vvaas <vvaas@student.42angouleme.fr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/21 10:34:25 by maldavid          #+#    #+#             */
-/*   Updated: 2024/01/29 20:04:19 by vvaas            ###   ########.fr       */
+/*   Updated: 2024/01/30 17:23:28 by maldavid         ###   ########.fr       */
 /*                                                                            */
 /******************************************************************************/
 
@@ -42,7 +42,7 @@ namespace irc
 
 			inline std::size_t getNumberOfClients() const { return _clients.size(); }
 			inline int getChannelSize() const { return _channel_size; }
-			void ModOperator(unstd::SharedPtr<class Client> client, const std::string &clientname, bool mode);
+			void modOperator(unstd::SharedPtr<class Client> client, const std::string &clientname, bool mode);
 			inline bool removeOperator(unstd::SharedPtr<Client> op) { return _operators.erase(op); }
 			void changeMode(unstd::SharedPtr<class Client> client, const Message& msg);
 			bool isOp(unstd::SharedPtr<Client> client) const;

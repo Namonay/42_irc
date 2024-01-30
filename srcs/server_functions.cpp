@@ -6,7 +6,7 @@
 /*   By: vvaas <vvaas@student.42angouleme.fr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/22 17:31:06 by maldavid          #+#    #+#             */
-/*   Updated: 2024/01/30 17:15:46 by vvaas            ###   ########.fr       */
+/*   Updated: 2024/01/30 17:35:15 by maldavid         ###   ########.fr       */
 /*                                                                            */
 /******************************************************************************/
 
@@ -60,7 +60,7 @@ namespace irc
 		std::string oldNick = (client->getNickName().size() > 0) ? client->getNickName() : msg.getTokens()[1]; // get nickname before /nick execution inside server (oldNick)
 		client->printUserHeader();
 		client->setNewNickName(msg.getTokens()[1]);
-		for (client_it it = _client.begin(); it != _client.end(); ++it)
+		for(client_it it = _client.begin(); it != _client.end(); ++it)
 			(*it)->sendMsg(oldNick, "NICK", msg.getTokens()[1]);
 		client->welcome();
 		std::cout << "new nickname, " << client->getNickName() << std::endl;
@@ -74,12 +74,12 @@ namespace irc
 			logs::report(log_error, "USER, invalid command '%s'", msg.getRawMsg().c_str());
 			return;
 		}
-		if (client->isRegistered())
+		if(client->isRegistered())
 		{
 			client->sendCode(ERR_ALREADYREGISTRED, "You are already registered");
 			return ;
 		}
-		if (msg.getTokens()[4][0] != ':')
+		if(msg.getTokens()[4][0] != ':')
 			return ;
 		client->printUserHeader();
 		client->setNewUserName(msg.getTokens()[1]);
@@ -88,7 +88,7 @@ namespace irc
 		client->printUserHeader();
 
 		std::string realname;
-		for (std::vector<std::string>::const_iterator it = msg.getTokens().begin() + 4; it != msg.getTokens().end(); ++it)
+		for(std::vector<std::string>::const_iterator it = msg.getTokens().begin() + 4; it != msg.getTokens().end(); ++it)
 		{
 			realname.append(*it);
 			realname.append(" ");

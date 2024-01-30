@@ -6,7 +6,7 @@
 /*   By: vvaas <vvaas@student.42angouleme.fr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/22 09:45:10 by maldavid          #+#    #+#             */
-/*   Updated: 2024/01/30 01:37:03 by vvaas            ###   ########.fr       */
+/*   Updated: 2024/01/30 17:34:11 by maldavid         ###   ########.fr       */
 /*                                                                            */
 /******************************************************************************/
 
@@ -18,4 +18,5 @@
 #define MAX_USERS 20
 #define NULL_SOCKET -1
 #define LEGAL_CHARACTER "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789{}[]\\|^`-_"
+
 #endif
