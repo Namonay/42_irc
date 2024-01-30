@@ -6,7 +6,7 @@
 /*   By: vvaas <vvaas@student.42angouleme.fr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/22 17:31:06 by maldavid          #+#    #+#             */
-/*   Updated: 2024/01/30 18:48:25 by vvaas            ###   ########.fr       */
+/*   Updated: 2024/01/30 18:50:47 by maldavid         ###   ########.fr       */
 /*                                                                            */
 /******************************************************************************/
 
@@ -99,7 +99,6 @@ namespace irc
 		realname.erase(realname.end() - 1);
 		client->setNewRealName(realname);
 		std::cout << "new realname, " << client->getRealName() << std::endl;
-		
 	}
 
 	void Server::handlePass(unstd::SharedPtr<class Client> client, const Message& msg)
@@ -121,7 +120,7 @@ namespace irc
 	void Server::handleQuit(unstd::SharedPtr<class Client> client, const Message& msg)
 	{
 		(void)msg;
-		for (channel_it it = _channels.begin(); it != _channels.end(); ++it)
+		for(channel_it it = _channels.begin(); it != _channels.end(); ++it)
 			it->removeClient(client);
 		client->printUserHeader();
 		std::cout << "quit" << std::endl;
