@@ -6,7 +6,7 @@
 /*   By: vvaas <vvaas@student.42angouleme.fr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/30 01:54:56 by vvaas             #+#    #+#             */
-/*   Updated: 2024/01/30 18:52:24 by maldavid         ###   ########.fr       */
+/*   Updated: 2024/01/30 21:45:18 by vvaas            ###   ########.fr       */
 /*                                                                            */
 /******************************************************************************/
 
@@ -18,8 +18,11 @@
 #include <fcntl.h>
 #include <cstring>
 #include <cstdlib>
+#include <signal.h>
 
-Bot::Bot() : _channel_created(false), _logged(false)
+bool active = true;
+
+Bot::Bot() : _channel_created(false), _logged(false), _fd(-1)
 {}
 
 Bot::~Bot()
@@ -28,7 +31,15 @@ Bot::~Bot()
 		close(_fd);
 }
 
-void Bot::init()
+void signalsHandler(int foo)
+{
+	(void)foo;
+	std::cout << "\b\b  \b\b" << std::flush;
+	irc::logs::report(irc::log_message, "Shutting down...");
+	active = false;
+}
+
+bool Bot::init()
 {
 	_connect_commands.push_back("PASS " PASSWORD "\r\n");
 	_connect_commands.push_back("NICK greg\r\n");
@@ -41,9 +52,18 @@ void Bot::init()
     _serv_addr.sin_port = htons(PORT);
 	_serv_addr.sin_addr.s_addr = inet_addr(IP);
 	if(connect(_fd, (struct sockaddr*)&_serv_addr, sizeof(_serv_addr)) < 0)
-        irc::logs::report(irc::log_fatal_error, "connect error");
+	{
+        irc::logs::report(irc::log_error, "connect error");
+		return (false);
+	}
 	if(fcntl(_fd, F_SETFL, O_NONBLOCK) < 0)
-		irc::logs::report(irc::log_fatal_error, "fcntl() error");
+	{
+        irc::logs::report(irc::log_error, "fcntl error");
+		return (false);
+	}
+	signal(SIGINT, signalsHandler);
+	signal(SIGQUIT, signalsHandler);
+	return (true);
 }
 
 void Bot::send_message(const std::string &content)
@@ -89,7 +109,7 @@ void Bot::connect_to_server()
 		if(recv(_fd, buffer, 1024, 0) > 0)
 			handle_response(buffer);
 	} 
-	while (true)
+	while (active)
 	{
 		if(recv(_fd, buffer, 1024, 0) > 0)
 			handle_response(buffer);

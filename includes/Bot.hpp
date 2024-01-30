@@ -6,7 +6,7 @@
 /*   By: vvaas <vvaas@student.42angouleme.fr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/30 01:54:36 by vvaas             #+#    #+#             */
-/*   Updated: 2024/01/30 18:13:55 by vvaas            ###   ########.fr       */
+/*   Updated: 2024/01/30 21:38:16 by vvaas            ###   ########.fr       */
 /*                                                                            */
 /******************************************************************************/
 
@@ -22,7 +22,7 @@ class Bot
 {
 	public:
 		Bot();
-		void init(void);
+		bool init(void);
 		void connect_to_server(void);
 		void handle_response(std::string buffer);
 		void send_message(const std::string &content);

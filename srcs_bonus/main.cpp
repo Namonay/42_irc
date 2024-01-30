@@ -6,7 +6,7 @@
 /*   By: vvaas <vvaas@student.42angouleme.fr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/29 20:36:23 by vvaas             #+#    #+#             */
-/*   Updated: 2024/01/30 18:48:49 by vvaas            ###   ########.fr       */
+/*   Updated: 2024/01/30 21:39:43 by vvaas            ###   ########.fr       */
 /*                                                                            */
 /******************************************************************************/
 
@@ -16,7 +16,8 @@ int main()
 {
 	Bot greg;
 
-	greg.init();
+	if (!greg.init())
+		return 1;
 	greg.connect_to_server();
 	return 0;
 }
