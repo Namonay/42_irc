@@ -6,7 +6,7 @@
 /*   By: vvaas <vvaas@student.42angouleme.fr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/30 01:54:56 by vvaas             #+#    #+#             */
-/*   Updated: 2024/01/30 02:41:49 by vvaas            ###   ########.fr       */
+/*   Updated: 2024/01/30 17:07:02 by vvaas            ###   ########.fr       */
 /*                                                                            */
 /******************************************************************************/
 
@@ -14,7 +14,9 @@
 #include <logs.hpp>
 #include <string>
 #include <iostream>
-#include <errno.h>
+#include <unistd.h>
+#include <fcntl.h>
+#include <cstring>
 
 bot::bot() {}
 
@@ -33,6 +35,14 @@ void bot::init()
 	_serv_addr.sin_addr.s_addr = inet_addr(IP);
 	if (connect(_fd, (struct sockaddr*)&_serv_addr, sizeof(_serv_addr)) < 0)
         irc::logs::report(irc::log_fatal_error, "connect error");
+	if(fcntl(_fd, F_SETFL, O_NONBLOCK) < 0)
+		irc::logs::report(irc::log_fatal_error, "fcntl() error");
+}
+
+void bot::handle_response(std::string buffer)
+{
+	if (buffer == ":yipirc 001 greg :Welcome to yipirc :), greg\r\n")
+		return ;
 }
 
 void bot::connect_to_server()
@@ -42,10 +52,11 @@ void bot::connect_to_server()
 	{
 		if (send(_fd, (*it).c_str(), (*it).size(), 0) < 0)
 			 irc::logs::report(irc::log_fatal_error, "send error");
-	}
+	} 
 	while (true)
 	{
-		while (recv(_fd, buffer, 1024, 0) < 0)
-		std::cout << buffer << std::endl;
+		if (recv(_fd, buffer, 1024, 0) > 0)
+			handle_response(buffer);
+		std::memset(buffer, 0, sizeof(buffer));
 	}
 }

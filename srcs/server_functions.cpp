@@ -6,7 +6,7 @@
 /*   By: vvaas <vvaas@student.42angouleme.fr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/22 17:31:06 by maldavid          #+#    #+#             */
-/*   Updated: 2024/01/30 02:32:17 by vvaas            ###   ########.fr       */
+/*   Updated: 2024/01/30 16:59:42 by vvaas            ###   ########.fr       */
 /*                                                                            */
 /******************************************************************************/
 
@@ -62,7 +62,6 @@ namespace irc
 		client->setNewNickName(msg.getTokens()[1]);
 		for (client_it it = _client.begin(); it != _client.end(); ++it)
 			(*it)->sendMsg(oldNick, "NICK", msg.getTokens()[1]);
-		std::string welcome_msg = "Welcome to yipirc :), " + client->getNickName();
 		client->welcome();
 		std::cout << "new nickname, " << client->getNickName() << std::endl;
 	}
@@ -103,7 +102,6 @@ namespace irc
 
 	void Server::handlePass(unstd::SharedPtr<class Client> client, const Message& msg)
 	{
-		std::string welcome_msg = "Welcome to yipirc :), " + client->getNickName();
 		if(client->isLogged())
 			return;
 		if(msg.getTokens()[1] == _password)
