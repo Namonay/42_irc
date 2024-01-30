@@ -6,7 +6,7 @@
 /*   By: vvaas <vvaas@student.42angouleme.fr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/20 09:27:04 by maldavid          #+#    #+#             */
-/*   Updated: 2024/01/23 10:23:01 by maldavid         ###   ########.fr       */
+/*   Updated: 2024/01/30 00:43:49 by maldavid         ###   ########.fr       */
 /*                                                                            */
 /******************************************************************************/
 
@@ -18,14 +18,14 @@
 #include <signal.h>
 #include <iostream>
 
-static unstd::SharedPtr<irc::Server> server_ref;
+static irc::Server* serv_ptr = NULL;
 
 void signalsHandler(int foo)
 {
 	(void)foo;
-	if (!server_ref)
+	if(!serv_ptr)
 		return;
-	server_ref->closeMainSocket();
+	serv_ptr->closeMainSocket();
 	std::cout << "\b\b  \b\b" << std::flush;
 	irc::logs::report(irc::log_message, "Shutting down...");
 }
@@ -45,12 +45,12 @@ int main(int ac, char** av)
 	if(errno == ERANGE || *end != 0 || port < 0 || port > 0xFFFF || std::strlen(av[1]) == 0)
 		irc::logs::report(irc::log_fatal_error, "invalid port");
 
-	unstd::SharedPtr<irc::Server> serv(new irc::Server(port, av[2]));
-	server_ref = serv;
+	irc::Server serv(port, av[2]);
+	serv_ptr = &serv;
 	signal(SIGINT, signalsHandler);
 	signal(SIGQUIT, signalsHandler);
-	serv->wait();
-	serv->closeMainSocket();
+	serv.wait();
+	serv.closeMainSocket();
 	irc::logs::report(irc::log_message, "Server has been closed");
 	return 0;
 }
