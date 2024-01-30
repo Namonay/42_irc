@@ -6,7 +6,7 @@
 /*   By: vvaas <vvaas@student.42angouleme.fr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/22 17:31:06 by maldavid          #+#    #+#             */
-/*   Updated: 2024/01/30 20:46:24 by vvaas            ###   ########.fr       */
+/*   Updated: 2024/01/30 21:01:20 by maldavid         ###   ########.fr       */
 /*                                                                            */
 /******************************************************************************/
 
@@ -120,7 +120,7 @@ namespace irc
 	void Server::handleQuit(unstd::SharedPtr<class Client> client, const Message& msg)
 	{
 		for(channel_it it = _channels.begin(); it != _channels.end(); ++it)
-			it->removeClient(client, (msg.getReason().empty() ? "Leaving" : msg.getReason()));
+			it->removeClient(client, (msg.getReason().empty() ? "Leaving" : msg.getReason()), true);
 		client->printUserHeader();
 		std::cout << "quit" << std::endl;
 	}
@@ -145,7 +145,7 @@ namespace irc
 		Channel* channel = getChannelByName(msg.getArgs()[0]);
 		if(channel == NULL)
 			logs::report(log_fatal_error, "(KICK), cannot get channel '%s' by name; panic !", channel->getName().c_str());
-		if(!channel->removeClient(client))
+		if(!channel->removeClient(client, (msg.getReason().empty() ? "" : msg.getReason())))
 		{
 			client->sendCode(ERR_NOTONCHANNEL, "Not on channel");
 			return;

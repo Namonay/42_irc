@@ -6,7 +6,7 @@
 /*   By: vvaas <vvaas@student.42angouleme.fr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/21 09:31:17 by maldavid          #+#    #+#             */
-/*   Updated: 2024/01/30 18:08:41 by maldavid         ###   ########.fr       */
+/*   Updated: 2024/01/30 20:58:31 by maldavid         ###   ########.fr       */
 /*                                                                            */
 /******************************************************************************/
 
@@ -48,7 +48,7 @@ namespace irc
 	void Server::initSocket()
 	{
 		int opt = 1;
-	
+
 		initSocketData();
 		if(setsockopt(_main_socket, SOL_SOCKET, SO_REUSEADDR, &opt, sizeof(opt)) < 0) // SOL_SOCKET : modify socket only, SO_REUSEADDR : Reusable after program ends
 			logs::report(log_fatal_error, "setsockopt() error (tout a pete)");
@@ -87,7 +87,7 @@ namespace irc
 				close((*it)->getFD());
 				for(channel_it cit = _channels.begin(); cit != _channels.end();)
 				{
-					cit->removeClient(*it);
+					cit->removeClient(*it, "");
 					if(cit->getNumberOfClients() == 0)
 					{
 						logs::report(log_message, "channel '%s' has been destroyed", cit->getName().c_str());
