@@ -6,7 +6,7 @@
 /*   By: vvaas <vvaas@student.42angouleme.fr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/21 09:31:17 by maldavid          #+#    #+#             */
-/*   Updated: 2024/01/30 21:06:26 by maldavid         ###   ########.fr       */
+/*   Updated: 2024/01/30 21:22:56 by vvaas            ###   ########.fr       */
 /*                                                                            */
 /******************************************************************************/
 
@@ -92,7 +92,7 @@ namespace irc
 				close((*it)->getFD());
 				for(channel_it cit = _channels.begin(); cit != _channels.end();)
 				{
-					cit->removeClient(*it, "");
+					cit->removeClient(*it, "", true);
 					if(cit->getNumberOfClients() == 0)
 					{
 						logs::report(log_message, "channel '%s' has been destroyed", cit->getName().c_str());

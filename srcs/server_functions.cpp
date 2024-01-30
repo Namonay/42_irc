@@ -6,7 +6,7 @@
 /*   By: vvaas <vvaas@student.42angouleme.fr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/22 17:31:06 by maldavid          #+#    #+#             */
-/*   Updated: 2024/01/30 21:05:17 by maldavid         ###   ########.fr       */
+/*   Updated: 2024/01/30 21:33:51 by vvaas            ###   ########.fr       */
 /*                                                                            */
 /******************************************************************************/
 
@@ -41,11 +41,8 @@ namespace irc
 			client->sendCode(ERR_NONICKNAMEGIVEN, "No nickname given");
 			return;
 		}
-		if(msg.getTokens().size() != 2 && msg.getTokens().size() != 3)
-		{
-			logs::report(log_error, "NICK, invalid command '%s'", msg.getRawMsg().c_str());
-			return;
-		}
+		if(msg.getTokens().size() >= 3)
+			return ;
 		const std::string& nickname = msg.getTokens()[1];
 		for(client_it it = _client.begin(); it != _client.end(); ++it)
 		{
@@ -73,7 +70,6 @@ namespace irc
 		if(msg.getTokens().size() < 5)
 		{
 			client->sendCode(ERR_NEEDMOREPARAMS, "Need more parameters");
-			logs::report(log_error, "USER, invalid command '%s'", msg.getRawMsg().c_str());
 			return;
 		}
 		if(client->isRegistered())
@@ -99,6 +95,8 @@ namespace irc
 		realname.erase(realname.end() - 1);
 		client->setNewRealName(realname);
 		std::cout << "new realname, " << client->getRealName() << std::endl;
+		client->register_user();
+		client->welcome();
 	}
 
 	void Server::handlePass(unstd::SharedPtr<class Client> client, const Message& msg)
@@ -129,14 +127,11 @@ namespace irc
 	{
 		if(msg.getTokens().size() < 2 && msg.getTokens().size() > 3)
 		{
-			logs::report(log_error, "PART, invalid command '%s'", msg.getRawMsg().c_str());
+			client->sendCode(ERR_NEEDMOREPARAMS, "Parameters amount invalid");
 			return;
 		}
 		if(msg.getTokens()[1][0] != '#' && msg.getTokens()[1][0] != '&')
-		{
-			logs::report(log_error, "PART, invalid channel name '%s'", msg.getTokens()[1].c_str());
 			return;
-		}
 		if(!isChannelKnown(msg.getArgs()[0]))
 		{
 			client->sendCode(ERR_NOSUCHCHANNEL, msg.getArgs()[0] + " no such channel");
@@ -170,14 +165,10 @@ namespace irc
 		if(msg.getArgs().empty())
 		{
 			client->sendCode(ERR_NEEDMOREPARAMS, "Need more params");
-			logs::report(log_error, "JOIN, invalid command '%s'", msg.getRawMsg().c_str());
 			return;
 		}
 		if(msg.getTokens()[1][0] != '#' && msg.getTokens()[1][0] != '&')
-		{
-			logs::report(log_error, "JOIN, invalid channel name '%s'", msg.getTokens()[1].c_str());
 			return;
-		}
 
 		channel_it it;
 		for(it = _channels.begin(); it != _channels.end(); ++it)
@@ -208,13 +199,18 @@ namespace irc
 	{
 		if(msg.getArgs().empty())
 		{
-			client->sendCode(ERR_NORECIPIENT, "No recipient given\n");
+			client->sendCode(ERR_NORECIPIENT, "No recipient given");
 			return;
 		}
 		if(msg.getTokens().size() < 3)
 		{
-			client->sendCode(ERR_NOTEXTTOSEND, "No text to send\n");
+			client->sendCode(ERR_NOTEXTTOSEND, "No text to send");
 			return;
+		}
+		if(msg.getReason().empty())
+		{
+			client->sendCode(ERR_NOTEXTTOSEND, "No text to send");
+			return ;
 		}
 		if(msg.getTokens()[1][0] != '&' && msg.getTokens()[1][0] != '#')
 		{
@@ -268,10 +264,7 @@ namespace irc
 	void Server::handleNotice(unstd::SharedPtr<class Client> client, const Message& msg)
 	{
 		if(msg.getArgs().empty())
-		{
-			logs::report(log_error, "NOTICE, invalid command '%s'", msg.getRawMsg().c_str());
 			return;
-		}
 		if(msg.getTokens()[1][0] != '&' && msg.getTokens()[1][0] != '#')
 		{
 			for(client_it itc = _client.begin(); itc != _client.end(); ++itc)
@@ -318,7 +311,7 @@ namespace irc
 	{
 		if(msg.getArgs().empty() || msg.getArgs().size() != 2)
 		{
-			logs::report(log_error, "INVITE, invalid command '%s'", msg.getRawMsg().c_str());
+			client->sendCode(ERR_NEEDMOREPARAMS, "Invalid parameters");
 			return;
 		}
 
@@ -368,7 +361,7 @@ namespace irc
 	{
 		if(msg.getArgs().empty())
 		{
-			logs::report(log_error, "KICK, invalid command '%s'", msg.getRawMsg().c_str());
+			client->sendCode(ERR_NONICKNAMEGIVEN, "No nickname given");
 			return;
 		}
 
@@ -403,10 +396,7 @@ namespace irc
 				logs::report(log_fatal_error, "(KICK), cannot get client '%s' by name; panic !", user->c_str());
 
 			if(!channel_target->kick(client, client_target, msg.getReason()))
-			{
-				logs::report(log_error, "could not kick %s because why not", user->c_str());
 				continue;
-			}
 			client->printUserHeader();
 			std::cout << "kicked " << *user << " from " << *channel << std::endl;
 			if(channel_target->getNumberOfClients() == 0)
@@ -427,7 +417,6 @@ namespace irc
 	{
 		irc::Channel *chan;
 
-		logs::report(log_message, "tokensize ok : %d", msg.getTokens().size());
 		if(msg.getTokens().size() != 2)
 			return;
 		if((chan = getChannelByName(msg.getTokens()[1])) == NULL)
@@ -439,7 +428,7 @@ namespace irc
 	{
 		if(msg.getArgs().empty())
 		{
-			logs::report(log_error, "TOPIC, invalid command '%s'", msg.getRawMsg().c_str());
+			client->sendCode(ERR_NEEDMOREPARAMS, "Need more parameters");
 			return;
 		}
 		if(!isChannelKnown(msg.getArgs()[0]))
@@ -468,10 +457,7 @@ namespace irc
 	void Server::handlePing(unstd::SharedPtr<class Client> client, const Message& msg)
 	{
 		if(msg.getTokens().size() == 1)
-		{
-			logs::report(log_error, "PING, invalid command '%s'", msg.getRawMsg().c_str());
 			return;
-		}
 		std::string out = "PONG";
 		for(std::vector<std::string>::const_iterator it = msg.getTokens().begin() + 1; it < msg.getTokens().end(); ++it)
 			out += ' ' + *it;

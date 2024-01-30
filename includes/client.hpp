@@ -6,7 +6,7 @@
 /*   By: vvaas <vvaas@student.42angouleme.fr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/21 10:33:17 by maldavid          #+#    #+#             */
-/*   Updated: 2024/01/30 17:06:21 by vvaas            ###   ########.fr       */
+/*   Updated: 2024/01/30 21:12:10 by vvaas            ###   ########.fr       */
 /*                                                                            */
 /******************************************************************************/
 
@@ -41,7 +41,7 @@ namespace irc
 
 			inline void login() { _logged = true; }
 			inline void register_user() { _registered = true; }
-			inline void welcome() { if (!isLogged() || isWelcomed() || _nickname.empty()) return ; _welcomed = true; sendCode(RPL_WELCOME, "Welcome to yipirc :), " + _nickname); }
+			inline void welcome() { if (!isLogged() || !isRegistered() || isWelcomed() || _nickname.empty()) return ; _welcomed = true; sendCode(RPL_WELCOME, "Welcome to yipirc :), " + _nickname); }
 			inline void requireDisconnect() { _disconnect_required = true; }
 
 			inline bool isLogged() const { return _logged; }

@@ -6,7 +6,7 @@
 /*   By: vvaas <vvaas@student.42angouleme.fr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/21 10:36:21 by maldavid          #+#    #+#             */
-/*   Updated: 2024/01/30 21:06:03 by maldavid         ###   ########.fr       */
+/*   Updated: 2024/01/30 21:26:58 by vvaas            ###   ########.fr       */
 /*                                                                            */
 /******************************************************************************/
 
@@ -41,7 +41,6 @@ namespace irc
 	void Channel::modOperator(unstd::SharedPtr<class Client> client, const std::string& clientname, bool mode)
 	{
 		client_it it;
-		logs::report(log_message, "mode operator, mode = %d", mode);
 		if(mode)
 		{
 			for(it = _clients.begin(); it != _clients.end(); ++it)
@@ -59,10 +58,8 @@ namespace irc
 
 		for(it = _operators.begin(); it != _operators.end(); ++it)
 		{
-			logs::report(log_message, "nickname %s, clientname : %s", const_cast<unstd::SharedPtr<irc::Client>&>(*it)->getNickName().c_str(), clientname.c_str());
 			if(const_cast<unstd::SharedPtr<irc::Client>&>(*it)->getNickName() == clientname)
 			{
-				logs::report(log_message, "found %s to erase", const_cast<unstd::SharedPtr<irc::Client>&>(*it)->getNickName().c_str());
 				_operators.erase(it);
 				break;
 			}
@@ -99,7 +96,6 @@ namespace irc
 				clientlist += '@';
 			clientlist += const_cast<unstd::SharedPtr<irc::Client>&>(*it)->getNickName() + ' ';
 		}
-		logs::report(log_message, "%s", clientlist.c_str());
 		client->sendModular("%s\r\n", clientlist.c_str());
 		clientlist = ":yipirc " RPL_NAMREPLY " " + client->getNickName() + " @ " + getName() + " :";
 		client->sendModular(":yipirc %s %s %s : End of names list\r\n", RPL_ENDOFNAMES, client->getNickName().c_str(), getName().c_str());
@@ -154,7 +150,6 @@ namespace irc
 	void Channel::changeMode(unstd::SharedPtr<class Client> client, const Message& msg)
 	{
 		bool modevalue = (msg.getTokens()[2][0] != '-');
-		logs::report(log_message, "tokensize : %d, mode : %c, modevalue %d", msg.getTokens().size(), msg.getTokens()[2][1], modevalue);
 		switch(msg.getTokens()[2][1])
 		{
 			case 'i': _invite_only = modevalue; break;
@@ -204,7 +199,6 @@ namespace irc
 
 			default : client->sendCode(":yipirc " ERR_UNKNOWNMODE " @", getName().c_str(), "Unknown mode"); return;
 		}
-		logs::report(log_message, "%s MODES : i:%d t:%d k:%s l:%d", getName().c_str(), _invite_only, _topic_op_restrict, _password.c_str(), _channel_size);
 		showModesModify(client, msg);
 	}
 
