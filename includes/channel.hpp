@@ -6,7 +6,7 @@
 /*   By: vvaas <vvaas@student.42angouleme.fr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/21 10:34:25 by maldavid          #+#    #+#             */
-/*   Updated: 2024/01/30 17:23:28 by maldavid         ###   ########.fr       */
+/*   Updated: 2024/01/30 20:14:08 by maldavid         ###   ########.fr       */
 /*                                                                            */
 /******************************************************************************/
 
@@ -38,7 +38,7 @@ namespace irc
 			inline const std::string& getPassword() const { return _password; }
 
 			void addClient(unstd::SharedPtr<Client> client, bool op = false);
-			bool removeClient(unstd::SharedPtr<Client> client);
+			bool removeClient(unstd::SharedPtr<Client> client, std::string reason = "");
 
 			inline std::size_t getNumberOfClients() const { return _clients.size(); }
 			inline int getChannelSize() const { return _channel_size; }

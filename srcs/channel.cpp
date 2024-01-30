@@ -6,7 +6,7 @@
 /*   By: vvaas <vvaas@student.42angouleme.fr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/21 10:36:21 by maldavid          #+#    #+#             */
-/*   Updated: 2024/01/30 18:48:32 by vvaas            ###   ########.fr       */
+/*   Updated: 2024/01/30 20:15:29 by maldavid         ###   ########.fr       */
 /*                                                                            */
 /******************************************************************************/
 
@@ -71,16 +71,22 @@ namespace irc
 			client->sendCode(ERR_USERNOTINCHANNEL, "User not in channel");
 	}
 
-	bool Channel::removeClient(unstd::SharedPtr<Client> client)
+	bool Channel::removeClient(unstd::SharedPtr<Client> client, std::string reason)
 	{
 		if(!_clients.erase(client))
-			return (false);
+			return false;
 		if(isOp(client))
 			_operators.erase(client);
 		for(client_it it = _clients.begin(); it != _clients.end(); ++it)
-			const_cast<unstd::SharedPtr<irc::Client>&>(*it)->sendMsg(client->getNickName(), "PART", _name);
-		client->sendMsg(client->getNickName(), "PART", _name);
-		return (true);
+		{
+			if(reason.empty())
+				const_cast<unstd::SharedPtr<irc::Client>&>(*it)->sendMsg(client->getNickName(), "PART", _name);
+			else
+				const_cast<unstd::SharedPtr<irc::Client>&>(*it)->sendMsg(client->getNickName(), "QUIT", reason);
+		}
+		if(reason.empty())
+			client->sendMsg(client->getNickName(), "PART", _name);
+		return true;
 	}
 
 	void Channel::sendWho(unstd::SharedPtr<Client> client)

@@ -6,7 +6,7 @@
 /*   By: vvaas <vvaas@student.42angouleme.fr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/22 17:31:06 by maldavid          #+#    #+#             */
-/*   Updated: 2024/01/30 18:50:47 by maldavid         ###   ########.fr       */
+/*   Updated: 2024/01/30 20:13:48 by maldavid         ###   ########.fr       */
 /*                                                                            */
 /******************************************************************************/
 
@@ -119,9 +119,8 @@ namespace irc
 
 	void Server::handleQuit(unstd::SharedPtr<class Client> client, const Message& msg)
 	{
-		(void)msg;
 		for(channel_it it = _channels.begin(); it != _channels.end(); ++it)
-			it->removeClient(client);
+			it->removeClient(client, msg.getReason());
 		client->printUserHeader();
 		std::cout << "quit" << std::endl;
 	}
