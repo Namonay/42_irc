@@ -6,7 +6,7 @@
 /*   By: vvaas <vvaas@student.42angouleme.fr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/22 17:31:06 by maldavid          #+#    #+#             */
-/*   Updated: 2024/01/30 21:33:51 by vvaas            ###   ########.fr       */
+/*   Updated: 2024/02/05 12:24:42 by vvaas            ###   ########.fr       */
 /*                                                                            */
 /******************************************************************************/
 
@@ -168,8 +168,10 @@ namespace irc
 			return;
 		}
 		if(msg.getTokens()[1][0] != '#' && msg.getTokens()[1][0] != '&')
+		{
+			client->sendCode(ERR_NOSUCHCHANNEL, ": " + msg.getTokens()[1], "No such channel");
 			return;
-
+		}
 		channel_it it;
 		for(it = _channels.begin(); it != _channels.end(); ++it)
 		{
@@ -185,7 +187,7 @@ namespace irc
 		}
 		if((msg.getTokens().size() == 3 && msg.getTokens()[2] != it->getPassword()) || (msg.getTokens().size() == 2 && it->getPassword().size() > 0))
 			client->sendCode(ERR_BADCHANNELKEY, "Invalid password");
-		else if(it->getChannelSize() != -1 && it->getChannelSize() >= static_cast<int>(it->getNumberOfClients()))
+		else if(it->getChannelSize() != -1 && it->getChannelSize() <= static_cast<int>(it->getNumberOfClients()))
 			client->sendCode(ERR_CHANNELISFULL, "Channel is full");
 		else if(it->isInviteOnly() && !client->hasBeenInvitedTo(it->getName()))
 			client->sendCode(ERR_INVITEONLYCHAN, it->getName());
@@ -471,7 +473,10 @@ namespace irc
 	{
 		irc::Channel *chan;
 		if(msg.getTokens().size() < 2)
+		{
+			client->sendCode(ERR_NEEDMOREPARAMS, "Need more parameters");
 			return ;
+		}
 		if(msg.getTokens().size() == 2 && (msg.getTokens()[1][0] == '#' || msg.getTokens()[1][0] == '&'))
 		{
 			chan = getChannelByName(msg.getTokens()[1]);

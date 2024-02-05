@@ -6,7 +6,7 @@
 /*   By: vvaas <vvaas@student.42angouleme.fr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/21 10:36:21 by maldavid          #+#    #+#             */
-/*   Updated: 2024/01/30 21:26:58 by vvaas            ###   ########.fr       */
+/*   Updated: 2024/02/05 13:13:54 by vvaas            ###   ########.fr       */
 /*                                                                            */
 /******************************************************************************/
 
@@ -16,6 +16,7 @@
 #include <errorscode.hpp>
 #include <cstdlib>
 #include <unstd/string.hpp>
+#include <iostream>
 
 namespace irc
 {
@@ -45,8 +46,12 @@ namespace irc
 		{
 			for(it = _clients.begin(); it != _clients.end(); ++it)
 			{
+				
 				if(const_cast<unstd::SharedPtr<irc::Client>&>(*it)->getNickName() == clientname)
 				{
+					if (isOp(*it))
+						return ;
+					showModesModify(client, mode, 'o', clientname);
 					_operators.insert(const_cast<unstd::SharedPtr<irc::Client>&>(*it));
 					break;
 				}
@@ -60,6 +65,7 @@ namespace irc
 		{
 			if(const_cast<unstd::SharedPtr<irc::Client>&>(*it)->getNickName() == clientname)
 			{
+				showModesModify(client, mode, 'o', clientname);
 				_operators.erase(it);
 				break;
 			}
@@ -112,17 +118,20 @@ namespace irc
 		}
 	}
 
-	void Channel::showModesModify(unstd::SharedPtr<Client> client, const Message& msg) const
+	void Channel::showModesModify(unstd::SharedPtr<Client> client, bool modevalue, char flag, std::string op) const
 	{
-		std::vector<std::string> mode = msg.getArgs();
 		std::string modes;
 		std::string out = "MODE ";
 		
-		for(std::vector<std::string>::iterator it = mode.begin() + 1; it != mode.end(); ++it)
-		{
-			modes += *it;
-			modes += " ";
-		}
+
+		modes += (modevalue) ? '+' : '-';
+		modes += flag;
+		if (flag == 'k')
+			modes += " " + _password;
+		if (flag == 'l')
+			modes += " " + unstd::toString(_channel_size);;
+		if (flag == 'o')
+			modes += " " + op;
 		out += getName();
 		for(client_it it = _clients.begin(); it != _clients.end(); ++it)
 			const_cast<unstd::SharedPtr<irc::Client>&>(*it)->sendMsg(client->getNickName(), out, modes);
@@ -150,56 +159,103 @@ namespace irc
 	void Channel::changeMode(unstd::SharedPtr<class Client> client, const Message& msg)
 	{
 		bool modevalue = (msg.getTokens()[2][0] != '-');
-		switch(msg.getTokens()[2][1])
-		{
-			case 'i': _invite_only = modevalue; break;
-			case 't': _topic_op_restrict = modevalue; break;
-			case 'k':
-			{
-				if(modevalue && msg.getTokens().size() == 4)
-				{
-					logs::report(log_message, "%s password set as %s", _name.c_str(), msg.getArgs()[2].c_str());
-					_password = msg.getArgs()[2];
-				}
-				else if(msg.getTokens().size() < 4)
-				{
-					_password.clear();
-					logs::report(log_message, "password removed on %s", _name.c_str());
-				}
-				break;
-			}
-			case 'o':
-			{
-				if(isOp(client))
-					modOperator(client, msg.getTokens()[3], modevalue);
-				else if(!isOp(client))
-					client->sendCode(ERR_CHANOPRIVSNEEDED, "You need to be operator to execute this command");
-				break;
-			}
-			case 'l':
-			{
-				if(msg.getTokens().size() < 3 && modevalue)
-					return;
-				if(!modevalue)
-				{
-					_channel_size = -1;
-					break;
-				}
-				if(modevalue)
-				{
-					char* end;
-					long tmp = std::strtol(msg.getArgs()[2].c_str(), &end, 10);
-					if(errno == ERANGE || *end != 0 || tmp < 0)
-						logs::report(log_error, "invalid channel size");
-					else
-						_channel_size = tmp;
-				}
-				break;
-			}
+		std::string flags = msg.getTokens()[2];
+		unsigned long arg_nb = 3;
+		int arg_index = 2;
 
-			default : client->sendCode(":yipirc " ERR_UNKNOWNMODE " @", getName().c_str(), "Unknown mode"); return;
+		if (flags.find_first_not_of("itkol+-") != std::string::npos || flags.find_last_of("+-") != 0)
+		{
+			client->sendCode(ERR_UNKNOWNMODE, "MODE : Unknown mode");
+			return ;
 		}
-		showModesModify(client, msg);
+		for (std::string::iterator it = flags.begin() + 1; it != flags.end(); ++it)
+		{
+			if (std::distance(flags.begin(), it) != static_cast<long>(flags.find_first_of(*it)))
+				it = flags.erase(it) - 1;
+		}
+		if (flags.find('o') != std::string::npos)
+			arg_nb++;
+		if (flags.find('k') != std::string::npos && modevalue)
+			arg_nb++;
+		if (flags.find('l') != std::string::npos && modevalue)
+			arg_nb++;
+		if (msg.getTokens().size() < arg_nb)
+		{
+			client->sendCode(ERR_NEEDMOREPARAMS, "MODE : Need more params");
+			return ;
+		}
+
+		for (std::string::iterator it = flags.begin() + 1; it != flags.end(); ++it)
+		{
+			switch(*it)
+			{
+				case 'i':
+					if (_invite_only == modevalue)
+						break;
+					_invite_only = modevalue;
+					showModesModify(client, modevalue, 'i');
+					break ;
+				case 't':
+					if (_topic_op_restrict == modevalue)
+						break;
+					_topic_op_restrict = modevalue;
+					showModesModify(client, modevalue, 't');
+					break ;
+				case 'k':
+					if(modevalue)
+					{
+						if (msg.getArgs()[arg_index] == _password)
+						{
+							arg_index++;
+							break;
+						}
+						logs::report(log_message, "%s password set as %s", _name.c_str(), msg.getArgs()[arg_index].c_str());
+						_password = msg.getArgs()[arg_index++];
+						showModesModify(client, modevalue, 'k');
+					}
+					else
+					{
+						if (_password.empty())
+							return ;
+						_password.clear();
+						logs::report(log_message, "password removed on %s", _name.c_str());
+						showModesModify(client, modevalue, 'k');
+					}
+					break ;
+				case 'o':
+					modOperator(client, msg.getArgs()[arg_index++], modevalue);
+					break ;
+				case 'l':
+					if (!modevalue && _channel_size == -1)
+						return ;
+					if(!modevalue)
+					{
+						_channel_size = -1;
+						showModesModify(client, modevalue, 'l');
+						break;
+					}
+					if(modevalue)
+					{
+						char* end;
+						long tmp = std::strtol(msg.getArgs()[arg_index++].c_str(), &end, 10);
+						if(errno == ERANGE || *end != 0 || tmp < 0)
+						{
+							client->sendCode(ERR_UNKNOWNMODE, "MODE : Invalid channel size");
+							logs::report(log_error, "invalid channel size");
+						}
+						if (tmp == _channel_size)
+							return ;
+						else
+						{
+							if (tmp == _channel_size)
+								break;
+							_channel_size = tmp;
+							showModesModify(client, modevalue, 'l');
+						}
+					}
+					break;
+			}
+		}
 	}
 
 	bool Channel::hasClient(std::string client) const

@@ -6,7 +6,7 @@
 /*   By: vvaas <vvaas@student.42angouleme.fr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/21 10:34:25 by maldavid          #+#    #+#             */
-/*   Updated: 2024/01/30 20:54:21 by maldavid         ###   ########.fr       */
+/*   Updated: 2024/02/05 12:45:08 by vvaas            ###   ########.fr       */
 /*                                                                            */
 /******************************************************************************/
 
@@ -55,7 +55,7 @@ namespace irc
 
 			void setTopic(unstd::SharedPtr<Client> client, const std::string& new_topic);
 			void relayTopic(unstd::SharedPtr<Client> client, bool broadcast = false);
-			void showModesModify(unstd::SharedPtr<Client> client, const Message& msg) const;
+			void showModesModify(unstd::SharedPtr<Client> client, bool modevalue, char flag, std::string op = "") const;
 			void showModes(unstd::SharedPtr<Client> client);
 			bool kick(unstd::SharedPtr<Client> op, unstd::SharedPtr<Client> target, const std::string& reason);
 
