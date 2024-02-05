@@ -6,7 +6,7 @@
 /*   By: vvaas <vvaas@student.42angouleme.fr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/21 10:36:21 by maldavid          #+#    #+#             */
-/*   Updated: 2024/02/05 14:52:42 by vvaas            ###   ########.fr       */
+/*   Updated: 2024/02/05 16:26:14 by maldavid         ###   ########.fr       */
 /*                                                                            */
 /******************************************************************************/
 
@@ -16,7 +16,6 @@
 #include <errorscode.hpp>
 #include <cstdlib>
 #include <unstd/string.hpp>
-#include <iostream>
 
 namespace irc
 {

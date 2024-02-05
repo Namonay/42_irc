@@ -6,7 +6,7 @@
 /*   By: vvaas <vvaas@student.42angouleme.fr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/21 11:38:34 by maldavid          #+#    #+#             */
-/*   Updated: 2024/02/05 16:09:12 by maldavid         ###   ########.fr       */
+/*   Updated: 2024/02/05 16:23:31 by maldavid         ###   ########.fr       */
 /*                                                                            */
 /******************************************************************************/
 
@@ -37,17 +37,23 @@ namespace irc
 					it++;
 				}
 			}
-			bool isempty = true;
-			for(std::string::const_iterator it = token.begin(); it != token.end(); ++it)
+			elems.push_back(token);
+			for(std::vector<std::string>::iterator vit = elems.begin(); vit != elems.end();)
 			{
-				if(!std::isspace(*it))
+				bool isempty = true;
+				for(std::string::const_iterator it = vit->begin(); it != vit->end(); ++it)
 				{
-					isempty = false;
-					break;
+					if(!std::isspace(*it))
+					{
+						isempty = false;
+						break;
+					}
 				}
+				if(isempty)
+					vit = elems.erase(vit);
+				else
+					vit++;
 			}
-			if(!isempty)
-				elems.push_back(token);
 		}
 
 		std::vector<std::string> split(const std::string& s)
@@ -77,11 +83,10 @@ namespace irc
 				if((*it)[0] == ':')
 					it->erase(it->begin());
 				_reason.append(*it);
-				_reason.push_back(' ');
+				if(it != tokens.end() - 1)
+					_reason.push_back(' ');
 			}
 		}
-		if (!_reason.empty())
-			_reason.erase(_reason.end() - 1);
 	}
 
 	Message::~Message() {}
