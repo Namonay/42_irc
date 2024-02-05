@@ -6,7 +6,7 @@
 /*   By: vvaas <vvaas@student.42angouleme.fr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/21 11:38:34 by maldavid          #+#    #+#             */
-/*   Updated: 2024/02/05 15:53:33 by vvaas            ###   ########.fr       */
+/*   Updated: 2024/02/05 16:09:12 by maldavid         ###   ########.fr       */
 /*                                                                            */
 /******************************************************************************/
 
@@ -37,7 +37,17 @@ namespace irc
 					it++;
 				}
 			}
-			elems.push_back(token);
+			bool isempty = true;
+			for(std::string::const_iterator it = token.begin(); it != token.end(); ++it)
+			{
+				if(!std::isspace(*it))
+				{
+					isempty = false;
+					break;
+				}
+			}
+			if(!isempty)
+				elems.push_back(token);
 		}
 
 		std::vector<std::string> split(const std::string& s)
