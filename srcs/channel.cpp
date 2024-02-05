@@ -6,7 +6,7 @@
 /*   By: vvaas <vvaas@student.42angouleme.fr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/21 10:36:21 by maldavid          #+#    #+#             */
-/*   Updated: 2024/02/05 13:13:54 by vvaas            ###   ########.fr       */
+/*   Updated: 2024/02/05 14:52:42 by vvaas            ###   ########.fr       */
 /*                                                                            */
 /******************************************************************************/
 
@@ -179,7 +179,7 @@ namespace irc
 			arg_nb++;
 		if (flags.find('l') != std::string::npos && modevalue)
 			arg_nb++;
-		if (msg.getTokens().size() < arg_nb)
+		if (msg.getTokens().size() != arg_nb)
 		{
 			client->sendCode(ERR_NEEDMOREPARAMS, "MODE : Need more params");
 			return ;
