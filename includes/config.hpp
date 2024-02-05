@@ -6,7 +6,7 @@
 /*   By: vvaas <vvaas@student.42angouleme.fr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/22 09:45:10 by maldavid          #+#    #+#             */
-/*   Updated: 2024/01/30 17:34:11 by maldavid         ###   ########.fr       */
+/*   Updated: 2024/02/05 16:13:06 by vvaas            ###   ########.fr       */
 /*                                                                            */
 /******************************************************************************/
 
@@ -16,6 +16,7 @@
 #define INPUT_SIZE 1024
 #define LOGS_BUFFER_SIZE 4096
 #define MAX_USERS 20
+#define FD_MAX 1023
 #define NULL_SOCKET -1
 #define LEGAL_CHARACTER "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789{}[]\\|^`-_"
 

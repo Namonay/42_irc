@@ -6,7 +6,7 @@
 /*   By: vvaas <vvaas@student.42angouleme.fr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/21 09:31:17 by maldavid          #+#    #+#             */
-/*   Updated: 2024/02/05 14:10:19 by vvaas            ###   ########.fr       */
+/*   Updated: 2024/02/05 16:14:13 by vvaas            ###   ########.fr       */
 /*                                                                            */
 /******************************************************************************/
 
@@ -232,5 +232,13 @@ namespace irc
 	Server::~Server()
 	{
 		closeMainSocket();
+		for(int i = 0; i < FD_MAX; ++i)
+		{
+			if (FD_ISSET(i, &_fd_set)) 
+			{
+				close(i);
+				FD_CLR(i, &_fd_set);
+   			}
+		}
 	}
 }
