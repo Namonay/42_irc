@@ -25,13 +25,13 @@ namespace unstd
 			TArray() {}
 			TArray(const TArray<T, N>& rhs)
 			{
-				for (std::size_t i = 0; i < N; i++)
+				for(std::size_t i = 0; i < N; i++)
 					_data[i] = rhs._data[i];
 			}
 
 			inline TArray& operator=(const TArray<T, N>& rhs)
 			{
-				for (std::size_t i = 0; i < N; i++)
+				for(std::size_t i = 0; i < N; i++)
 					_data[i] = rhs._data[i];
 				return *this;
 			}

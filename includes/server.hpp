@@ -29,7 +29,7 @@ namespace irc
 
 			inline void closeMainSocket()
 			{
-				if (_main_socket > NULL_SOCKET)
+				if(_main_socket > NULL_SOCKET)
 					close(_main_socket);
 				_main_socket = NULL_SOCKET;
 				_active = false;

@@ -15,11 +15,11 @@
 
 int main(int argc, char **argv)
 {
-	if (argc != 4)
+	if(argc != 4)
 		irc::logs::report(irc::log_fatal_error, "./greg <ip address> <port> <password>");
 	Bot greg;
 
-	if (!greg.init(argv[1], argv[2], argv[3]))
+	if(!greg.init(argv[1], argv[2], argv[3]))
 		return 1;
 	greg.connect_to_server();
 	return 0;

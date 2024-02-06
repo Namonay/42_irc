@@ -21,14 +21,14 @@ namespace unstd
 	template <typename T>
 	SharedPtr<T>::SharedPtr(const SharedPtr<T>& rhs) : _ptr(rhs._ptr), _ref(rhs._ref)
 	{
-		if (_ptr && _ref)
+		if(_ptr && _ref)
 			++_ref->shared;
 	}
 
 	template <typename T>
 	SharedPtr<T>& SharedPtr<T>::operator=(const SharedPtr<T>& rhs)
 	{
-		if (_ptr == rhs._ptr)
+		if(_ptr == rhs._ptr)
 			return *this;
 
 		safeRelease();
@@ -96,10 +96,10 @@ namespace unstd
 	template <typename T>
 	void SharedPtr<T>::safeRelease()
 	{
-		if (_ref == NULL)
-			return ;
+		if(_ref == NULL)
+			return;
 		_ref->shared--;
-		if (_ref->shared <= 0)
+		if(_ref->shared <= 0)
 		{
 			delete _ptr;
 			_ptr = NULL;

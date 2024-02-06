@@ -35,10 +35,10 @@ namespace irc
 		struct tm tstruct = *localtime(&ltime);
 		char buf[100];
 
-		if (password.empty() || password.find_first_of(" \t\r\v") != std::string::npos)
+		if(password.empty() || password.find_first_of(" \t\r\v") != std::string::npos)
 		{
 			logs::report(log_error, "Password is invalid !");
-			return ;
+			return;
 		}
 		std::memset(&_s_data, 0, sizeof(sockaddr));
 		initSocket();
@@ -52,7 +52,7 @@ namespace irc
 		_s_data.sin_addr.s_addr = INADDR_ANY;
 		_s_data.sin_port = htons(_port);
 		_main_socket = socket(AF_INET, SOCK_STREAM, 0); // AF_INET == IPv4, SOCK_STREAM == TCP
-		if (_main_socket < 0)
+		if(_main_socket < 0)
 			logs::report(log_fatal_error, "socket error");
 		logs::report(log_message, "socket succesfully started");
 	}
@@ -62,14 +62,14 @@ namespace irc
 		int opt = 1;
 
 		initSocketData();
-		if (setsockopt(_main_socket, SOL_SOCKET, SO_REUSEADDR, &opt, sizeof(opt)) < 0) // SOL_SOCKET : modify socket only, SO_REUSEADDR : Reusable after program ends
+		if(setsockopt(_main_socket, SOL_SOCKET, SO_REUSEADDR, &opt, sizeof(opt)) < 0) // SOL_SOCKET : modify socket only, SO_REUSEADDR : Reusable after program ends
 			logs::report(log_fatal_error, "setsockopt() error (tout a pete)");
 
-		if (bind(_main_socket, reinterpret_cast<sockaddr*>(&_s_data), sizeof(_s_data)) != 0) // Bind _main_socket to localhost
+		if(bind(_main_socket, reinterpret_cast<sockaddr*>(&_s_data), sizeof(_s_data)) != 0) // Bind _main_socket to localhost
 			logs::report(log_fatal_error, "bind error");
 		logs::report(log_message, "bind successful, starting listen loop");
 
-		if (listen(_main_socket, MAX_USERS) != 0) // init the listen with MAX_USERS
+		if(listen(_main_socket, MAX_USERS) != 0) // init the listen with MAX_USERS
 			logs::report(log_fatal_error, "listen error");
 		logs::report(log_message, "listen queue created successfully");
 
@@ -80,27 +80,27 @@ namespace irc
 	{
 		char buffer[INPUT_SIZE] = { 0 };
 		ssize_t recv_size;
-		for (std::vector<unstd::SharedPtr<Client> >::iterator it = _client.begin(); it != _client.end(); ++it)
+		for(std::vector<unstd::SharedPtr<Client> >::iterator it = _client.begin(); it != _client.end(); ++it)
 		{
-			if (!FD_ISSET((*it)->getFD(), &_fd_set))
+			if(!FD_ISSET((*it)->getFD(), &_fd_set))
 				continue;
-			while ((recv_size = recv((*it)->getFD(), buffer, INPUT_SIZE, 0)) > 0) // read() but forsocket fd
+			while((recv_size = recv((*it)->getFD(), buffer, INPUT_SIZE, 0)) > 0) // read() but forsocket fd
 			{
 				(*it)->newMsgInFlight(buffer);
 			#ifdef DEBUG
 				logs::report(log_message,"processing '%s'", buffer);
 			#endif
-				while (handleMessage(*it));
+				while(handleMessage(*it));
 				std::memset(buffer, 0, sizeof(buffer)); // clear the buffer to avoid trash remaining
 			}
-			if (recv_size == 0 || (*it)->disconnectRequired()) // recv return 0 ifan user disconnect
+			if(recv_size == 0 || (*it)->disconnectRequired()) // recv return 0 ifan user disconnect
 			{
 				logs::report(log_message, "User %d disconnected", (*it)->getID());
 				close((*it)->getFD());
-				for (channel_it cit = _channels.begin(); cit != _channels.end();)
+				for(channel_it cit = _channels.begin(); cit != _channels.end();)
 				{
 					cit->removeClient(*it, "", true);
-					if (cit->getNumberOfClients() == 0)
+					if(cit->getNumberOfClients() == 0)
 					{
 						logs::report(log_message, "channel '%s' has been destroyed", cit->getName().c_str());
 						cit = _channels.erase(cit);
@@ -121,27 +121,27 @@ namespace irc
 		int i = 0;
 		socklen_t len = sizeof(sockaddr_in);
 
-		if (_main_socket == NULL_SOCKET)
-			return ;
-		while (_active)
+		if(_main_socket == NULL_SOCKET)
+			return;
+		while(_active)
 		{
 			FD_ZERO(&_fd_set);
 			FD_SET(_main_socket, &_fd_set);
 
-			for (std::vector<unstd::SharedPtr<Client> >::iterator it = _client.begin(); it != _client.end(); ++it)
+			for(std::vector<unstd::SharedPtr<Client> >::iterator it = _client.begin(); it != _client.end(); ++it)
 				FD_SET((*it)->getFD(), &_fd_set);
 
 			tmp = select(MAX_USERS, &_fd_set, NULL, NULL, NULL); // SELECT blocks till a connection or message is received, and let only those in _fd_set
-			if (tmp < 0 && _main_socket != NULL_SOCKET)
+			if(tmp < 0 && _main_socket != NULL_SOCKET)
 				logs::report(log_fatal_error, "select fd error");
 
-			if (FD_ISSET(_main_socket, &_fd_set)) // ifit's a new connection
+			if(FD_ISSET(_main_socket, &_fd_set)) // ifit's a new connection
 			{
 				sockaddr_in cli_sock;
 				fd = accept(_main_socket, reinterpret_cast<sockaddr*>(&cli_sock), &len); // adds the new connection
-				if (fd < 0)
+				if(fd < 0)
 					logs::report(log_fatal_error, "accept() error");
-				if (fcntl(fd, F_SETFL, O_NONBLOCK) < 0)
+				if(fcntl(fd, F_SETFL, O_NONBLOCK) < 0)
 					logs::report(log_fatal_error, "fcntl() error");
 
 				unstd::SharedPtr<Client> new_client(new Client(fd, cli_sock, i++));
@@ -155,41 +155,41 @@ namespace irc
 
 	bool Server::handleMessage(unstd::SharedPtr<Client> client)
 	{
-		if (client->getMsgInFlight().empty()) // ifthere are no commands just return
+		if(client->getMsgInFlight().empty()) // ifthere are no commands just return
 			return false;
 
 		const Message msg(client, client->getNextMsg());
-		if (msg.getCmd() == "NICK")
+		if(msg.getCmd() == "NICK")
 			handleNick(client, msg, *this);
-		else if (msg.getCmd() == "USER")
+		else if(msg.getCmd() == "USER")
 			handleUser(client, msg, *this);
-		else if (msg.getCmd() == "PASS")
+		else if(msg.getCmd() == "PASS")
 			handlePass(client, msg, *this);
-		else if (!client->isWelcomed())
+		else if(!client->isWelcomed())
 			return true;
-		else if (msg.getCmd() == "QUIT")
+		else if(msg.getCmd() == "QUIT")
 			handleQuit(client, msg);
-		else if (msg.getCmd() == "WHO")
+		else if(msg.getCmd() == "WHO")
 			handleWho(client, msg);
-		else if (msg.getCmd() == "PART")
+		else if(msg.getCmd() == "PART")
 			handlePart(client, msg);
-		else if (msg.getCmd() == "JOIN")
+		else if(msg.getCmd() == "JOIN")
 			handleJoin(client, msg);
-		else if (msg.getCmd() == "INVITE")
+		else if(msg.getCmd() == "INVITE")
 			handleInvite(client, msg);
-		else if (msg.getCmd() == "PRIVMSG")
+		else if(msg.getCmd() == "PRIVMSG")
 			handlePrivMsg(client, msg);
-		else if (msg.getCmd() == "NOTICE")
+		else if(msg.getCmd() == "NOTICE")
 			handleNotice(client, msg);
-		else if (msg.getCmd() == "KICK")
+		else if(msg.getCmd() == "KICK")
 			handleKick(client, msg);
-		else if (msg.getCmd() == "TOPIC")
+		else if(msg.getCmd() == "TOPIC")
 			handleTopic(client, msg);
-		else if (msg.getCmd() == "PING")
+		else if(msg.getCmd() == "PING")
 			handlePing(client, msg);
-		else if (msg.getCmd() == "MODE")
+		else if(msg.getCmd() == "MODE")
 			handleMode(client, msg);
-		else if (msg.getCmd() == "imfeelinglucky")
+		else if(msg.getCmd() == "imfeelinglucky")
 			handleRussian(client);
 		else
 			client->sendCode(ERR_UNKNOWNCOMMAND, "No such command");
@@ -198,9 +198,9 @@ namespace irc
 
 	bool Server::isUserKnown(const std::string& user) const
 	{
-		for (client_const_it it = _client.begin(); it < _client.end(); ++it)
+		for(client_const_it it = _client.begin(); it < _client.end(); ++it)
 		{
-			if (const_cast<unstd::SharedPtr<Client>&>(*it)->getNickName() == user)
+			if(const_cast<unstd::SharedPtr<Client>&>(*it)->getNickName() == user)
 				return true;
 		}
 		return false;
@@ -208,9 +208,9 @@ namespace irc
 
 	bool Server::isChannelKnown(const std::string& channel) const
 	{
-		for (channel_const_it it = _channels.begin(); it < _channels.end(); ++it)
+		for(channel_const_it it = _channels.begin(); it < _channels.end(); ++it)
 		{
-			if (it->getName() == channel)
+			if(it->getName() == channel)
 				return true;
 		}
 		return false;
@@ -218,9 +218,9 @@ namespace irc
 
 	Channel* Server::getChannelByName(const std::string& name)
 	{
-		for (channel_it it = _channels.begin(); it < _channels.end(); ++it)
+		for(channel_it it = _channels.begin(); it < _channels.end(); ++it)
 		{
-			if (it->getName() == name)
+			if(it->getName() == name)
 				return &*it;
 		}
 		return NULL;
@@ -228,9 +228,9 @@ namespace irc
 
 	unstd::SharedPtr<Client> Server::getClientByName(const std::string& name)
 	{
-		for (client_it it = _client.begin(); it < _client.end(); ++it)
+		for(client_it it = _client.begin(); it < _client.end(); ++it)
 		{
-			if ((*it)->getNickName() == name)
+			if((*it)->getNickName() == name)
 				return *it;
 		}
 		return unstd::SharedPtr<Client>(NULL);
@@ -238,13 +238,13 @@ namespace irc
 
 	Server::~Server()
 	{
-		for (client_it it = _client.begin(); it != _client.end(); ++it)
+		for(client_it it = _client.begin(); it != _client.end(); ++it)
 		{
-			if ((*it)->isWelcomed())
+			if((*it)->isWelcomed())
 				(*it)->kill("Server shutting down");
 		}
 		closeMainSocket();
-		for (int i = 3; i <= FD_MAX; ++i)
+		for(int i = 3; i <= FD_MAX; ++i)
 			close(i);
 	}
 }

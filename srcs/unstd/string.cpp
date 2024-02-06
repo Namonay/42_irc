@@ -18,13 +18,13 @@ namespace unstd
 	{
 		std::vector<std::string> elems;
 		std::string token;
-		for (std::string::const_iterator it = s.begin(); it != s.end();)
+		for(std::string::const_iterator it = s.begin(); it != s.end();)
 		{
-			if (*it == delim)
+			if(*it == delim)
 			{
 				elems.push_back(token);
 				token.clear();
-				while (*it == delim && it != s.end())
+				while(*it == delim && it != s.end())
 					it++;
 			}
 			else
