@@ -6,13 +6,13 @@
 /*   By: vvaas <vvaas@student.42angouleme.fr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/30 01:54:36 by vvaas             #+#    #+#             */
-/*   Updated: 2024/01/30 21:38:16 by vvaas            ###   ########.fr       */
+/*   Updated: 2024/02/06 11:52:46 by vvaas            ###   ########.fr       */
 /*                                                                            */
 /******************************************************************************/
 
 #define IP "127.0.0.1"
 #define PORT 6667
-#define PASSWORD "gg"
+#define PASSWORD "passwordIRC"
 
 #include <irc.hpp>
 #include <vector>
@@ -22,7 +22,7 @@ class Bot
 {
 	public:
 		Bot();
-		bool init(void);
+		bool init(const std::string &ip, const std::string &port, const std::string &password);
 		void connect_to_server(void);
 		void handle_response(std::string buffer);
 		void send_message(const std::string &content);

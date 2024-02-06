@@ -6,7 +6,7 @@
 /*   By: vvaas <vvaas@student.42angouleme.fr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/21 10:35:52 by maldavid          #+#    #+#             */
-/*   Updated: 2024/02/06 10:53:59 by vvaas            ###   ########.fr       */
+/*   Updated: 2024/02/06 11:40:41 by vvaas            ###   ########.fr       */
 /*                                                                            */
 /******************************************************************************/
 
@@ -31,7 +31,7 @@ namespace irc
 
 	void Client::sendCode(const std::string& code, const std::string& msg)
 	{
-		const std::string command = ":yipirc " + code + " " + getNickName() + " :"  + msg + "\r\n";
+		const std::string command = ":YipIRC " + code + " " + getNickName() + " :"  + msg + "\r\n";
 #ifdef DEBUG
 		logs::report(log_message, "sending '%s'", command.c_str());
 #endif
@@ -41,7 +41,7 @@ namespace irc
 
 	void Client::sendCode(const std::string& code, const std::string& msg0, const std::string& msg1)
 	{
-		const std::string command = ":yipirc " + code + " " + msg0 + " :"  + msg1 + "\r\n";
+		const std::string command = ":YipIRC " + code + " " + msg0 + " :"  + msg1 + "\r\n";
 #ifdef DEBUG
 		logs::report(log_message, "sending '%s'", command.c_str());
 #endif
@@ -51,7 +51,7 @@ namespace irc
 
 	void Client::sendCodeInChannel(const std::string& code, const Channel &chan, const std::string& msg)
 	{
-		const std::string command = ":yipirc " + code + " " + getNickName() + " " + chan.getName() + " :"  + msg + "\r\n";
+		const std::string command = ":YipIRC " + code + " " + getNickName() + " " + chan.getName() + " :"  + msg + "\r\n";
 #ifdef DEBUG
 		logs::report(log_message, "sending '%s'", command.c_str());
 #endif
@@ -156,16 +156,16 @@ namespace irc
 		tosend = "This server is running since ";
 		tosend += server.getRunDate();
 		sendCode(RPL_CREATED, tosend);
-		sendModular("%s %s %s %s %s %s %s %s", ":yipirc", RPL_MYINFO, getNickName().c_str(), "YipIRC", "1.0", "o", "tikl", "kl");
+		sendModular("%s %s %s %s %s %s %s %s", ":YipIRC", RPL_MYINFO, getNickName().c_str(), "YipIRC", "1.0", "o", "tikl", "kl");
 		sendModular("There are %u users on %u channels", server.getClientCount(), server.getChannelCount());
 		sendModular("You are connected using %s", proto->p_name);
-		sendCode(RPL_WELCOME, "Welcome to yipirc :), your nickname is : " + _nickname);
+		sendCode(RPL_WELCOME, "Welcome to YipIRC 😀, your nickname is : " + _nickname);
 	}
 
 	void Client::kill(const std::string& reason)
 	{
 		std::string cmd = "KILL " + getNickName();
-		sendMsg("yipirc", cmd, reason);
+		sendMsg("YipIRC", cmd, reason);
 	}
 
 	Client::~Client() {}

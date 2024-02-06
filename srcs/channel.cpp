@@ -6,7 +6,7 @@
 /*   By: vvaas <vvaas@student.42angouleme.fr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/21 10:36:21 by maldavid          #+#    #+#             */
-/*   Updated: 2024/02/06 10:33:44 by vvaas            ###   ########.fr       */
+/*   Updated: 2024/02/06 11:37:55 by vvaas            ###   ########.fr       */
 /*                                                                            */
 /******************************************************************************/
 
@@ -93,7 +93,7 @@ namespace irc
 
 	void Channel::sendWho(unstd::SharedPtr<Client> client)
 	{
-		std::string clientlist(":yipirc " RPL_NAMREPLY " " + client->getNickName() + " @ " + getName() + " :");
+		std::string clientlist(":YipIRC " RPL_NAMREPLY " " + client->getNickName() + " @ " + getName() + " :");
 		
 		for(client_it it = _clients.begin(); it != _clients.end(); ++it)
 		{
@@ -102,8 +102,8 @@ namespace irc
 			clientlist += const_cast<unstd::SharedPtr<irc::Client>&>(*it)->getNickName() + ' ';
 		}
 		client->sendModular("%s", clientlist.c_str());
-		clientlist = ":yipirc " RPL_NAMREPLY " " + client->getNickName() + " @ " + getName() + " :";
-		client->sendModular(":yipirc %s %s %s : End of names list", RPL_ENDOFNAMES, client->getNickName().c_str(), getName().c_str());
+		clientlist = ":YipIRC " RPL_NAMREPLY " " + client->getNickName() + " @ " + getName() + " :";
+		client->sendModular(":YipIRC %s %s %s : End of names list", RPL_ENDOFNAMES, client->getNickName().c_str(), getName().c_str());
 	}
 
 	void Channel::handleMessage(const std::string& msg, unstd::SharedPtr<Client> client, bool notice) const

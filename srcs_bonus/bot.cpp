@@ -6,7 +6,7 @@
 /*   By: vvaas <vvaas@student.42angouleme.fr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/30 01:54:56 by vvaas             #+#    #+#             */
-/*   Updated: 2024/01/30 21:45:18 by vvaas            ###   ########.fr       */
+/*   Updated: 2024/02/06 11:53:03 by vvaas            ###   ########.fr       */
 /*                                                                            */
 /******************************************************************************/
 
@@ -19,7 +19,7 @@
 #include <cstring>
 #include <cstdlib>
 #include <signal.h>
-
+#include <cerrno>
 bool active = true;
 
 Bot::Bot() : _channel_created(false), _logged(false), _fd(-1)
@@ -39,9 +39,16 @@ void signalsHandler(int foo)
 	active = false;
 }
 
-bool Bot::init()
+bool Bot::init(const std::string &ip, const std::string &port, const std::string &password)
 {
-	_connect_commands.push_back("PASS " PASSWORD "\r\n");
+	if (ip.empty() || port.empty() || password.empty())
+		irc::logs::report(irc::log_fatal_error, "An argument is empty");
+
+	char* end;
+	int portval = std::strtol(port.c_str(), &end, 10);
+	if (errno == ERANGE || *end != 0 || portval < 0 || portval > 0xFFFF)
+		irc::logs::report(irc::log_fatal_error, "invalid port");
+	_connect_commands.push_back("PASS " + password + "\r\n");
 	_connect_commands.push_back("NICK greg\r\n");
 	_connect_commands.push_back("USER greg_Bot 0 * :Botrealname\r\n");
 	_connect_commands.push_back("JOIN #greg\r\n");
@@ -49,8 +56,8 @@ bool Bot::init()
 	if(_fd == -1)
 		irc::logs::report(irc::log_fatal_error, "FD error");
 	_serv_addr.sin_family = AF_INET;
-    _serv_addr.sin_port = htons(PORT);
-	_serv_addr.sin_addr.s_addr = inet_addr(IP);
+    _serv_addr.sin_port = htons(portval);
+	_serv_addr.sin_addr.s_addr = inet_addr(ip.c_str());
 	if(connect(_fd, (struct sockaddr*)&_serv_addr, sizeof(_serv_addr)) < 0)
 	{
         irc::logs::report(irc::log_error, "connect error");
@@ -74,9 +81,7 @@ void Bot::send_message(const std::string &content)
 
 void Bot::handle_response(std::string buffer)
 {
-	std::cout << buffer << std::flush;
-
-	if(!_logged && buffer == ":yipirc 001 greg :Welcome to yipirc :), greg\r\n")
+	if(!_logged && buffer == ":YipIRC 001 greg :Welcome to YipIRC 😀, your nickname is : greg\r\n")
 	{
 		_logged = true;
 		irc::logs::report(irc::log_message, "Logged in succesfully");

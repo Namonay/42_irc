@@ -6,7 +6,7 @@
 /*   By: vvaas <vvaas@student.42angouleme.fr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/21 09:31:17 by maldavid          #+#    #+#             */
-/*   Updated: 2024/02/06 10:22:58 by vvaas            ###   ########.fr       */
+/*   Updated: 2024/02/06 11:37:58 by vvaas            ###   ########.fr       */
 /*                                                                            */
 /******************************************************************************/
 
@@ -35,8 +35,6 @@ namespace irc
 		struct tm tstruct = *localtime(&ltime);
 		char buf[100];
 
-		strftime(buf, 100, "%a %b %d %Y %T CET", &tstruct);
-		_run_date = buf;
 		if (password.empty() || password.find_first_of(" \t\r\v") != std::string::npos)
 		{
 			logs::report(log_error, "Password is invalid !");
@@ -44,6 +42,8 @@ namespace irc
 		}
 		std::memset(&_s_data, 0, sizeof(sockaddr));
 		initSocket();
+		strftime(buf, 100, "%a %b %d %Y %T CET", &tstruct);
+		_run_date = buf;
 	}
 
 	void Server::initSocketData()
@@ -238,6 +238,11 @@ namespace irc
 
 	Server::~Server()
 	{
+		for (client_it it = _client.begin(); it != _client.end(); ++it)
+		{
+			if ((*it)->isWelcomed())
+				(*it)->kill("Server shutting down");
+		}
 		closeMainSocket();
 		for(int i = 0; i < FD_MAX; ++i)
 		{
