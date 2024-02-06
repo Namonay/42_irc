@@ -6,7 +6,7 @@
 /*   By: vvaas <vvaas@student.42angouleme.fr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/21 10:35:52 by maldavid          #+#    #+#             */
-/*   Updated: 2024/02/06 12:36:00 by vvaas            ###   ########.fr       */
+/*   Updated: 2024/02/06 12:42:43 by vvaas            ###   ########.fr       */
 /*                                                                            */
 /******************************************************************************/
 
@@ -156,7 +156,7 @@ namespace irc
 		tosend = "This server is running since ";
 		tosend += server.getRunDate();
 		sendCode(RPL_CREATED, tosend);
-		sendModular("%s %s %s %s %s %s %s %s", ":YipIRC", RPL_MYINFO, getNickName().c_str(), "YipIRC", "1.0", "o", "tikl", "kl");
+		sendModular("%s %s %s %s %s %s %s %s", ":YipIRC", RPL_MYINFO, getNickName().c_str(), "YipIRC", "1.0", "o", "tikl", "okl");
 		sendModular("There are %u users on %u channels", server.getClientCount(), server.getChannelCount());
 		sendModular("You are connected using %s", proto->p_name);
 		sendCode(RPL_WELCOME, "Welcome to YipIRC 😀, your nickname is : " + _nickname);
