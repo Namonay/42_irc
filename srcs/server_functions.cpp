@@ -6,7 +6,7 @@
 /*   By: vvaas <vvaas@student.42angouleme.fr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/22 17:31:06 by maldavid          #+#    #+#             */
-/*   Updated: 2024/02/06 12:36:19 by vvaas            ###   ########.fr       */
+/*   Updated: 2024/02/06 12:56:32 by vvaas            ###   ########.fr       */
 /*                                                                            */
 /******************************************************************************/
 
@@ -373,7 +373,11 @@ namespace irc
 			client->sendCode(ERR_NONICKNAMEGIVEN, "KICK : No nickname given");
 			return;
 		}
-
+		if (msg.getArgs().size() < 2)
+		{
+			client->sendCode(ERR_NEEDMOREPARAMS, "KICK : Not enough parameters");
+			return ;
+		}
 		typedef std::vector<std::string>::iterator name_it;
 		std::vector<std::string> channels = unstd::split(msg.getArgs()[0], ',');
 		std::vector<std::string> users = unstd::split(msg.getArgs()[1], ',');
