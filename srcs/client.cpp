@@ -6,7 +6,7 @@
 /*   By: vvaas <vvaas@student.42angouleme.fr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/21 10:35:52 by maldavid          #+#    #+#             */
-/*   Updated: 2024/02/06 12:31:53 by maldavid         ###   ########.fr       */
+/*   Updated: 2024/02/06 12:36:00 by vvaas            ###   ########.fr       */
 /*                                                                            */
 /******************************************************************************/
 
@@ -35,7 +35,7 @@ namespace irc
 #ifdef DEBUG
 		logs::report(log_message, "sending '%s'", command.c_str());
 #endif
-		if(send(_fd, command.c_str(), command.size(), 0) != static_cast<ssize_t>(command.length()))
+		if (send(_fd, command.c_str(), command.size(), 0) != static_cast<ssize_t>(command.length()))
 			logs::report(log_error, "server failed to send a code to '%s' (:sadge:)", _username.c_str());
 	}
 
@@ -45,7 +45,7 @@ namespace irc
 #ifdef DEBUG
 		logs::report(log_message, "sending '%s'", command.c_str());
 #endif
-		if(send(_fd, command.c_str(), command.size(), 0) != static_cast<ssize_t>(command.length()))
+		if (send(_fd, command.c_str(), command.size(), 0) != static_cast<ssize_t>(command.length()))
 			logs::report(log_error, "server failed to send a code to '%s' (:sadge:)", _username.c_str());
 	}
 
@@ -55,7 +55,7 @@ namespace irc
 #ifdef DEBUG
 		logs::report(log_message, "sending '%s'", command.c_str());
 #endif
-		if(send(_fd, command.c_str(), command.size(), 0) != static_cast<ssize_t>(command.length()))
+		if (send(_fd, command.c_str(), command.size(), 0) != static_cast<ssize_t>(command.length()))
 			logs::report(log_error, "server failed to send a code to '%s' (:sadge:)", _username.c_str());
 	}
 
@@ -64,7 +64,7 @@ namespace irc
 #ifdef DEBUG
 		logs::report(log_message,"sending '%s'", str.c_str());
 #endif
-		if(send(_fd, str.c_str(), str.length(), 0) != static_cast<ssize_t>(str.length()))
+		if (send(_fd, str.c_str(), str.length(), 0) != static_cast<ssize_t>(str.length()))
 			logs::report(log_error, "server failed to send a message to '%s' (:sadge:)", _username.c_str());
 	}
 
@@ -74,7 +74,7 @@ namespace irc
 #ifdef DEBUG
 		logs::report(log_message,"sending '%s'", out.c_str());
 #endif
-		if(send(_fd, out.c_str(), out.length(), 0) != static_cast<ssize_t>(out.length()))
+		if (send(_fd, out.c_str(), out.length(), 0) != static_cast<ssize_t>(out.length()))
 			logs::report(log_error, "server failed to send a message from '%s' to '%s' (:sadge:)", sender.c_str(), _username.c_str());
 	}
 
@@ -90,7 +90,7 @@ namespace irc
 
 		int len = vsnprintf(NULL, 0, message.c_str(), al);
 
-		if(len > 0)
+		if (len > 0)
 		{
 			std::vector<char> tmp(len + 1);
 			vsnprintf(&tmp[0], tmp.size(), message.c_str(), al_copy);
@@ -103,17 +103,17 @@ namespace irc
 #ifdef DEBUG
 		logs::report(log_message,"sending '%s'", buffer.c_str());
 #endif	
-		if(send(_fd, buffer.c_str(), buffer.length(), 0) < static_cast<ssize_t>(buffer.length()))
+		if (send(_fd, buffer.c_str(), buffer.length(), 0) < static_cast<ssize_t>(buffer.length()))
 			logs::report(log_error, "server failed to send a message to '%s'", _nickname.c_str());
 	}
 	void Client::printUserHeader() const
 	{
 		std::cout << AnsiColor::green << "[User " << _id;
-		if(!_realname.empty())
+		if (!_realname.empty())
 			std::cout << " {realname " << _realname << '}';
-		if(!_username.empty())
+		if (!_username.empty())
 			std::cout << " {username " << _username << "}";
-		if(!_nickname.empty())
+		if (!_nickname.empty())
 			std::cout << " {nickname " << _nickname << "}";
 		std::cout << "] : " << AnsiColor::reset;
 	}
@@ -121,14 +121,14 @@ namespace irc
 	std::string Client::getNextMsg()
 	{
 		std::size_t finder = _msg_in_flight.find("\r\n");
-		if(finder != std::string::npos)
+		if (finder != std::string::npos)
 		{
 			std::string msg = _msg_in_flight.substr(0, finder);
 			_msg_in_flight = _msg_in_flight.substr(finder + 2);
 			return msg;
 		}
 		finder = _msg_in_flight.find("\n");
-		if(finder != std::string::npos)
+		if (finder != std::string::npos)
 		{
 			std::string msg = _msg_in_flight.substr(0, finder);
 			_msg_in_flight = _msg_in_flight.substr(finder + 1);
@@ -147,8 +147,8 @@ namespace irc
 		std::string tosend = "Your host is ";
 		getsockopt(_fd, SOL_SOCKET, SO_PROTOCOL, &protocol, &size);
 		protoent *proto = getprotobynumber(protocol);
-		if(!isLogged() || !isRegistered() || isWelcomed() || _nickname.empty())
-			return;
+		if (!isLogged() || !isRegistered() || isWelcomed() || _nickname.empty())
+			return ;
 		_welcomed = true; 
 		gethostname(hostname, 1023);
 		tosend += hostname;

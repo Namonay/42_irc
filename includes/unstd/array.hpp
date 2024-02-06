@@ -1,14 +1,14 @@
-/* ************************************************************************** */
+/******************************************************************************/
 /*                                                                            */
 /*                                                        :::      ::::::::   */
 /*   array.hpp                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: maldavid <kbz_8.dev@akel-engine.com>       +#+  +:+       +#+        */
+/*   By: vvaas <vvaas@student.42angouleme.fr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/20 09:31:30 by maldavid          #+#    #+#             */
-/*   Updated: 2024/01/20 19:12:36 by maldavid         ###   ########.fr       */
+/*   Updated: 2024/02/06 12:36:19 by vvaas            ###   ########.fr       */
 /*                                                                            */
-/* ************************************************************************** */
+/******************************************************************************/
 
 #ifndef __UNSTD_ARRAY__
 #define __UNSTD_ARRAY__
@@ -25,13 +25,13 @@ namespace unstd
 			TArray() {}
 			TArray(const TArray<T, N>& rhs)
 			{
-				for(std::size_t i = 0; i < N; i++)
+				for (std::size_t i = 0; i < N; i++)
 					_data[i] = rhs._data[i];
 			}
 
 			inline TArray& operator=(const TArray<T, N>& rhs)
 			{
-				for(std::size_t i = 0; i < N; i++)
+				for (std::size_t i = 0; i < N; i++)
 					_data[i] = rhs._data[i];
 				return *this;
 			}

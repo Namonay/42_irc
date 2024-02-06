@@ -6,7 +6,7 @@
 /*   By: vvaas <vvaas@student.42angouleme.fr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/21 09:12:28 by maldavid          #+#    #+#             */
-/*   Updated: 2024/02/06 10:51:18 by vvaas            ###   ########.fr       */
+/*   Updated: 2024/02/06 12:35:48 by vvaas            ###   ########.fr       */
 /*                                                                            */
 /******************************************************************************/
 
@@ -29,7 +29,7 @@ namespace irc
 
 			inline void closeMainSocket()
 			{
-				if(_main_socket > NULL_SOCKET)
+				if (_main_socket > NULL_SOCKET)
 					close(_main_socket);
 				_main_socket = NULL_SOCKET;
 				_active = false;
