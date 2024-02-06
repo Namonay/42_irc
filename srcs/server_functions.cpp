@@ -6,7 +6,7 @@
 /*   By: vvaas <vvaas@student.42angouleme.fr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/22 17:31:06 by maldavid          #+#    #+#             */
-/*   Updated: 2024/02/06 12:56:32 by vvaas            ###   ########.fr       */
+/*   Updated: 2024/02/06 13:10:44 by vvaas            ###   ########.fr       */
 /*                                                                            */
 /******************************************************************************/
 
@@ -363,7 +363,7 @@ namespace irc
 
 		client_target->inviteToChannel(channel_target->getName());
 		client_target->sendMsg(client->getNickName(), "INVITE " + msg.getArgs()[0] + ' ' + msg.getArgs()[1], "");
-		client->sendCode(RPL_INVITING, msg.getArgs()[1] + ' ' + msg.getArgs()[0], "");
+		client->sendCode(RPL_INVITING, "", ' ' + msg.getArgs()[0] + ' ' + msg.getArgs()[1]);
 	}
 
 	void Server::handleKick(unstd::SharedPtr<class Client> client, const Message& msg)
