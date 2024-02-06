@@ -6,7 +6,7 @@
 /*   By: vvaas <vvaas@student.42angouleme.fr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/21 09:12:28 by maldavid          #+#    #+#             */
-/*   Updated: 2024/01/30 00:24:49 by vvaas            ###   ########.fr       */
+/*   Updated: 2024/02/06 10:51:18 by vvaas            ###   ########.fr       */
 /*                                                                            */
 /******************************************************************************/
 
@@ -18,6 +18,7 @@
 #include <irc.hpp>
 #include <unstd/shared_ptr.hpp>
 #include <config.hpp>
+#include <channel.hpp>
 
 namespace irc
 {
@@ -36,6 +37,10 @@ namespace irc
 
 			void wait();
 
+			inline const std::string &getRunDate(void) const { return _run_date; };
+			inline size_t getClientCount(void) const { return _client.size(); };
+			inline size_t getChannelCount(void) const { return _channels.size(); };
+
 			~Server();
 
 		private:
@@ -48,9 +53,9 @@ namespace irc
 			void handleInput();
 
 			// ugly as f*ck
-			void handleNick(unstd::SharedPtr<class Client> client, const class Message& msg);
-			void handleUser(unstd::SharedPtr<class Client> client, const class Message& msg);
-			void handlePass(unstd::SharedPtr<class Client> client, const class Message& msg);
+			void handleNick(unstd::SharedPtr<class Client> client, const class Message& msg, const class Server& server);
+			void handleUser(unstd::SharedPtr<class Client> client, const class Message& msg, const class Server& server);
+			void handlePass(unstd::SharedPtr<class Client> client, const class Message& msg, const class Server& server);
 			void handleQuit(unstd::SharedPtr<class Client> client, const class Message& msg);
 			void handlePart(unstd::SharedPtr<class Client> client, const class Message& msg);
 			void handleJoin(unstd::SharedPtr<class Client> client, const class Message& msg);
@@ -76,6 +81,7 @@ namespace irc
 			sockaddr_in _s_data;
 			socklen_t _s_len;
 			fd_set _fd_set;
+			std::string _run_date;
 			const std::string _password;
 			const std::string _ip;
 			int _port;

@@ -6,7 +6,7 @@
 /*   By: vvaas <vvaas@student.42angouleme.fr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/21 10:33:17 by maldavid          #+#    #+#             */
-/*   Updated: 2024/01/30 21:12:10 by vvaas            ###   ########.fr       */
+/*   Updated: 2024/02/06 10:08:14 by vvaas            ###   ########.fr       */
 /*                                                                            */
 /******************************************************************************/
 
@@ -41,7 +41,6 @@ namespace irc
 
 			inline void login() { _logged = true; }
 			inline void register_user() { _registered = true; }
-			inline void welcome() { if (!isLogged() || !isRegistered() || isWelcomed() || _nickname.empty()) return ; _welcomed = true; sendCode(RPL_WELCOME, "Welcome to yipirc :), " + _nickname); }
 			inline void requireDisconnect() { _disconnect_required = true; }
 
 			inline bool isLogged() const { return _logged; }
@@ -63,6 +62,7 @@ namespace irc
 			void sendMsg(const std::string& sender, const std::string& cmd, const std::string& trailing);
 			void sendModular(std::string message, ...);
 			void sendCodeInChannel(const std::string& code, const class Channel &chan, const std::string& msg);
+			void welcome(const class Server& server);
 			void kill(const std::string& reason);
 			inline void inviteToChannel(const std::string& channel) { _invites.insert(channel); }
 			inline bool hasBeenInvitedTo(const std::string& channel) { return _invites.erase(channel); }

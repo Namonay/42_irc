@@ -6,7 +6,7 @@
 /*   By: vvaas <vvaas@student.42angouleme.fr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/21 10:35:52 by maldavid          #+#    #+#             */
-/*   Updated: 2024/01/30 17:48:31 by vvaas            ###   ########.fr       */
+/*   Updated: 2024/02/06 10:48:54 by vvaas            ###   ########.fr       */
 /*                                                                            */
 /******************************************************************************/
 
@@ -22,6 +22,8 @@
 #include <cstdio>
 #include <vector>
 #include <channel.hpp>
+#include <server.hpp>
+#include <netdb.h>
 
 namespace irc
 {
@@ -93,7 +95,7 @@ namespace irc
 			std::vector<char> tmp(len + 1);
 			vsnprintf(&tmp[0], tmp.size(), message.c_str(), al_copy);
 			buffer = std::string(&tmp[0], len);
-			buffer += "\r";
+			buffer += "\r\n";
 		}
 		va_end(al_copy);
 		va_end(al);
@@ -135,6 +137,29 @@ namespace irc
 		logs::report(log_warning, "Incomplete data type");
 		_msg_in_flight.clear();
 		return (std::string());
+	}
+
+	void Client::welcome(const Server& server) 
+	{
+		char hostname[1024];
+		int protocol;
+		socklen_t size = sizeof(protocol);
+		std::string tosend = "Your host is ";
+		getsockopt(_fd, SOL_SOCKET, SO_PROTOCOL, &protocol, &size);
+		protoent *proto = getprotobynumber(protocol);
+		if (!isLogged() || !isRegistered() || isWelcomed() || _nickname.empty())
+			return ;
+		_welcomed = true; 
+		gethostname(hostname, 1023);
+		tosend += hostname;
+		sendCode(RPL_YOURHOST, tosend);
+		tosend = "This server is running since ";
+		tosend += server.getRunDate();
+		sendCode(RPL_CREATED, tosend);
+		sendModular("%s %s %s %s %s %s %s %s", ":yipirc", RPL_MYINFO, getNickName().c_str(), "YipIRC", "1.0", "o", "tikl", "kl");
+		sendModular("There are %u users on %u channels", server.getClientCount(), server.getChannelCount());
+		sendModular("You are connected using %s", proto->p_name);
+		sendCode(RPL_WELCOME, "Welcome to yipirc :), your nickname is : " + _nickname);
 	}
 
 	void Client::kill(const std::string& reason)

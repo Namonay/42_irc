@@ -6,7 +6,7 @@
 /*   By: vvaas <vvaas@student.42angouleme.fr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/21 10:36:21 by maldavid          #+#    #+#             */
-/*   Updated: 2024/02/05 16:26:14 by maldavid         ###   ########.fr       */
+/*   Updated: 2024/02/06 10:33:44 by vvaas            ###   ########.fr       */
 /*                                                                            */
 /******************************************************************************/
 
@@ -56,7 +56,7 @@ namespace irc
 				}
 			}
 			if(it == _clients.end())
-				client->sendCode(ERR_USERNOTINCHANNEL, "User not in channel");
+				client->sendCode(ERR_USERNOTINCHANNEL, "MODE : User not in channel");
 			return;
 		}
 
@@ -70,7 +70,7 @@ namespace irc
 			}
 		}
 		if(it == _operators.end())
-			client->sendCode(ERR_USERNOTINCHANNEL, "User not in channel");
+			client->sendCode(ERR_USERNOTINCHANNEL, "MODE : User not in channel");
 	}
 
 	bool Channel::removeClient(unstd::SharedPtr<Client> client, const std::string& reason, bool quit)
@@ -101,9 +101,9 @@ namespace irc
 				clientlist += '@';
 			clientlist += const_cast<unstd::SharedPtr<irc::Client>&>(*it)->getNickName() + ' ';
 		}
-		client->sendModular("%s\r\n", clientlist.c_str());
+		client->sendModular("%s", clientlist.c_str());
 		clientlist = ":yipirc " RPL_NAMREPLY " " + client->getNickName() + " @ " + getName() + " :";
-		client->sendModular(":yipirc %s %s %s : End of names list\r\n", RPL_ENDOFNAMES, client->getNickName().c_str(), getName().c_str());
+		client->sendModular(":yipirc %s %s %s : End of names list", RPL_ENDOFNAMES, client->getNickName().c_str(), getName().c_str());
 	}
 
 	void Channel::handleMessage(const std::string& msg, unstd::SharedPtr<Client> client, bool notice) const

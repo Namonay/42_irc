@@ -6,7 +6,7 @@
 /*   By: vvaas <vvaas@student.42angouleme.fr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/22 17:31:06 by maldavid          #+#    #+#             */
-/*   Updated: 2024/02/05 12:24:42 by vvaas            ###   ########.fr       */
+/*   Updated: 2024/02/06 10:33:11 by vvaas            ###   ########.fr       */
 /*                                                                            */
 /******************************************************************************/
 
@@ -34,11 +34,11 @@ namespace irc
 	typedef std::vector<Channel>::iterator channel_it;
 	typedef std::vector<Channel>::const_iterator channel_const_it;
 
-	void Server::handleNick(unstd::SharedPtr<class Client> client, const Message& msg)
+	void Server::handleNick(unstd::SharedPtr<class Client> client, const Message& msg, const Server& server)
 	{
 		if(msg.getTokens().size() < 2)
 		{
-			client->sendCode(ERR_NONICKNAMEGIVEN, "No nickname given");
+			client->sendCode(ERR_NONICKNAMEGIVEN, " NICK : No nickname given");
 			return;
 		}
 		if(msg.getTokens().size() >= 3)
@@ -48,10 +48,14 @@ namespace irc
 		{
 			if((*it)->getNickName() == nickname)
 			{
-				client->setNewNickName(nickname);
-				client->sendCode(ERR_NICKCOLLISION, "Nickname is used");
-				client->kill("Nickname already used");
-				client->requireDisconnect();
+				if (client->getNickName().empty())
+				{
+					client->sendCode(ERR_NICKCOLLISION, " NICK : Nickname is used");
+					client->kill(" NICK : Nickname already used");
+					client->requireDisconnect();
+					return ;
+				}
+				client->sendCode(ERR_NICKCOLLISION, "NICK : Nickname is used");
 				return;
 			}
 		}
@@ -60,21 +64,21 @@ namespace irc
 		client->setNewNickName(msg.getTokens()[1]);
 		for(client_it it = _client.begin(); it != _client.end(); ++it)
 			(*it)->sendMsg(oldNick, "NICK", msg.getTokens()[1]);
-		client->welcome();
+		client->welcome(server);
 		client->printUserHeader();
 		std::cout << "new nickname, " << client->getNickName() << std::endl;
 	}
 
-	void Server::handleUser(unstd::SharedPtr<class Client> client, const Message& msg)
+	void Server::handleUser(unstd::SharedPtr<class Client> client, const Message& msg, const Server& server)
 	{
 		if(msg.getTokens().size() < 5)
 		{
-			client->sendCode(ERR_NEEDMOREPARAMS, "Need more parameters");
+			client->sendCode(ERR_NEEDMOREPARAMS, "USER : Need more parameters");
 			return;
 		}
 		if(client->isRegistered())
 		{
-			client->sendCode(ERR_ALREADYREGISTRED, "You are already registered");
+			client->sendCode(ERR_ALREADYREGISTRED, "USER : You are already registered");
 			return ;
 		}
 		if(msg.getTokens()[4][0] != ':')
@@ -96,21 +100,24 @@ namespace irc
 		client->setNewRealName(realname);
 		std::cout << "new realname, " << client->getRealName() << std::endl;
 		client->register_user();
-		client->welcome();
+		client->welcome(server);
 	}
 
-	void Server::handlePass(unstd::SharedPtr<class Client> client, const Message& msg)
+	void Server::handlePass(unstd::SharedPtr<class Client> client, const Message& msg, const Server& server)
 	{
 		if(client->isLogged())
+		{
+			client->sendCode(ERR_ALREADYREGISTRED, "PASS : You are already registered");
 			return;
+		}
 		if(msg.getTokens()[1] == _password)
 		{
 			client->login();
-			client->welcome();
+			client->welcome(server);
 		}
 		else
 		{
-			client->sendCode(ERR_PASSWDMISMATCH);
+			client->sendCode(ERR_PASSWDMISMATCH, " PASS : Invalid password");
 			client->requireDisconnect();
 		}
 	}
@@ -127,7 +134,7 @@ namespace irc
 	{
 		if(msg.getTokens().size() < 2 && msg.getTokens().size() > 3)
 		{
-			client->sendCode(ERR_NEEDMOREPARAMS, "Parameters amount invalid");
+			client->sendCode(ERR_NEEDMOREPARAMS, "PART : Parameters amount invalid");
 			return;
 		}
 		if(msg.getTokens()[1][0] != '#' && msg.getTokens()[1][0] != '&')
@@ -142,7 +149,7 @@ namespace irc
 			logs::report(log_fatal_error, "(KICK), cannot get channel '%s' by name; panic !", channel->getName().c_str());
 		if(!channel->removeClient(client, (msg.getReason().empty() ? "" : msg.getReason())))
 		{
-			client->sendCode(ERR_NOTONCHANNEL, "Not on channel");
+			client->sendCode(ERR_NOTONCHANNEL, "PART : Not on channel");
 			return;
 		}
 		client->printUserHeader();
@@ -164,7 +171,7 @@ namespace irc
 	{
 		if(msg.getArgs().empty())
 		{
-			client->sendCode(ERR_NEEDMOREPARAMS, "Need more params");
+			client->sendCode(ERR_NEEDMOREPARAMS, "JOIN : Need more params");
 			return;
 		}
 		if(msg.getTokens()[1][0] != '#' && msg.getTokens()[1][0] != '&')
@@ -186,9 +193,9 @@ namespace irc
 			return ;
 		}
 		if((msg.getTokens().size() == 3 && msg.getTokens()[2] != it->getPassword()) || (msg.getTokens().size() == 2 && it->getPassword().size() > 0))
-			client->sendCode(ERR_BADCHANNELKEY, "Invalid password");
+			client->sendCode(ERR_BADCHANNELKEY, "JOIN : Invalid password");
 		else if(it->getChannelSize() != -1 && it->getChannelSize() <= static_cast<int>(it->getNumberOfClients()))
-			client->sendCode(ERR_CHANNELISFULL, "Channel is full");
+			client->sendCode(ERR_CHANNELISFULL, "JOIN : Channel is full");
 		else if(it->isInviteOnly() && !client->hasBeenInvitedTo(it->getName()))
 			client->sendCode(ERR_INVITEONLYCHAN, it->getName());
 		else if(it->getPassword().size() == 0)
@@ -201,17 +208,17 @@ namespace irc
 	{
 		if(msg.getArgs().empty())
 		{
-			client->sendCode(ERR_NORECIPIENT, "No recipient given");
+			client->sendCode(ERR_NORECIPIENT, "PRIVMSG : No recipient given");
 			return;
 		}
 		if(msg.getTokens().size() < 3)
 		{
-			client->sendCode(ERR_NOTEXTTOSEND, "No text to send");
+			client->sendCode(ERR_NOTEXTTOSEND, "PRIVMSG : No text to send");
 			return;
 		}
 		if(msg.getReason().empty())
 		{
-			client->sendCode(ERR_NOTEXTTOSEND, "No text to send");
+			client->sendCode(ERR_NOTEXTTOSEND, "PRIVMSG : No text to send");
 			return ;
 		}
 		if(msg.getTokens()[1][0] != '&' && msg.getTokens()[1][0] != '#')
@@ -231,7 +238,7 @@ namespace irc
 						complete_msg.erase(complete_msg.begin());
 					}
 					if(complete_msg.empty())
-						client->sendCode(ERR_NOTEXTTOSEND, "No text to send");
+						client->sendCode(ERR_NOTEXTTOSEND, "PRIVMSG : No text to send");
 					(*itc)->sendMsg(client->getNickName(), "PRIVMSG " + (*itc)->getNickName(), complete_msg);
 					break;
 				}
@@ -244,7 +251,7 @@ namespace irc
 			{
 				if(!it->hasClient(client))
 				{
-					client->sendCode(ERR_CANNOTSENDTOCHAN, "You are not in the channel");
+					client->sendCode(ERR_CANNOTSENDTOCHAN, "PRIVMSG : You are not in the channel");
 					return ;
 				}
 				std::string complete_msg;
@@ -313,7 +320,7 @@ namespace irc
 	{
 		if(msg.getArgs().empty() || msg.getArgs().size() != 2)
 		{
-			client->sendCode(ERR_NEEDMOREPARAMS, "Invalid parameters");
+			client->sendCode(ERR_NEEDMOREPARAMS, "INVITE : Invalid parameters");
 			return;
 		}
 
@@ -350,7 +357,7 @@ namespace irc
 
 		if(channel_target->isInviteOnly() && !channel_target->isOp(client))
 		{
-			client->sendCode(ERR_CHANOPRIVSNEEDED, msg.getArgs()[1], "you're not channel operator");
+			client->sendCode(ERR_CHANOPRIVSNEEDED, msg.getArgs()[1], "INVITE : you're not channel operator");
 			return;
 		}
 
@@ -363,7 +370,7 @@ namespace irc
 	{
 		if(msg.getArgs().empty())
 		{
-			client->sendCode(ERR_NONICKNAMEGIVEN, "No nickname given");
+			client->sendCode(ERR_NONICKNAMEGIVEN, "KICK : No nickname given");
 			return;
 		}
 
@@ -381,12 +388,12 @@ namespace irc
 		{
 			if(!isUserKnown(*user))
 			{
-				client->sendCode(ERR_NOSUCHNICK, const_cast<std::string&>(*user) + " no such nick");
+				client->sendCode(ERR_NOSUCHNICK, const_cast<std::string&>(*user) + " : no such nick");
 				continue;
 			}
 			if(!isChannelKnown(*channel))
 			{
-				client->sendCode(ERR_NOSUCHCHANNEL, const_cast<std::string&>(*channel) + " no such channel");
+				client->sendCode(ERR_NOSUCHCHANNEL, const_cast<std::string&>(*channel) + " : no such channel");
 				continue;
 			}
 
@@ -422,7 +429,7 @@ namespace irc
 		if(msg.getTokens().size() != 2)
 			return;
 		if((chan = getChannelByName(msg.getTokens()[1])) == NULL)
-			client->sendCode(ERR_NOSUCHCHANNEL, "No such channel");
+			client->sendCode(ERR_NOSUCHCHANNEL, "WHO : No such channel");
 		chan->sendWho(client);
 	}
 
@@ -430,7 +437,7 @@ namespace irc
 	{
 		if(msg.getArgs().empty())
 		{
-			client->sendCode(ERR_NEEDMOREPARAMS, "Need more parameters");
+			client->sendCode(ERR_NEEDMOREPARAMS, "TOPIC : Need more parameters");
 			return;
 		}
 		if(!isChannelKnown(msg.getArgs()[0]))
@@ -474,14 +481,14 @@ namespace irc
 		irc::Channel *chan;
 		if(msg.getTokens().size() < 2)
 		{
-			client->sendCode(ERR_NEEDMOREPARAMS, "Need more parameters");
+			client->sendCode(ERR_NEEDMOREPARAMS, "MODE : Need more parameters");
 			return ;
 		}
 		if(msg.getTokens().size() == 2 && (msg.getTokens()[1][0] == '#' || msg.getTokens()[1][0] == '&'))
 		{
 			chan = getChannelByName(msg.getTokens()[1]);
 			if(chan == NULL)
-				client->sendCode(ERR_NOSUCHCHANNEL, "No such channel");
+				client->sendCode(ERR_NOSUCHCHANNEL, "MODE : No such channel");
 			else
 				chan->showModes(client);
 			return ;
@@ -489,12 +496,12 @@ namespace irc
 		chan = getChannelByName(msg.getTokens()[1]);
 		if(chan == NULL)
 		{
-			client->sendCode(ERR_NOSUCHCHANNEL, "No such channel");
+			client->sendCode(ERR_NOSUCHCHANNEL, "MODE : No such channel");
 			return ;
 		}
 		if(!chan->isOp(client))
 		{
-			client->sendCodeInChannel(ERR_CHANOPRIVSNEEDED, *chan, "You need operator privileges to execute this command");
+			client->sendCodeInChannel(ERR_CHANOPRIVSNEEDED, *chan, "MODE : You need operator privileges to execute this command");
 			return ;
 		}
 		if(msg.getTokens()[2][0] != '-' && msg.getTokens()[2][0] != '+')
@@ -504,7 +511,6 @@ namespace irc
 		}
 		chan->changeMode(client, msg);
 	}
-
 	void Server::handleRussian(unstd::SharedPtr<class Client> client)
 	{
 		srand(time(NULL));
@@ -516,7 +522,7 @@ namespace irc
 			client->requireDisconnect();
 		}
 		else
-			client->sendModular("%s\n", "Click..");
+			client->sendModular("%s", "Click..");
 	}
 }
 

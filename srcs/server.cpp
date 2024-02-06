@@ -6,7 +6,7 @@
 /*   By: vvaas <vvaas@student.42angouleme.fr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/21 09:31:17 by maldavid          #+#    #+#             */
-/*   Updated: 2024/02/05 16:14:13 by vvaas            ###   ########.fr       */
+/*   Updated: 2024/02/06 10:22:58 by vvaas            ###   ########.fr       */
 /*                                                                            */
 /******************************************************************************/
 
@@ -19,6 +19,7 @@
 #include <ansi.hpp>
 #include <config.hpp>
 #include <message.hpp>
+#include <ctime>
 
 namespace irc
 {
@@ -30,6 +31,12 @@ namespace irc
 
 	Server::Server(int port, const std::string& password) : _s_len(sizeof(_s_data)), _password(password), _port(port), _main_socket(NULL_SOCKET), _active(true)
 	{
+		time_t ltime = time(NULL);
+		struct tm tstruct = *localtime(&ltime);
+		char buf[100];
+
+		strftime(buf, 100, "%a %b %d %Y %T CET", &tstruct);
+		_run_date = buf;
 		if (password.empty() || password.find_first_of(" \t\r\v") != std::string::npos)
 		{
 			logs::report(log_error, "Password is invalid !");
@@ -153,12 +160,12 @@ namespace irc
 
 		const Message msg(client, client->getNextMsg());
 		if(msg.getCmd() == "NICK")
-			handleNick(client, msg);
+			handleNick(client, msg, *this);
 		else if(msg.getCmd() == "USER")
-			handleUser(client, msg);
+			handleUser(client, msg, *this);
 		else if(msg.getCmd() == "PASS")
-			handlePass(client, msg);
-		else if(!client->isLogged())
+			handlePass(client, msg, *this);
+		else if(!client->isWelcomed())
 			return true;
 		else if(msg.getCmd() == "QUIT")
 			handleQuit(client, msg);
