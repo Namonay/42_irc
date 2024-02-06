@@ -6,7 +6,7 @@
 /*   By: vvaas <vvaas@student.42angouleme.fr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/20 09:27:04 by maldavid          #+#    #+#             */
-/*   Updated: 2024/01/30 17:35:22 by maldavid         ###   ########.fr       */
+/*   Updated: 2024/02/06 11:57:04 by vvaas            ###   ########.fr       */
 /*                                                                            */
 /******************************************************************************/
 
@@ -42,7 +42,7 @@ int main(int ac, char** av)
 
 	char* end;
 	int port = std::strtol(av[1], &end, 10);
-	if (errno == ERANGE || *end != 0 || port < 0 || port > 0xFFFF || std::strlen(av[1]) == 0)
+	if (errno == ERANGE || *end != 0 || port <= 0 || port > 0xFFFF || std::strlen(av[1]) == 0)
 		irc::logs::report(irc::log_fatal_error, "invalid port");
 
 	irc::Server serv(port, av[2]);
