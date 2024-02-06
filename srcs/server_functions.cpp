@@ -6,7 +6,7 @@
 /*   By: vvaas <vvaas@student.42angouleme.fr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/22 17:31:06 by maldavid          #+#    #+#             */
-/*   Updated: 2024/02/06 11:38:00 by vvaas            ###   ########.fr       */
+/*   Updated: 2024/02/06 12:30:27 by maldavid         ###   ########.fr       */
 /*                                                                            */
 /******************************************************************************/
 
@@ -42,18 +42,18 @@ namespace irc
 			return;
 		}
 		if(msg.getTokens().size() >= 3)
-			return ;
+			return;
 		const std::string& nickname = msg.getTokens()[1];
 		for(client_it it = _client.begin(); it != _client.end(); ++it)
 		{
 			if((*it)->getNickName() == nickname)
 			{
-				if (client->getNickName().empty())
+				if(client->getNickName().empty())
 				{
 					client->sendCode(ERR_NICKCOLLISION, " NICK : Nickname is used");
 					client->kill(" NICK : Nickname already used");
 					client->requireDisconnect();
-					return ;
+					return;
 				}
 				client->sendCode(ERR_NICKCOLLISION, "NICK : Nickname is used");
 				return;
@@ -79,10 +79,10 @@ namespace irc
 		if(client->isRegistered())
 		{
 			client->sendCode(ERR_ALREADYREGISTRED, "USER : You are already registered");
-			return ;
+			return;
 		}
 		if(msg.getTokens()[4][0] != ':')
-			return ;
+			return;
 		client->printUserHeader();
 		client->setNewUserName(msg.getTokens()[1]);
 		std::cout << "new username, " << client->getUserName() << std::endl;
@@ -190,7 +190,7 @@ namespace irc
 			_channels.push_back(Channel(msg.getTokens()[1]));
 			_channels.back().addClient(client, true);
 			logs::report(log_message, "channel '%s' has been created", msg.getTokens()[1].c_str());
-			return ;
+			return;
 		}
 		if((msg.getTokens().size() == 3 && msg.getTokens()[2] != it->getPassword()) || (msg.getTokens().size() == 2 && it->getPassword().size() > 0))
 			client->sendCode(ERR_BADCHANNELKEY, "JOIN : Invalid password");
@@ -219,7 +219,7 @@ namespace irc
 		if(msg.getReason().empty())
 		{
 			client->sendCode(ERR_NOTEXTTOSEND, "PRIVMSG : No text to send");
-			return ;
+			return;
 		}
 		if(msg.getTokens()[1][0] != '&' && msg.getTokens()[1][0] != '#')
 		{
@@ -252,7 +252,7 @@ namespace irc
 				if(!it->hasClient(client))
 				{
 					client->sendCode(ERR_CANNOTSENDTOCHAN, "PRIVMSG : You are not in the channel");
-					return ;
+					return;
 				}
 				std::string complete_msg;
 				if(msg.getTokens().size() > 2)
@@ -294,7 +294,7 @@ namespace irc
 					break;
 				}
 			}
-			return ;
+			return;
 		}
 		for(channel_it it = _channels.begin(); it != _channels.end(); ++it)
 		{
@@ -431,7 +431,7 @@ namespace irc
 		if((chan = getChannelByName(msg.getTokens()[1])) == NULL)
 		{
 			client->sendCode(ERR_NOSUCHCHANNEL, "WHO : No such channel");
-			return ;
+			return;
 		}
 		chan->sendWho(client);
 	}
@@ -485,7 +485,7 @@ namespace irc
 		if(msg.getTokens().size() < 2)
 		{
 			client->sendCode(ERR_NEEDMOREPARAMS, "MODE : Need more parameters");
-			return ;
+			return;
 		}
 		if(msg.getTokens().size() == 2 && (msg.getTokens()[1][0] == '#' || msg.getTokens()[1][0] == '&'))
 		{
@@ -494,23 +494,23 @@ namespace irc
 				client->sendCode(ERR_NOSUCHCHANNEL, "MODE : No such channel");
 			else
 				chan->showModes(client);
-			return ;
+			return;
 		}
 		chan = getChannelByName(msg.getTokens()[1]);
 		if(chan == NULL)
 		{
 			client->sendCode(ERR_NOSUCHCHANNEL, "MODE : No such channel");
-			return ;
+			return;
 		}
 		if(!chan->isOp(client))
 		{
 			client->sendCodeInChannel(ERR_CHANOPRIVSNEEDED, *chan, "MODE : You need operator privileges to execute this command");
-			return ;
+			return;
 		}
 		if(msg.getTokens()[2][0] != '-' && msg.getTokens()[2][0] != '+')
 		{
 			client->sendCode(ERR_UNKNOWNMODE, "MODE : Invalid flags (missing +/-)");
-			return ;
+			return;
 		}
 		chan->changeMode(client, msg);
 	}

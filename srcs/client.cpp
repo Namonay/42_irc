@@ -6,7 +6,7 @@
 /*   By: vvaas <vvaas@student.42angouleme.fr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/21 10:35:52 by maldavid          #+#    #+#             */
-/*   Updated: 2024/02/06 11:40:41 by vvaas            ###   ########.fr       */
+/*   Updated: 2024/02/06 12:31:53 by maldavid         ###   ########.fr       */
 /*                                                                            */
 /******************************************************************************/
 
@@ -103,7 +103,7 @@ namespace irc
 #ifdef DEBUG
 		logs::report(log_message,"sending '%s'", buffer.c_str());
 #endif	
-		if (send(_fd, buffer.c_str(), buffer.length(), 0) < static_cast<ssize_t>(buffer.length()))
+		if(send(_fd, buffer.c_str(), buffer.length(), 0) < static_cast<ssize_t>(buffer.length()))
 			logs::report(log_error, "server failed to send a message to '%s'", _nickname.c_str());
 	}
 	void Client::printUserHeader() const
@@ -147,8 +147,8 @@ namespace irc
 		std::string tosend = "Your host is ";
 		getsockopt(_fd, SOL_SOCKET, SO_PROTOCOL, &protocol, &size);
 		protoent *proto = getprotobynumber(protocol);
-		if (!isLogged() || !isRegistered() || isWelcomed() || _nickname.empty())
-			return ;
+		if(!isLogged() || !isRegistered() || isWelcomed() || _nickname.empty())
+			return;
 		_welcomed = true; 
 		gethostname(hostname, 1023);
 		tosend += hostname;

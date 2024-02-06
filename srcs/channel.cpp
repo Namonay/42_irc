@@ -6,7 +6,7 @@
 /*   By: vvaas <vvaas@student.42angouleme.fr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/21 10:36:21 by maldavid          #+#    #+#             */
-/*   Updated: 2024/02/06 12:09:38 by vvaas            ###   ########.fr       */
+/*   Updated: 2024/02/06 12:31:15 by maldavid         ###   ########.fr       */
 /*                                                                            */
 /******************************************************************************/
 
@@ -48,8 +48,8 @@ namespace irc
 				
 				if(const_cast<unstd::SharedPtr<irc::Client>&>(*it)->getNickName() == clientname)
 				{
-					if (isOp(*it))
-						return ;
+					if(isOp(*it))
+						return;
 					showModesModify(client, mode, 'o', clientname);
 					_operators.insert(const_cast<unstd::SharedPtr<irc::Client>&>(*it));
 					break;
@@ -125,11 +125,11 @@ namespace irc
 
 		modes += (modevalue) ? '+' : '-';
 		modes += flag;
-		if (flag == 'k')
+		if(flag == 'k')
 			modes += " " + _password;
-		if (flag == 'l')
+		if(flag == 'l')
 			modes += " " + unstd::toString(_channel_size);;
-		if (flag == 'o')
+		if(flag == 'o')
 			modes += " " + op;
 		out += getName();
 		for(client_it it = _clients.begin(); it != _clients.end(); ++it)
@@ -149,9 +149,9 @@ namespace irc
 		if(_channel_size != -1)
 			modes += 'l';
 		if(modes.size() <= 2)
-			return ;
-		if (modes.size() == _name.size() + 2)
-			return ;
+			return;
+		if(modes.size() == _name.size() + 2)
+			return;
 		client->sendCode(RPL_CHANNELMODEIS, modes);
 	}
 
@@ -162,48 +162,48 @@ namespace irc
 		unsigned long arg_nb = 3;
 		int arg_index = 2;
 
-		if (flags.find_first_not_of("itkol+-") != std::string::npos || flags.find_last_of("+-") != 0)
+		if(flags.find_first_not_of("itkol+-") != std::string::npos || flags.find_last_of("+-") != 0)
 		{
 			client->sendCode(ERR_UNKNOWNMODE, "MODE : Unknown mode");
-			return ;
+			return;
 		}
-		for (std::string::iterator it = flags.begin() + 1; it != flags.end(); ++it)
+		for(std::string::iterator it = flags.begin() + 1; it != flags.end(); ++it)
 		{
-			if (std::distance(flags.begin(), it) != static_cast<long>(flags.find_first_of(*it)))
+			if(std::distance(flags.begin(), it) != static_cast<long>(flags.find_first_of(*it)))
 				it = flags.erase(it) - 1;
 		}
-		if (flags.find('o') != std::string::npos)
+		if(flags.find('o') != std::string::npos)
 			arg_nb++;
-		if (flags.find('k') != std::string::npos && modevalue)
+		if(flags.find('k') != std::string::npos && modevalue)
 			arg_nb++;
-		if (flags.find('l') != std::string::npos && modevalue)
+		if(flags.find('l') != std::string::npos && modevalue)
 			arg_nb++;
-		if (msg.getTokens().size() < arg_nb)
+		if(msg.getTokens().size() < arg_nb)
 		{
 			client->sendCode(ERR_NEEDMOREPARAMS, "MODE : Need more params");
-			return ;
+			return;
 		}
 
-		for (std::string::iterator it = flags.begin() + 1; it != flags.end(); ++it)
+		for(std::string::iterator it = flags.begin() + 1; it != flags.end(); ++it)
 		{
 			switch(*it)
 			{
 				case 'i':
-					if (_invite_only == modevalue)
+					if(_invite_only == modevalue)
 						break;
 					_invite_only = modevalue;
 					showModesModify(client, modevalue, 'i');
-					break ;
+					break;
 				case 't':
-					if (_topic_op_restrict == modevalue)
+					if(_topic_op_restrict == modevalue)
 						break;
 					_topic_op_restrict = modevalue;
 					showModesModify(client, modevalue, 't');
-					break ;
+					break;
 				case 'k':
 					if(modevalue)
 					{
-						if (msg.getArgs()[arg_index] == _password)
+						if(msg.getArgs()[arg_index] == _password)
 						{
 							arg_index++;
 							break;
@@ -214,19 +214,19 @@ namespace irc
 					}
 					else
 					{
-						if (_password.empty())
-							return ;
+						if(_password.empty())
+							return;
 						_password.clear();
 						logs::report(log_message, "password removed on %s", _name.c_str());
 						showModesModify(client, modevalue, 'k');
 					}
-					break ;
+					break;
 				case 'o':
 					modOperator(client, msg.getArgs()[arg_index++], modevalue);
-					break ;
+					break;
 				case 'l':
-					if (!modevalue && _channel_size == -1)
-						return ;
+					if(!modevalue && _channel_size == -1)
+						return;
 					if(!modevalue)
 					{
 						_channel_size = -1;
@@ -241,13 +241,13 @@ namespace irc
 						{
 							client->sendCode(ERR_UNKNOWNMODE, "MODE : Invalid channel size");
 							logs::report(log_error, "invalid channel size");
-							return ;
+							return;
 						}
-						if (tmp == _channel_size)
-							return ;
+						if(tmp == _channel_size)
+							return;
 						else
 						{
-							if (tmp == _channel_size)
+							if(tmp == _channel_size)
 								break;
 							_channel_size = tmp;
 							showModesModify(client, modevalue, 'l');

@@ -6,7 +6,7 @@
 /*   By: vvaas <vvaas@student.42angouleme.fr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/21 09:31:17 by maldavid          #+#    #+#             */
-/*   Updated: 2024/02/06 12:21:13 by vvaas            ###   ########.fr       */
+/*   Updated: 2024/02/06 12:31:42 by maldavid         ###   ########.fr       */
 /*                                                                            */
 /******************************************************************************/
 
@@ -35,10 +35,10 @@ namespace irc
 		struct tm tstruct = *localtime(&ltime);
 		char buf[100];
 
-		if (password.empty() || password.find_first_of(" \t\r\v") != std::string::npos)
+		if(password.empty() || password.find_first_of(" \t\r\v") != std::string::npos)
 		{
 			logs::report(log_error, "Password is invalid !");
-			return ;
+			return;
 		}
 		std::memset(&_s_data, 0, sizeof(sockaddr));
 		initSocket();
@@ -84,13 +84,13 @@ namespace irc
 		{
 			if(!FD_ISSET((*it)->getFD(), &_fd_set))
 				continue;
-			while ((recv_size = recv((*it)->getFD(), buffer, INPUT_SIZE, 0)) > 0) // read() but forsocket fd
+			while((recv_size = recv((*it)->getFD(), buffer, INPUT_SIZE, 0)) > 0) // read() but forsocket fd
 			{
 				(*it)->newMsgInFlight(buffer);
 			#ifdef DEBUG
 				logs::report(log_message,"processing '%s'", buffer);
 			#endif
-				while (handleMessage(*it));
+				while(handleMessage(*it));
 				std::memset(buffer, 0, sizeof(buffer)); // clear the buffer to avoid trash remaining
 			}
 			if(recv_size == 0 || (*it)->disconnectRequired()) // recv return 0 ifan user disconnect
@@ -121,8 +121,8 @@ namespace irc
 		int i = 0;
 		socklen_t len = sizeof(sockaddr_in);
 
-		if (_main_socket == NULL_SOCKET)
-			return ;
+		if(_main_socket == NULL_SOCKET)
+			return;
 		while(_active)
 		{
 			FD_ZERO(&_fd_set);
@@ -238,9 +238,9 @@ namespace irc
 
 	Server::~Server()
 	{
-		for (client_it it = _client.begin(); it != _client.end(); ++it)
+		for(client_it it = _client.begin(); it != _client.end(); ++it)
 		{
-			if ((*it)->isWelcomed())
+			if((*it)->isWelcomed())
 				(*it)->kill("Server shutting down");
 		}
 		closeMainSocket();
