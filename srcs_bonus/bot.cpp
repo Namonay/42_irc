@@ -6,7 +6,7 @@
 /*   By: vvaas <vvaas@student.42angouleme.fr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/30 01:54:56 by vvaas             #+#    #+#             */
-/*   Updated: 2024/02/06 12:36:19 by vvaas            ###   ########.fr       */
+/*   Updated: 2024/02/07 16:41:47 by maldavid         ###   ########.fr       */
 /*                                                                            */
 /******************************************************************************/
 
@@ -23,7 +23,7 @@
 
 bool active = true;
 
-Bot::Bot() : _channel_created(false), _logged(false), _fd(-1)
+Bot::Bot() : _fd(-1), _channel_created(false), _logged(false)
 {}
 
 Bot::~Bot()
@@ -43,41 +43,53 @@ void signalsHandler(int foo)
 bool Bot::init(const std::string &ip, const std::string &port, const std::string &password)
 {
 	if(ip.empty() || port.empty() || password.empty())
-		irc::logs::report(irc::log_fatal_error, "An argument is empty");
+	{
+		irc::logs::report(irc::log_error, "An argument is empty");
+		return false;
+	}
 
 	char* end;
 	int portval = std::strtol(port.c_str(), &end, 10);
 	if(errno == ERANGE || *end != 0 || portval < 0 || portval > 0xFFFF)
-		irc::logs::report(irc::log_fatal_error, "invalid port");
+	{
+		irc::logs::report(irc::log_error, "invalid port");
+		return false;
+	}
 	_connect_commands.push_back("PASS " + password + "\r\n");
 	_connect_commands.push_back("NICK greg\r\n");
 	_connect_commands.push_back("USER greg_Bot 0 * :Botrealname\r\n");
 	_connect_commands.push_back("JOIN #greg\r\n");
 	_fd = socket(AF_INET, SOCK_STREAM, 0);
 	if(_fd == -1)
-		irc::logs::report(irc::log_fatal_error, "FD error");
+	{
+		irc::logs::report(irc::log_error, "FD error");
+		return false;
+	}
 	_serv_addr.sin_family = AF_INET;
     _serv_addr.sin_port = htons(portval);
 	_serv_addr.sin_addr.s_addr = inet_addr(ip.c_str());
 	if(connect(_fd, (struct sockaddr*)&_serv_addr, sizeof(_serv_addr)) < 0)
 	{
         irc::logs::report(irc::log_error, "connect error");
-		return (false);
+		return false;
 	}
 	if(fcntl(_fd, F_SETFL, O_NONBLOCK) < 0)
 	{
         irc::logs::report(irc::log_error, "fcntl error");
-		return (false);
+		return false;
 	}
 	signal(SIGINT, signalsHandler);
 	signal(SIGQUIT, signalsHandler);
-	return (true);
+	return true;
 }
 
 void Bot::send_message(const std::string &content)
 {
 	if(send(_fd, content.c_str(), content.length(), 0) < 0)
-		irc::logs::report(irc::log_fatal_error, "send error");
+	{
+		irc::logs::report(irc::log_error, "send error");
+		active = false;
+	}
 }
 
 void Bot::handle_response(std::string buffer)
@@ -99,7 +111,7 @@ void Bot::handle_response(std::string buffer)
 	if(buffer.find("KICK #greg greg :") != std::string::npos || buffer.find("explose") != std::string::npos)
 	{
 		send_message("QUIT: Explose\r\n");
-		std::exit(0);
+		active = false;
 	}
 	if(buffer.find("quoi") != std::string::npos)
 		send_message("PRIVMSG #greg :feur\r\n");
@@ -111,10 +123,13 @@ void Bot::connect_to_server()
 	for(std::vector<std::string>::iterator it = _connect_commands.begin(); it != _connect_commands.end(); ++it)
 	{
 		if(send(_fd, (*it).c_str(), (*it).size(), 0) < 0)
-			 irc::logs::report(irc::log_fatal_error, "send error");
+		{
+			 irc::logs::report(irc::log_error, "send error");
+			 return;
+		}
 		if(recv(_fd, buffer, 1024, 0) > 0)
 			handle_response(buffer);
-	} 
+	}
 	while(active)
 	{
 		if(recv(_fd, buffer, 1024, 0) > 0)

@@ -6,7 +6,7 @@
 /*   By: vvaas <vvaas@student.42angouleme.fr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/21 09:15:24 by maldavid          #+#    #+#             */
-/*   Updated: 2024/02/06 12:35:38 by vvaas            ###   ########.fr       */
+/*   Updated: 2024/02/07 16:52:54 by maldavid         ###   ########.fr       */
 /*                                                                            */
 /******************************************************************************/
 
@@ -21,8 +21,7 @@ namespace irc
 	{
 		log_message = 0,
 		log_warning,
-		log_error,
-		log_fatal_error
+		log_error
 	};
 
 	namespace logs

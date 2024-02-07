@@ -6,7 +6,7 @@
 /*   By: vvaas <vvaas@student.42angouleme.fr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/20 09:27:04 by maldavid          #+#    #+#             */
-/*   Updated: 2024/02/06 12:35:38 by vvaas            ###   ########.fr       */
+/*   Updated: 2024/02/07 16:50:24 by maldavid         ###   ########.fr       */
 /*                                                                            */
 /******************************************************************************/
 
@@ -38,14 +38,22 @@ int main(int ac, char** av)
 		return 0;
 	}
 	if(av[1] == NULL || av[2] == NULL)
-		irc::logs::report(irc::log_fatal_error, "invalid argv, argv[1] or argv[2] is NULL (wtf)");
+	{
+		irc::logs::report(irc::log_error, "invalid argv, argv[1] or argv[2] is NULL (wtf)");
+		return 1;
+	}
 
 	char* end;
 	int port = std::strtol(av[1], &end, 10);
 	if(errno == ERANGE || *end != 0 || port <= 0 || port > 0xFFFF || std::strlen(av[1]) == 0)
-		irc::logs::report(irc::log_fatal_error, "invalid port");
+	{
+		irc::logs::report(irc::log_error, "invalid port");
+		return 1;
+	}
 
 	irc::Server serv(port, av[2]);
+	if(serv.hasFailedInit())
+		return 1;
 	serv_ptr = &serv;
 	signal(SIGINT, signalsHandler);
 	signal(SIGQUIT, signalsHandler);

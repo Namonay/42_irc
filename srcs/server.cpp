@@ -6,7 +6,7 @@
 /*   By: vvaas <vvaas@student.42angouleme.fr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/21 09:31:17 by maldavid          #+#    #+#             */
-/*   Updated: 2024/02/06 12:36:19 by vvaas            ###   ########.fr       */
+/*   Updated: 2024/02/07 16:52:35 by maldavid         ###   ########.fr       */
 /*                                                                            */
 /******************************************************************************/
 
@@ -31,6 +31,7 @@ namespace irc
 
 	Server::Server(int port, const std::string& password) : _s_len(sizeof(_s_data)), _password(password), _port(port), _main_socket(NULL_SOCKET), _active(true)
 	{
+		_init_failed = false;
 		time_t ltime = time(NULL);
 		struct tm tstruct = *localtime(&ltime);
 		char buf[100];
@@ -53,7 +54,11 @@ namespace irc
 		_s_data.sin_port = htons(_port);
 		_main_socket = socket(AF_INET, SOCK_STREAM, 0); // AF_INET == IPv4, SOCK_STREAM == TCP
 		if(_main_socket < 0)
-			logs::report(log_fatal_error, "socket error");
+		{
+			logs::report(log_error, "socket error");
+			_init_failed = true;
+			return;
+		}
 		logs::report(log_message, "socket succesfully started");
 	}
 
@@ -63,14 +68,26 @@ namespace irc
 
 		initSocketData();
 		if(setsockopt(_main_socket, SOL_SOCKET, SO_REUSEADDR, &opt, sizeof(opt)) < 0) // SOL_SOCKET : modify socket only, SO_REUSEADDR : Reusable after program ends
-			logs::report(log_fatal_error, "setsockopt() error (tout a pete)");
+		{
+			logs::report(log_error, "setsockopt() error (tout a pete)");
+			_init_failed = true;
+			return;
+		}
 
 		if(bind(_main_socket, reinterpret_cast<sockaddr*>(&_s_data), sizeof(_s_data)) != 0) // Bind _main_socket to localhost
-			logs::report(log_fatal_error, "bind error");
+		{
+			logs::report(log_error, "bind error");
+			_init_failed = true;
+			return;
+		}
 		logs::report(log_message, "bind successful, starting listen loop");
 
 		if(listen(_main_socket, MAX_USERS) != 0) // init the listen with MAX_USERS
-			logs::report(log_fatal_error, "listen error");
+		{
+			logs::report(log_error, "listen error");
+			_init_failed = true;
+			return;
+		}
 		logs::report(log_message, "listen queue created successfully");
 
 		logs::report(log_message, "server is up and running");
@@ -133,16 +150,25 @@ namespace irc
 
 			tmp = select(MAX_USERS, &_fd_set, NULL, NULL, NULL); // SELECT blocks till a connection or message is received, and let only those in _fd_set
 			if(tmp < 0 && _main_socket != NULL_SOCKET)
-				logs::report(log_fatal_error, "select fd error");
+			{
+				logs::report(log_error, "select fd error");
+				return;
+			}
 
 			if(FD_ISSET(_main_socket, &_fd_set)) // ifit's a new connection
 			{
 				sockaddr_in cli_sock;
 				fd = accept(_main_socket, reinterpret_cast<sockaddr*>(&cli_sock), &len); // adds the new connection
 				if(fd < 0)
-					logs::report(log_fatal_error, "accept() error");
+				{
+					logs::report(log_error, "accept() error");
+					return;
+				}
 				if(fcntl(fd, F_SETFL, O_NONBLOCK) < 0)
-					logs::report(log_fatal_error, "fcntl() error");
+				{
+					logs::report(log_error, "fcntl() error");
+					return;
+				}
 
 				unstd::SharedPtr<Client> new_client(new Client(fd, cli_sock, i++));
 				_client.push_back(new_client); // put the client into the vector used in handle_input

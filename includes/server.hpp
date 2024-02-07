@@ -6,7 +6,7 @@
 /*   By: vvaas <vvaas@student.42angouleme.fr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/21 09:12:28 by maldavid          #+#    #+#             */
-/*   Updated: 2024/02/06 12:35:48 by vvaas            ###   ########.fr       */
+/*   Updated: 2024/02/07 16:50:54 by maldavid         ###   ########.fr       */
 /*                                                                            */
 /******************************************************************************/
 
@@ -40,6 +40,7 @@ namespace irc
 			inline const std::string &getRunDate(void) const { return _run_date; };
 			inline size_t getClientCount(void) const { return _client.size(); };
 			inline size_t getChannelCount(void) const { return _channels.size(); };
+			inline bool hasFailedInit() const { return _init_failed; }
 
 			~Server();
 
@@ -87,6 +88,7 @@ namespace irc
 			int _port;
 			int _main_socket;
 			bool _active;
+			bool _init_failed;
 	};
 }
 

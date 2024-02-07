@@ -6,7 +6,7 @@
 /*   By: vvaas <vvaas@student.42angouleme.fr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/22 17:31:06 by maldavid          #+#    #+#             */
-/*   Updated: 2024/02/06 13:10:44 by vvaas            ###   ########.fr       */
+/*   Updated: 2024/02/07 16:45:33 by maldavid         ###   ########.fr       */
 /*                                                                            */
 /******************************************************************************/
 
@@ -146,7 +146,10 @@ namespace irc
 		}
 		Channel* channel = getChannelByName(msg.getArgs()[0]);
 		if(channel == NULL)
-			logs::report(log_fatal_error, "(KICK), cannot get channel '%s' by name; panic !", channel->getName().c_str());
+		{
+			logs::report(log_error, "(KICK), cannot get channel '%s' by name; panic !", channel->getName().c_str());
+			return;
+		}
 		if(!channel->removeClient(client, (msg.getReason().empty() ? "" : msg.getReason())))
 		{
 			client->sendCode(ERR_NOTONCHANNEL, "PART : Not on channel");
@@ -337,15 +340,21 @@ namespace irc
 
 		Channel* channel_target = getChannelByName(msg.getArgs()[1]);
 		if(channel_target == NULL)
-			logs::report(log_fatal_error, "(INVITE), cannot get channel '%s' by name; panic !", msg.getArgs()[1].c_str());
+		{
+			logs::report(log_error, "(INVITE), cannot get channel '%s' by name; panic !", msg.getArgs()[1].c_str());
+			return;
+		}
 
 		unstd::SharedPtr<Client> client_target = getClientByName(msg.getArgs()[0]);
 		if(client_target.get() == NULL)
-			logs::report(log_fatal_error, "(INVITE), cannot get client '%s' by name; panic !", msg.getArgs()[0].c_str());
+		{
+			logs::report(log_error, "(INVITE), cannot get client '%s' by name; panic !", msg.getArgs()[0].c_str());
+			return;
+		}
 
 		if(!channel_target->hasClient(client))
 		{
-			logs::report(log_fatal_error, "(INVITE), cannot get channel '%s' by name; panic !", msg.getArgs()[1].c_str());
+			logs::report(log_error, "(INVITE), cannot get channel '%s' by name; panic !", msg.getArgs()[1].c_str());
 			return;
 		}
 
@@ -403,10 +412,16 @@ namespace irc
 
 			Channel* channel_target = getChannelByName(*channel);
 			if(channel_target == NULL)
-				logs::report(log_fatal_error, "(KICK), cannot get channel '%s' by name; panic !", channel->c_str());
+			{
+				logs::report(log_error, "(KICK), cannot get channel '%s' by name; panic !", channel->c_str());
+				return;
+			}
 			unstd::SharedPtr<Client> client_target = getClientByName(*user);
 			if(client_target.get() == NULL)
-				logs::report(log_fatal_error, "(KICK), cannot get client '%s' by name; panic !", user->c_str());
+			{
+				logs::report(log_error, "(KICK), cannot get client '%s' by name; panic !", user->c_str());
+				return;
+			}
 
 			if(!channel_target->kick(client, client_target, msg.getReason()))
 				continue;
@@ -454,7 +469,10 @@ namespace irc
 		}
 		Channel* channel = getChannelByName(msg.getArgs()[0]);
 		if(channel == NULL)
-			logs::report(log_fatal_error, "(TOPIC), cannot get channel '%s' by name; panic !", channel->getName().c_str());
+		{
+			logs::report(log_error, "(TOPIC), cannot get channel '%s' by name; panic !", channel->getName().c_str());
+			return;
+		}
 		if(!channel->hasClient(client))
 		{
 			client->sendCode(ERR_NOTONCHANNEL, msg.getArgs()[0] + " you're not on that channel");
