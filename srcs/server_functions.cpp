@@ -6,7 +6,7 @@
 /*   By: vvaas <vvaas@student.42angouleme.fr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/22 17:31:06 by maldavid          #+#    #+#             */
-/*   Updated: 2024/02/07 16:45:33 by maldavid         ###   ########.fr       */
+/*   Updated: 2024/02/10 17:59:06 by vvaas            ###   ########.fr       */
 /*                                                                            */
 /******************************************************************************/
 
@@ -293,7 +293,7 @@ namespace irc
 						}
 						complete_msg.erase(complete_msg.begin());
 					}
-					(*itc)->sendMsg(client->getNickName(), "NOTICE " + (*itc)->getNickName(), complete_msg);
+					(*itc)->sendMsg(":YipIRC", "NOTICE " + (*itc)->getNickName(), complete_msg);
 					break;
 				}
 			}

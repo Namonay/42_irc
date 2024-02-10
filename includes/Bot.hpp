@@ -6,7 +6,7 @@
 /*   By: vvaas <vvaas@student.42angouleme.fr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/30 01:54:36 by vvaas             #+#    #+#             */
-/*   Updated: 2024/02/07 16:57:53 by maldavid         ###   ########.fr       */
+/*   Updated: 2024/02/10 17:24:56 by vvaas            ###   ########.fr       */
 /*                                                                            */
 /******************************************************************************/
 
@@ -26,7 +26,8 @@ class Bot
 
 		~Bot();
 
-	private :
+	private:
+		clock_t begin;
 		std::vector<std::string> _connect_commands;
 		struct sockaddr_in _serv_addr;
 		int _fd;

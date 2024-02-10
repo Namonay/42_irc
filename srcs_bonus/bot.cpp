@@ -6,7 +6,7 @@
 /*   By: vvaas <vvaas@student.42angouleme.fr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/30 01:54:56 by vvaas             #+#    #+#             */
-/*   Updated: 2024/02/07 16:41:47 by maldavid         ###   ########.fr       */
+/*   Updated: 2024/02/10 18:03:17 by vvaas            ###   ########.fr       */
 /*                                                                            */
 /******************************************************************************/
 
@@ -20,10 +20,11 @@
 #include <cstdlib>
 #include <signal.h>
 #include <cerrno>
+#include <ctime>
 
 bool active = true;
 
-Bot::Bot() : _fd(-1), _channel_created(false), _logged(false)
+Bot::Bot() :  begin(clock()), _fd(-1), _channel_created(false), _logged(false)
 {}
 
 Bot::~Bot()
@@ -108,9 +109,10 @@ void Bot::handle_response(std::string buffer)
 	}
 	else if(!_channel_created)
 		return;
-	if(buffer.find("KICK #greg greg :") != std::string::npos || buffer.find("explose") != std::string::npos)
+	if(buffer.find("KICK #greg greg :") != std::string::npos || buffer.find("explose") != std::string::npos || buffer.find(":YipIRC KILL greg :") != std::string::npos)
 	{
-		send_message("QUIT: Explose\r\n");
+		irc::logs::report(irc::log_message, "Exiting server");
+		send_message("QUIT :Salut mon pote\r\n");
 		active = false;
 	}
 	if(buffer.find("quoi") != std::string::npos)
@@ -132,6 +134,11 @@ void Bot::connect_to_server()
 	}
 	while(active)
 	{
+		if (((clock() -  begin) * 1000 / CLOCKS_PER_SEC) > 1000 && !_logged)
+		{
+			active = false;
+			irc::logs::report(irc::log_error, "Couldn't log into server");
+		}
 		if(recv(_fd, buffer, 1024, 0) > 0)
 			handle_response(buffer);
 		std::memset(buffer, 0, sizeof(buffer));
