@@ -56,7 +56,7 @@ int main(int ac, char** av)
 		return 1;
 	serv_ptr = &serv;
 	signal(SIGINT, signalsHandler);
-	signal(SIGPIPE; SIG_IGN); // tkt
+	signal(SIGPIPE, SIG_IGN); // tkt
 	signal(SIGQUIT, signalsHandler);
 	serv.wait();
 	serv.closeMainSocket();
