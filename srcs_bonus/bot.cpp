@@ -6,7 +6,7 @@
 /*   By: vvaas <vvaas@student.42angouleme.fr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/30 01:54:56 by vvaas             #+#    #+#             */
-/*   Updated: 2024/02/10 18:03:17 by vvaas            ###   ########.fr       */
+/*   Updated: 2024/02/12 18:12:58 by vvaas            ###   ########.fr       */
 /*                                                                            */
 /******************************************************************************/
 
@@ -134,7 +134,7 @@ void Bot::connect_to_server()
 	}
 	while(active)
 	{
-		if (((clock() -  begin) * 1000 / CLOCKS_PER_SEC) > 1000 && !_logged)
+		if (((clock() -  begin) * 1000 / CLOCKS_PER_SEC) > 1000 && (!_logged || !_channel_created))
 		{
 			active = false;
 			irc::logs::report(irc::log_error, "Couldn't log into server");
